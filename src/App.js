@@ -1,25 +1,26 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from 'react';
+import { Outlet, useLocation } from 'react-router-dom';
+
+import { AuthContext } from './Context/AuthContext';
+import { ThemeContext } from './Context/ThemeContext';
 
 function App() {
+  const { authenticated } = React.useContext(AuthContext);
+  const location = useLocation();
+  const { darkMode } = React.useContext(ThemeContext);
+
+  const hideNavOnRoutes = ['/login', '/register'];
+  
+  useEffect(() => {
+    if (darkMode) {
+      document.body.setAttribute('data-theme', 'dark');
+    } else {
+      document.body.removeAttribute('data-theme');
+    }
+  }, [darkMode]);
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Outlet />
   );
 }
-
 export default App;

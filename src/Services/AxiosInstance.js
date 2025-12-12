@@ -19,25 +19,15 @@ axiosInstance.interceptors.request.use(
   (error) => Promise.reject(error)
 );
 
-// Interceptor para refrescar token en respuesta 401
 axiosInstance.interceptors.response.use(
   response => response,
-  async (error) => {
-    const originalRequest = error.config;
-    if (error.response?.status === 401 && !originalRequest._retry) {
-      originalRequest._retry = true;
-      const newToken = await AuthService.refreshToken();
-      if (newToken) {
-        axiosInstance.defaults.headers.common['Authorization'] = `Bearer ${newToken}`;
-        originalRequest.headers['Authorization'] = `Bearer ${newToken}`;
-        console.log('Token refrescado, reintentando la solicitud original');
-        return axiosInstance(originalRequest);
-      } else {
-        console.log('Algo falló al refrescar el token');
-        AuthService.logout();
-        window.location.href = '/login';
-      }
+  (error) => {
+    if (error.response?.status === 401) {
+      console.log('Sesión expirada o token inválido, cerrando sesión...');
+      localStorage.removeItem('token');
+      window.location.href = '/login';
     }
+
     return Promise.reject(error);
   }
 );
