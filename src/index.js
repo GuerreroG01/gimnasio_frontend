@@ -12,6 +12,8 @@ import Dashboard from './Components/Home/Dashboard';
 import FormularioCliente from './Pages/Cliente/FormPage';
 import IndexClientes from './Pages/Cliente/IndexPage';
 import DetailsPage from './Pages/Cliente/DetailsPage';
+//import FormPagosPage from './Pages/Pago/FormPagoPage';
+import IndexPagos from './Pages/Pago/IndexPage';
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
 import IndexTipoEjerYPagoPage from './Pages/IndexTipoEjer_y_PagoPage';
@@ -21,9 +23,6 @@ import FormularioPagosPage from './Pages/Tipo_Pagos/FormularioPagosPage';
 import IndexProductoPage from './Pages/Producto/IndexProductoPage';
 import VentaFormPage from './Pages/Producto/Venta/VentaFormPage';
 import VentaIndexPage from './Pages/Producto/Venta/VentaIndexPage';
-
-import FormPagosPage from './Pages/Pago/FormPagoPage';
-import IndexPagos from './Pages/Pago/IndexPagoPage';
 
 import Asistencia from './Pages/Asistencia/AsistenciaPage';
 import AsistenciaListado from './Pages/Asistencia/AsistenciaListaPage';
@@ -55,6 +54,11 @@ const router = createBrowserRouter([
       { path: '/clientes/form', element: <ProtectedRoute><FormularioCliente /></ProtectedRoute> },
       { path: '/clientes/:id/update', element: <ProtectedRoute><FormularioCliente /></ProtectedRoute> },
       { path: '/clientes/:id/details', element: <ProtectedRoute><DetailsPage /></ProtectedRoute> },
+
+      // PAGOS - REALIZADOS
+      { path: '/pagos', element: <ProtectedRoute><IndexPagos /></ProtectedRoute> },
+      //{ path: '/pagos/nuevo', element: <ProtectedRoute><FormPagosPage /></ProtectedRoute> },
+      //{ path: '/pagos/editar/:id', element: <ProtectedRoute><FormPagosPage /></ProtectedRoute> },
 /*
       // TIPOS EJERCICIOS Y PAGOS
       { path: '/IndexTipoEjer_y_Pago', element: <ProtectedRoute><IndexTipoEjerYPagoPage /></ProtectedRoute> },
@@ -67,11 +71,6 @@ const router = createBrowserRouter([
 
       // PRODUCTOS
       { path: '/productos', element: <ProtectedRoute><IndexProductoPage /></ProtectedRoute> },
-
-      // PAGOS - REALIZADOS
-      { path: '/pagos', element: <ProtectedRoute><IndexPagos /></ProtectedRoute> },
-      { path: '/pagos/nuevo', element: <ProtectedRoute><FormPagosPage /></ProtectedRoute> },
-      { path: '/pagos/editar/:id', element: <ProtectedRoute><FormPagosPage /></ProtectedRoute> },
 
       // ASISTENCIA
       { path: '/asistencia', element: <ProtectedRoute><Asistencia /></ProtectedRoute> },
