@@ -32,7 +32,8 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
     const fetchinfopago = async () => {
       if (pago && pago.codigoCliente && pago.fechaPago) {
         try {
-          const fechaData = await pagoService.getFechasUsuario(pago.codigoCliente, pago.fechaPago);
+          const fechaData = await pagoService.getTiempoPagoCliente(pago.codigoCliente, pago.fechaPago);
+          console.log("Información del pago obtenida:", fechaData);
   
           if (fechaData) {
             setinfopago(fechaData);
@@ -55,7 +56,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
   };
 
   const handleEditClick = (id) => {
-    navigate(`/pagos/editar/${id}`);
+    navigate(`/pagos/${id}/update`);
   };
   
   const handleDeleteClick = (pago, event) => {
@@ -78,9 +79,9 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
         } else {
           throw new Error('La fecha de pago no tiene un formato válido');
         }
-        const fechaUsuarioExiste = await pagoService.checkFechaUsuarioExist(pagoAEliminar.codigoCliente, fechaPagoFormateada);
+        const fechaClienteExiste = await pagoService.checkFechaClienteExist(pagoAEliminar.codigoCliente, fechaPagoFormateada);
   
-        if (fechaUsuarioExiste) {
+        if (fechaClienteExiste) {
           await pagoService.deleteFecha({
             ClienteId: pagoAEliminar.codigoCliente,
             FechaPago: fechaPagoFormateada,

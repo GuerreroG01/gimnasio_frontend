@@ -107,7 +107,7 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
                 >
                     <IconButton
                         color="primary"
-                        onClick={() => navigate('/pagos/nuevo')}
+                        onClick={() => navigate('/pagos/form')}
                         sx={{
                             fontSize: 30,
                             backgroundColor: '#1976d2',

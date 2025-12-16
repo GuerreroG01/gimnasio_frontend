@@ -32,18 +32,18 @@ const updateFecha = (fechaData) =>
 const deleteFecha = (fechaData) =>
   axiosInstance.delete(`${API_URL}/DeleteFechas_Cliente`, { data: fechaData }).then(r => r.data);
 
-const getUltimoPagoVigente = (usuarioId, esEdicion = false) =>
+const getUltimoPagoVigente = (clienteId, esEdicion = false) =>
   axiosInstance
-    .get(`${API_URL}/ultimo-pago-vigente`, { params: { usuarioId, esEdicion } })
+    .get(`${API_URL}/ultimo-pago-vigente`, { params: { clienteId, esEdicion } })
     .then(r => r.data)
     .catch(error => {
       if (error.response?.status === 404) return { diasRestantes: 0 };
       throw error;
     });
 
-const getFechasUsuario = (usuarioId, fechaPago) =>
+const getTiempoPagoCliente = (clienteId, fechaPago) =>
   axiosInstance
-    .get(`${API_URL}/GetFechas_Cliente`, { params: { usuarioId, fechaPago } })
+    .get(`${API_URL}/GetFechas_Cliente`, { params: { clienteId, fechaPago } })
     .then(r => r.data)
     .catch(error => {
       if (error.response?.status === 404)
@@ -51,12 +51,12 @@ const getFechasUsuario = (usuarioId, fechaPago) =>
       throw error;
     });
 
-const checkFechaUsuarioExist = (usuarioId, fechaPago) =>
+const checkFechaClienteExist = (usuarioId, fechaPago) =>
   axiosInstance
     .get(`${API_URL}/CheckPagoClienteExist/${usuarioId}/${fechaPago}`)
     .then(r => r.data.exists);
 
-const getUltimoPagoPorUsuario = (usuarioId) =>
+const getUltimoPagoPorCliente = (usuarioId) =>
   axiosInstance.get(`${API_URL}/ultimo-pago-cliente/${usuarioId}`).then(r => r.data);
 
 const getVencimientosProximos = () =>
@@ -74,8 +74,8 @@ export default {
   updateFecha,
   deleteFecha,
   getUltimoPagoVigente,
-  getFechasUsuario,
-  checkFechaUsuarioExist,
-  getUltimoPagoPorUsuario,
+  getTiempoPagoCliente,
+  checkFechaClienteExist,
+  getUltimoPagoPorCliente,
   getVencimientosProximos,
 };

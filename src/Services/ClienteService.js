@@ -37,7 +37,7 @@ const getClientePorPrimeraLetra = () => {
 };
 
 const buscarCliente = (nombres, apellidos) => {
-  return axiosInstance.get(`${API_URL}/BuscarCliente`, {
+  return axiosInstance.get(`${API_URL}/BuscarClientes`, {
     params: { nombres, apellidos },
   });
 };

@@ -12,7 +12,7 @@ import Dashboard from './Components/Home/Dashboard';
 import FormularioCliente from './Pages/Cliente/FormPage';
 import IndexClientes from './Pages/Cliente/IndexPage';
 import DetailsPage from './Pages/Cliente/DetailsPage';
-//import FormPagosPage from './Pages/Pago/FormPagoPage';
+import FormularioPagos from './Pages/Pago/FormPage';
 import IndexPagos from './Pages/Pago/IndexPage';
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
@@ -57,8 +57,8 @@ const router = createBrowserRouter([
 
       // PAGOS - REALIZADOS
       { path: '/pagos', element: <ProtectedRoute><IndexPagos /></ProtectedRoute> },
-      //{ path: '/pagos/nuevo', element: <ProtectedRoute><FormPagosPage /></ProtectedRoute> },
-      //{ path: '/pagos/editar/:id', element: <ProtectedRoute><FormPagosPage /></ProtectedRoute> },
+      { path: '/pagos/form', element: <ProtectedRoute><FormularioPagos /></ProtectedRoute> },
+      { path: '/pagos/:id/update', element: <ProtectedRoute><FormularioPagos /></ProtectedRoute> },
 /*
       // TIPOS EJERCICIOS Y PAGOS
       { path: '/IndexTipoEjer_y_Pago', element: <ProtectedRoute><IndexTipoEjerYPagoPage /></ProtectedRoute> },

@@ -11,7 +11,6 @@ const DetailsPago = ({ open, onClose, pago, infopago }) => {
 
   const fechaPago = new Date(pago.fechaPago);
   const mesesPagados = pago.intervaloPago ? `Meses Pagados: ${pago.mesesPagados}` : `Días Pagados: ${pago.mesesPagados}`;
-  const mesesPagadosA = `Meses Pagados A: ${pago.mesesPagadosA || 'No proporcionado'}`;
   const monto = `Monto: $${pago.monto}`;
   const detallePago = `Detalle: ${pago.detallePago}`;
 
@@ -71,10 +70,6 @@ const DetailsPago = ({ open, onClose, pago, infopago }) => {
 
         <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
           {mesesPagados}
-        </Typography>
-
-        <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
-          {mesesPagadosA}
         </Typography>
 
         <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>

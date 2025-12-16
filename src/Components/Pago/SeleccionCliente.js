@@ -1,15 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { TextField, Grid, Card, CardContent, CardHeader, Avatar, Box, Typography, CircularProgress, IconButton, InputAdornment, Chip } from '@mui/material';
 import { Search as SearchIcon, Close as CloseIcon } from '@mui/icons-material';
-import UsuarioService from '../../Services/UsuarioService';
+import ClienteService from '../../Services/ClienteService';
 
-const SeleccionUsuario = ({ onSelectUsuario }) => {
-  const [searchName, setSearchName] = useState('');
-  const [searchSurname, setSearchSurname] = useState('');
-  const [searchCode, setSearchCode] = useState('');
-  const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [activeFilters, setActiveFilters] = useState([]);
+const SeleccionCliente = ({ onSelectCliente }) => {
+  const [searchName, setSearchName] = React.useState('');
+  const [searchSurname, setSearchSurname] = React.useState('');
+  const [searchCode, setSearchCode] = React.useState('');
+  const [cliente, setCliente] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [activeFilters, setActiveFilters] = React.useState([]);
 
   const handleSearch = (type) => {
     setLoading(true);
@@ -26,57 +26,57 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
     setActiveFilters(newFilters);
 
     if (!searchName && !searchSurname && !searchCode) {
-      setUsuarios([]);
+      setCliente([]);
       setLoading(false);
       return;
     }
 
     if (type === 'code' && searchCode) {
-      UsuarioService.getUsuarioById(searchCode)
+      ClienteService.getClienteById(searchCode)
         .then((response) => {
-          setUsuarios([response.data]);
+          setCliente([response.data]);
         })
         .catch((error) => {
-          console.error('Error al buscar usuario por código:', error);
-          setUsuarios([]);
+          console.error('Error al buscar cliente por código:', error);
+          setCliente([]);
         })
         .finally(() => {
           setLoading(false);
         });
     } else if (type === 'name' || type === 'surname') {
       if (searchName && searchSurname) {
-        UsuarioService.buscarUsuarios(searchName, searchSurname)
+        ClienteService.buscarCliente(searchName, searchSurname)
           .then((response) => {
-            setUsuarios(response.data);
+            setCliente(response.data);
           })
           .catch((error) => {
-            console.error('Error al buscar usuarios por nombre y apellido:', error);
-            setUsuarios([]);
+            console.error('Error al buscar cliente por nombre y apellido:', error);
+            setCliente([]);
           })
           .finally(() => {
             setLoading(false);
           });
       } else {
         if (searchName) {
-          UsuarioService.buscarUsuarios(searchName, '')
+          ClienteService.buscarCliente(searchName, '')
             .then((response) => {
-              setUsuarios(response.data);
+              setCliente(response.data);
             })
             .catch((error) => {
-              console.error('Error al buscar usuarios por nombre:', error);
-              setUsuarios([]);
+              console.error('Error al buscar cliente por nombre:', error);
+              setCliente([]);
             })
             .finally(() => {
               setLoading(false);
             });
         } else if (searchSurname) {
-          UsuarioService.buscarUsuarios('', searchSurname)
+          ClienteService.buscarCliente('', searchSurname)
             .then((response) => {
-              setUsuarios(response.data);
+              setCliente(response.data);
             })
             .catch((error) => {
-              console.error('Error al buscar usuarios por apellido:', error);
-              setUsuarios([]);
+              console.error('Error al buscar cliente por apellido:', error);
+              setCliente([]);
             })
             .finally(() => {
               setLoading(false);
@@ -95,7 +95,7 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
     if (filterType === 'surname') setSearchSurname('');
   
     if (newFilters.length === 0) {
-      setUsuarios([]);
+      setCliente([]);
       setLoading(false);
     } else {
       setLoading(true);
@@ -103,22 +103,22 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
       const searchPromises = [];
   
       if (newFilters.some(filter => filter.type === 'code') && searchCode) {
-        searchPromises.push(UsuarioService.getUsuarioById(searchCode));
+        searchPromises.push(ClienteService.getClienteById(searchCode));
       }
       if (newFilters.some(filter => filter.type === 'name') && searchName) {
-        searchPromises.push(UsuarioService.buscarUsuarios(searchName, ''));
+        searchPromises.push(ClienteService.buscarCliente(searchName, ''));
       }
       if (newFilters.some(filter => filter.type === 'surname') && searchSurname) {
-        searchPromises.push(UsuarioService.buscarUsuarios('', searchSurname));
+        searchPromises.push(ClienteService.buscarCliente('', searchSurname));
       }
       Promise.all(searchPromises)
         .then((responses) => {
-          const allUsuarios = responses.flatMap(response => response.data);
-          setUsuarios(allUsuarios);
+          const allClientes = responses.flatMap(response => response.data);
+          setCliente(allClientes);
         })
         .catch((error) => {
-          console.error('Error al buscar usuarios:', error);
-          setUsuarios([]);
+          console.error('Error al buscar cliente:', error);
+          setCliente([]);
         })
         .finally(() => {
           setLoading(false);
@@ -126,13 +126,13 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
     }
   };      
 
-  const handleSelectUsuario = (usuario) => {
-    onSelectUsuario(usuario.codigo, `${usuario.nombres} ${usuario.apellidos}`);
+  const handleSelectCliente = (cliente) => {
+    onSelectCliente(cliente.codigo, `${cliente.nombres} ${cliente.apellidos}`);
   };
 
   return (
-    <Card sx={{ maxWidth: 900, margin: 'auto', padding: 2 }}>
-      <CardHeader subheader="Filtra los usuarios por nombre, apellido o código" />
+    <Card sx={{ maxWidth: 580, margin: 'auto',  padding: 2 }}>
+      <CardHeader subheader="Filtra los cliente por nombre, apellido o código" />
       <CardContent>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, marginBottom: 2 }}>
           {activeFilters.length > 0 && (
@@ -156,6 +156,13 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
                 variant="outlined"
                 value={searchCode}
                 onChange={(e) => setSearchCode(e.target.value)}
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: '80%',
+                    md: 140,
+                  }
+                }}
                 fullWidth
                 InputProps={{
                   endAdornment: (
@@ -175,7 +182,13 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
                 variant="outlined"
                 value={searchName}
                 onChange={(e) => setSearchName(e.target.value)}
-                fullWidth
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: '80%',
+                    md: 180,
+                  }
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -194,7 +207,13 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
                 variant="outlined"
                 value={searchSurname}
                 onChange={(e) => setSearchSurname(e.target.value)}
-                fullWidth
+                sx={{
+                  width: {
+                    xs: '100%',
+                    sm: '80%',
+                    md: 180,
+                  }
+                }}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -215,7 +234,7 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
           </Box>
         ) : (
           <Grid container spacing={2}>
-            {usuarios.length === 0 ? (
+            {cliente.length === 0 ? (
               <Typography 
                 variant="h6" 
                 color="textSecondary" 
@@ -233,8 +252,8 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
                 </Box>
               </Typography>            
             ) : (
-              usuarios.map((usuario) => (
-                <Grid item xs={12} sm={6} key={usuario.codigo}>
+              cliente.map((cliente) => (
+                <Grid item xs={6} sm={6} key={cliente.codigo}>
                   <Card
                     sx={{
                       display: 'flex',
@@ -246,22 +265,22 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
                       transition: 'transform 0.3s ease',
                       '&:hover': { transform: 'scale(1.05)' },
                     }}
-                    onClick={() => handleSelectUsuario(usuario)}
+                    onClick={() => handleSelectCliente(cliente)}
                   >
                     <Box sx={{ display: 'flex', alignItems: 'center', marginBottom: 2 }}>
                       <Avatar sx={{ width: 56, height: 56, marginRight: 2 }}>
-                        {usuario.nombres[0]}
+                        {cliente.nombres[0]}
                       </Avatar>
                       <Box>
-                        <Typography variant="subtitle1">{`${usuario.nombres} ${usuario.apellidos}`}</Typography>
+                        <Typography variant="subtitle1">{`${cliente.nombres} ${cliente.apellidos}`}</Typography>
                         <Typography variant="body2" color="textSecondary">
-                          Código: {usuario.codigo}
+                          Código: {cliente.codigo}
                         </Typography>
                       </Box>
                     </Box>
 
                     <Typography variant="body2" color="textSecondary">
-                      Teléfono: {usuario.telefono}
+                      Teléfono: {cliente.telefono}
                     </Typography>
                   </Card>
                 </Grid>
@@ -273,4 +292,4 @@ const SeleccionUsuario = ({ onSelectUsuario }) => {
     </Card>
   );
 };
-export default SeleccionUsuario;
+export default SeleccionCliente;

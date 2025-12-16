@@ -19,11 +19,14 @@ const createFecha = (fechaData) => {
     },
   });
 };
+const updateByPago = (id, data) =>
+  axiosInstance.put(`${API_URL}/${id}`, data);
 
 const TiempoPagoService = {
   getFechasByClienteId,
   getFechaById,
-  createFecha
+  createFecha,
+  updateByPago
 };
 
 export default TiempoPagoService;

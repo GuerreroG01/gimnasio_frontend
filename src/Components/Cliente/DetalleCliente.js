@@ -5,7 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import './DetalleCliente.css';
 
 const DetalleCliente = ({ imageUrl, cliente, id, navigate, telefonoMostrar, estadoCliente, formatDate, handleAddFecha, formatMonthYear, calculateProgress, getColorBasedOnDate }) => {
-
+  console.log('DetalleCliente renderizado con cliente:', cliente);
   return (
     <Box sx={{ padding: 3 }}>
       <Typography variant="h4" gutterBottom>
@@ -71,10 +71,10 @@ const DetalleCliente = ({ imageUrl, cliente, id, navigate, telefonoMostrar, esta
                     Pago {formatMonthYear(fecha.fechaPago)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Fecha Pago: {formatDate(fecha.fechaPago)}
+                    Codigo del Pago: {fecha.codigoPago}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
-                    Fecha Pago A: {formatDate(fecha.fechaPagoA)}
+                    Fecha Pago: {formatDate(fecha.fechaPago)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     Fecha Vencimiento: {formatDate(fecha.fechaVencimiento)}

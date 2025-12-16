@@ -18,6 +18,7 @@ import Box from '@mui/material/Box';
 import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import FechasUsuarioService from '../../Services/TiempoPagoService';
+import TiempoPagoService from '../../Services/TiempoPagoService';
 
 function Row({ usuario, onEdit, onDelete, onViewDetails }) {
   const [open, setOpen] = React.useState(false);
@@ -28,7 +29,7 @@ function Row({ usuario, onEdit, onDelete, onViewDetails }) {
     if (open && !fechasUsuario.length) {
       const fetchFechas = async () => {
         try {
-          const response = await FechasUsuarioService.getFechasByUsuarioId(usuario.codigo);
+          const response = await TiempoPagoService.getFechasByClienteId(usuario.codigo);
           const datosFechas = response.data;
           setFechasUsuario(datosFechas);
           if (datosFechas.length > 0) {
