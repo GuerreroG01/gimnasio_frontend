@@ -29,7 +29,7 @@ export default function DetailsPage(){
     }, [id]);
     const handleAddFecha = () => {
         const clienteId = cliente.codigo;
-        navigate('/pagos/nuevo', { state: { clienteId } });
+        navigate('/pagos/form', { state: { clienteId } });
     };
 
     const formatDate = (date) => {

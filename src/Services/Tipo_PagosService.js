@@ -49,13 +49,20 @@ const deleteTipoPago = async (id) => {
     throw error;
   }
 };
+const searchTipoPagoByName = (descripcion) => {
+  console.log("Buscando tipo de pago con descripcion:", descripcion);
+  return axiosInstance.get(`${API_URL}/buscarTiposPagos`, {
+    params: { descripcion },
+  });
+}
 
 const tipo_PagosService = {
   getTipoPagos,
   getTipoPagoById,
   createTipoPago,
   updateTipoPago,
-  deleteTipoPago
+  deleteTipoPago,
+  searchTipoPagoByName,
 };
 
 export default tipo_PagosService;

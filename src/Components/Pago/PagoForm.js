@@ -1,11 +1,11 @@
-import { TextField, Button, Grid, Container, Typography, Alert, Snackbar, IconButton, CircularProgress, ToggleButton, Select, InputLabel, FormControl, ToggleButtonGroup, MenuItem } from '@mui/material';
+import { TextField, Button, Grid, Autocomplete, Container, Typography, Alert, Snackbar, IconButton, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { Payment, AttachMoney, Edit, EditOff, CalendarToday } from '@mui/icons-material';
 import SeleccionCliente from './SeleccionCliente';
 import FechaVencimiento from './FechaVencimiento';
 
 const PagoForm = ({ clienteId, editMode, handleSubmit, selectedUserName, handleClickEditIcon, showSeleccionCliente, rangoPagoUnidad,
-  diasSeleccionados, handleDiasSeleccionados, setUserEditedSelect, handleChange, pagoData, setPagoData, loading, errorMessage, 
-  setErrorMessage, handleSelectCliente, handleRangoPagoUnidadChange }) => {
+  setDiasSeleccionados, setUserEditedSelect, handleChange, pagoData, setPagoData, loading, errorMessage, 
+  setErrorMessage, handleSelectCliente, handleRangoPagoUnidadChange, loadingTiposPago, tiposPago, setSearchText, setTipoPagoSeleccionado }) => {
     
   return (
     <Grid container spacing={2}>
@@ -82,9 +82,6 @@ const PagoForm = ({ clienteId, editMode, handleSubmit, selectedUserName, handleC
               </Grid>
               <Grid item xs={12} sm={6} container direction="column" spacing={2}>
                 <Grid item xs={12} sx={{ width: 250 }}>
-                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                    Tipo de pago
-                  </Typography>
                   <ToggleButtonGroup
                     value={rangoPagoUnidad}
                     exclusive
@@ -109,7 +106,7 @@ const PagoForm = ({ clienteId, editMode, handleSubmit, selectedUserName, handleC
                   </ToggleButtonGroup>
                 </Grid>
                 <Grid container spacing={2} sx={{ maxWidth: 250, margin: '0 auto' }}>
-                  <Grid item xs={6} sx={{ maxWidth: 100 }}>
+                  <Grid item xs={12}>
                     <TextField
                       label={rangoPagoUnidad === 'meses' ? 'Meses a pagar' : 'Días a pagar'}
                       type="number"
@@ -124,37 +121,48 @@ const PagoForm = ({ clienteId, editMode, handleSubmit, selectedUserName, handleC
                     />
                   </Grid>
                   {rangoPagoUnidad === 'dias' && (
-                    <Grid item xs={6}>
-                      <TextField
-                        select
-                        label="Opciones"
-                        fullWidth
-                        value={diasSeleccionados === 'Otro' ? 'Otro' : diasSeleccionados}
-                        onChange={(e) => {
-                          setUserEditedSelect(true);
-                          handleDiasSeleccionados(e);
+                    <Grid item xs={12} md={6}>
+                      <Autocomplete
+                        sx={{ width: 245 }}
+                        fullWidth={false}
+                        loading={loadingTiposPago}
+                        options={tiposPago}
+                        getOptionLabel={(option) => option.descripcion}
+                        filterOptions={(x) => x}
+                        onInputChange={(event, value, reason) => {
+                          if (reason === 'input') {
+                            setSearchText(value);
+                          }
                         }}
-                      >
-                        {[7, 15].map((dia) => (
-                          <MenuItem key={dia} value={dia}>
-                            {dia} días
-                          </MenuItem>
-                        ))}
-                        <MenuItem
-                          value="Otro"
-                          onClick={() => {
-                            if ([7, 15].includes(pagoData.MesesPagados)) {
-                              setPagoData((prev) => ({
-                                ...prev,
-                                MesesPagados: 0,
-                                Monto: 0,
-                              }));
-                            }
-                          }}
-                        >
-                          Otro
-                        </MenuItem>
-                      </TextField>
+                        onChange={(event, value) => {
+                          setUserEditedSelect(true);
+                          setTipoPagoSeleccionado(value);
+
+                          if (value) {
+                            setDiasSeleccionados(value.duracion);
+                            setPagoData((prev) => ({
+                              ...prev,
+                              MesesPagados: value.duracion,
+                              Monto: value.monto,
+                            }));
+                          }
+                        }}
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Tipos de Pagos"
+                            InputProps={{
+                              ...params.InputProps,
+                              endAdornment: (
+                                <>
+                                  {loadingTiposPago && <CircularProgress size={20} />}
+                                  {params.InputProps.endAdornment}
+                                </>
+                              ),
+                            }}
+                          />
+                        )}
+                      />
                     </Grid>
                   )}
                 </Grid>
