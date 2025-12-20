@@ -25,7 +25,6 @@ const NAV_LINKS = [
   { label: "Clientes", path: "/clientes" },
   { label: "Operaciones", children: [
       { label: "Pago", path: "/pagos" },
-      { label: "Tipo Pago", path: "/tipopagos" },
       { label: "Productos", path: "/productos" }
   ]}
 ];

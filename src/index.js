@@ -14,13 +14,13 @@ import IndexClientes from './Pages/Cliente/IndexPage';
 import DetailsPage from './Pages/Cliente/DetailsPage';
 import FormularioPagos from './Pages/Pago/FormPage';
 import IndexPagos from './Pages/Pago/IndexPage';
+import IndexProducto from './Pages/Producto/IndexPage';
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
 import IndexTipoEjerYPagoPage from './Pages/IndexTipoEjer_y_PagoPage';
 
 import FormularioPagosPage from './Pages/Tipo_Pagos/FormularioPagosPage';
 
-import IndexProductoPage from './Pages/Producto/IndexProductoPage';
 import VentaFormPage from './Pages/Producto/Venta/VentaFormPage';
 import VentaIndexPage from './Pages/Producto/Venta/VentaIndexPage';
 
@@ -59,6 +59,9 @@ const router = createBrowserRouter([
       { path: '/pagos', element: <ProtectedRoute><IndexPagos /></ProtectedRoute> },
       { path: '/pagos/form', element: <ProtectedRoute><FormularioPagos /></ProtectedRoute> },
       { path: '/pagos/:id/update', element: <ProtectedRoute><FormularioPagos /></ProtectedRoute> },
+
+      //PRODUCTOS
+      { path: '/productos', element: <ProtectedRoute><IndexProducto /></ProtectedRoute> },
 /*
       // TIPOS EJERCICIOS Y PAGOS
       { path: '/IndexTipoEjer_y_Pago', element: <ProtectedRoute><IndexTipoEjerYPagoPage /></ProtectedRoute> },
@@ -68,9 +71,6 @@ const router = createBrowserRouter([
       // TIPO PAGOS
       { path: '/tipopagos/nuevo', element: <ProtectedRoute><FormularioPagosPage /></ProtectedRoute> },
       { path: '/tipopagos/editar/:id', element: <ProtectedRoute><FormularioPagosPage /></ProtectedRoute> },
-
-      // PRODUCTOS
-      { path: '/productos', element: <ProtectedRoute><IndexProductoPage /></ProtectedRoute> },
 
       // ASISTENCIA
       { path: '/asistencia', element: <ProtectedRoute><Asistencia /></ProtectedRoute> },
