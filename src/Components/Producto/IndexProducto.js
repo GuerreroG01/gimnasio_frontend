@@ -16,19 +16,9 @@ import ProductoCard from './ProductoCard';
 import vacioImg from '../../assets/Images/vacio.png';
 import { useNavigate } from 'react-router-dom';
 
-const IndexProducto = ({
-  productos,
-  categorias, categoriaSeleccionada, handleCategoriaChange,
-  handleOpenNew, handleOpenEdit, handleClose,
-  loading, success, error,
-  currentProducto,
-  handleChange, handleSubmit,
-  anchorEl,
-  openDeleteDialog, setOpenDeleteDialog,
-  confirmDelete, deleteSuccess, deleteError,
-  handleDelete,
-  getCategoryIcon
-}) => {
+const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCategoriaChange, handleOpenNew, handleOpenEdit, handleClose,
+  loading, success, error, currentProducto, handleChange, handleSubmit, anchorEl, openDeleteDialog, setOpenDeleteDialog, confirmDelete,
+  deleteSuccess, deleteError, handleDelete, getCategoryIcon }) => {
 
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -36,8 +26,8 @@ const IndexProducto = ({
 
   const actions = [
     { icon: <AddIcon />, name: 'Nuevo Producto', onClick: (e) => handleOpenNew(e) },
-    { icon: <ShoppingBagIcon />, name: 'Ventas', onClick: () => navigate('/productos/venta') },
-    { icon: <ShoppingCartIcon />, name: 'Vender Producto', onClick: () => navigate('/productos/venta/nuevo') },
+    { icon: <ShoppingBagIcon />, name: 'Ventas', onClick: () => navigate('/venta') },
+    { icon: <ShoppingCartIcon />, name: 'Vender Producto', onClick: () => navigate('/venta/new') },
   ];
 
   const startIndex = (page - 1) * itemsPerPage;

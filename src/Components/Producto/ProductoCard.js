@@ -1,7 +1,19 @@
+import React, { useEffect } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
+import { useExistencias } from '../../Context/ExistenciaContext';
 
 const ProductosCard = ({ producto, onClick, getCategoryIcon }) => {
   const monedaSimbolo = producto.moneda === 'USD' ? '$' : 'C$';
+  const modelo = 'productos';
+  const { existencias } = useExistencias();
+  
+  const [existenciaActual, setExistenciaActual] = React.useState(
+      existencias?.[modelo]?.[producto.codigoProducto] ?? producto.existencias
+  );
+
+  useEffect(() => {
+      setExistenciaActual(existencias?.[modelo]?.[producto.codigoProducto] ?? producto.existencias);
+  }, [existencias, producto.codigoProducto, modelo, producto.existencias]);
   return (
     <Card
       sx={{
@@ -48,7 +60,7 @@ const ProductosCard = ({ producto, onClick, getCategoryIcon }) => {
           color="text.secondary"
           sx={{ fontSize: '0.8rem' }}
         >
-          Existencias: {producto.existencias} | Stock Mínimo: {producto.stockMinimo}
+          Existencias: {existenciaActual} | Stock Mínimo: {producto.stockMinimo}
         </Typography>
       </CardContent>
     </Card>

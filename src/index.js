@@ -6,6 +6,7 @@ import reportWebVitals from './reportWebVitals';
 
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './Context/AuthContext';
+import { ExistenciasProvider } from './Context/ExistenciaContext';
 import ErrorPage from './Pages/ErrorPage';
 import LoginPage from './Pages/Login/LoginPage';
 import Dashboard from './Components/Home/Dashboard';
@@ -15,14 +16,13 @@ import DetailsPage from './Pages/Cliente/DetailsPage';
 import FormularioPagos from './Pages/Pago/FormPage';
 import IndexPagos from './Pages/Pago/IndexPage';
 import IndexProducto from './Pages/Producto/IndexPage';
+import VentaFormPage from './Pages/Venta/VentaFormPage';
+import VentaIndexPage from './Pages/Venta/IndexPage';
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
 import IndexTipoEjerYPagoPage from './Pages/IndexTipoEjer_y_PagoPage';
 
 import FormularioPagosPage from './Pages/Tipo_Pagos/FormularioPagosPage';
-
-import VentaFormPage from './Pages/Producto/Venta/VentaFormPage';
-import VentaIndexPage from './Pages/Producto/Venta/VentaIndexPage';
 
 import Asistencia from './Pages/Asistencia/AsistenciaPage';
 import AsistenciaListado from './Pages/Asistencia/AsistenciaListaPage';
@@ -62,6 +62,11 @@ const router = createBrowserRouter([
 
       //PRODUCTOS
       { path: '/productos', element: <ProtectedRoute><IndexProducto /></ProtectedRoute> },
+
+      // VENTAS
+      { path: '/venta', element: <ProtectedRoute><VentaIndexPage /></ProtectedRoute> },
+      { path: '/venta/new', element: <ProtectedRoute><VentaFormPage /></ProtectedRoute> },
+      { path: '/venta/:codigo_venta/update', element: <ProtectedRoute><VentaFormPage /></ProtectedRoute> },
 /*
       // TIPOS EJERCICIOS Y PAGOS
       { path: '/IndexTipoEjer_y_Pago', element: <ProtectedRoute><IndexTipoEjerYPagoPage /></ProtectedRoute> },
@@ -74,12 +79,7 @@ const router = createBrowserRouter([
 
       // ASISTENCIA
       { path: '/asistencia', element: <ProtectedRoute><Asistencia /></ProtectedRoute> },
-      { path: '/asistencia/listado', element: <ProtectedRoute><AsistenciaListado /></ProtectedRoute> },
-
-      // VENTAS
-      { path: '/productos/venta', element: <ProtectedRoute><VentaIndexPage /></ProtectedRoute> },
-      { path: '/productos/venta/nuevo', element: <ProtectedRoute><VentaFormPage /></ProtectedRoute> },
-      { path: '/productos/venta/editar/:codigo_venta', element: <ProtectedRoute><VentaFormPage /></ProtectedRoute> },*/
+      { path: '/asistencia/listado', element: <ProtectedRoute><AsistenciaListado /></ProtectedRoute> },*/
 
       // Publicas
       { path: '/Login', element: <LoginPage /> },
@@ -97,9 +97,11 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <AuthProvider>
-      <ThemeProvider>
-        <RouterProvider router={router} />
-      </ThemeProvider>
+      <ExistenciasProvider>
+        <ThemeProvider>
+          <RouterProvider router={router} />
+        </ThemeProvider>
+      </ExistenciasProvider>  
     </AuthProvider>
   </React.StrictMode>
 );
