@@ -8,6 +8,7 @@ const ProductoCard = ({ producto, onSelect, isSelected, esProductoEditando }) =>
     };
     const modelo = 'productos';
     const { existencias } = useExistencias();
+    const monedaSimbolo = producto.moneda === 'USD' ? '$' : 'C$';
     
     const [existenciaActual, setExistenciaActual] = useState(
         existencias?.[modelo]?.[producto.codigoProducto] ?? producto.existencias
@@ -38,7 +39,7 @@ const ProductoCard = ({ producto, onSelect, isSelected, esProductoEditando }) =>
             <CardContent>
                 <Typography variant="h6">{producto.descripcion}</Typography>
                 <Typography variant="body1" color="text.secondary">
-                    Precio: ${producto.precio} | Existencias: {existenciaActual}
+                    Precio: {monedaSimbolo}{producto.precio} | Existencias: {existenciaActual}
                 </Typography>
                 {esProductoEditando && (
                     <Typography variant="caption" color="primary">

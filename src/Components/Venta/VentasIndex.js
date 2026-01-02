@@ -4,7 +4,7 @@ import VentasContent from './VentasContent';
 
 const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () => {}, selectedAnio, setSelectedAnio, selectedMes, setSelectedMes,
   selectedDia, setSelectedDia, selectedFecha, limitAnio, setLimitAnio, limitMes, setLimitMes, limitDia, setLimitDia, fechaLimite, anios = [],
-  meses = [], dias = [], loadingVentas }) => {
+  meses = [], dias = [], loadingVentas, limitMeses=[], limitDias=[] }) => {
 
   const renderSelect = (label, value, options, onChange, disabled = false, width = '100%') => (
     <FormControl size="small" fullWidth={width === '100%'} sx={{ width }}>
@@ -25,8 +25,8 @@ const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () 
     : null;
 
   const filteredAnios = anios.filter(a => !minLimitDate || a >= minLimitDate.getFullYear());
-  const filteredMeses = meses.filter(m => !minLimitDate || !limitAnio || new Date(limitAnio, m - 1, 1) >= new Date(minLimitDate.getFullYear(), minLimitDate.getMonth(), 1));
-  const filteredDias = dias.filter(d => !minLimitDate || !limitAnio || !limitMes || new Date(limitAnio, limitMes - 1, d) > minLimitDate);
+  const filteredMeses = limitMeses.filter(m => !minLimitDate || !limitAnio || new Date(limitAnio, m - 1, 1) >= new Date(minLimitDate.getFullYear(), minLimitDate.getMonth(), 1));
+  const filteredDias = limitDias.filter(d => !minLimitDate || !limitAnio || !limitMes || new Date(limitAnio, limitMes - 1, d) > minLimitDate);
 
   return (
     <Box sx={{ padding: 3, maxWidth: 900, margin: 'auto', textAlign: 'center' }}>

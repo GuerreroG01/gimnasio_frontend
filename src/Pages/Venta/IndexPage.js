@@ -18,7 +18,9 @@ export default function IndexPage() {
 
   const [availableYears, setAvailableYears] = useState([]);
   const [availableMonths, setAvailableMonths] = useState([]);
+  const [availableLimitMonths, setAvailableLimitMonths] = useState([]);
   const [availableDays, setAvailableDays] = useState([]);
+  const [availableLimitDays, setAvailableLimitDays] = useState([]);
 
   useEffect(() => {
     const fetchYears = async () => {
@@ -67,6 +69,41 @@ export default function IndexPage() {
     };
     fetchDays();
   }, [year, month]);
+  
+  useEffect(() => {
+    if (!limitYear) return;
+
+    const fetchLimitMonths = async () => {
+      try {
+        const response = await VentaService.GetMesesConVentas(limitYear);
+        const months = Array.isArray(response) ? response.map(Number) : [];
+        setAvailableLimitMonths(months);
+        setLimitMonth(months.length ? months.at(-1) : null);
+        if (months.length) setLimitMonth(months.at(-1));
+      } catch (err) {
+        console.error("Error al obtener meses límite", err);
+      }
+    };
+
+    fetchLimitMonths();
+  }, [limitYear]);
+
+  useEffect(() => {
+    if (!limitYear || !limitMonth) return;
+
+    const fetchLimitDays = async () => {
+      try {
+        const response = await VentaService.GetDiasConVentas(limitYear, limitMonth);
+        const days = Array.isArray(response) ? response.map(Number) : [];
+        setAvailableLimitDays(days);
+        if (days.length) setLimitDay(days.at(-1));
+      } catch (err) {
+        console.error("Error al obtener días límite", err);
+      }
+    };
+
+    fetchLimitDays();
+  }, [limitYear, limitMonth]);
 
   useEffect(() => {
     if ([year, month, day].some(v => !Number.isInteger(v))) return;
@@ -78,7 +115,6 @@ export default function IndexPage() {
 
   useEffect(() => {
     if (![limitYear, limitMonth, limitDay].every(Number.isInteger)) return;
-
     const fecha = new Date(limitYear, limitMonth - 1, limitDay);
     if (!isNaN(fecha.getTime())) setFechaLimite(fecha.toISOString());
   }, [limitYear, limitMonth, limitDay]);
@@ -119,6 +155,8 @@ export default function IndexPage() {
       anios={availableYears}
       meses={availableMonths}
       dias={availableDays}
+      limitMeses={availableLimitMonths}
+      limitDias={availableLimitDays}
     />
   );
 }

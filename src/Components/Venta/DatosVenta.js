@@ -1,215 +1,158 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Typography, Button, TextField, Divider, IconButton, CircularProgress } from '@mui/material';
-import EditIcon from '@mui/icons-material/Edit';
-import EditOffIcon from '@mui/icons-material/EditOff';
-import { useExistencias } from '../../Context/ExistenciaContext';
+import React, { useEffect } from 'react';
+import { Box, Typography, Button, TextField, Divider, CircularProgress, Chip, Pagination, Stack, Tooltip, IconButton, Select, MenuItem } from '@mui/material';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-const DatosVenta = ({ productoSeleccionado, cantidad, setCantidad, setTotal, setError, handleregistrarDatos, total, ventaActual }) => {
-  const [precioEspecial, setPrecioEspecial] = useState(null);
-  const [isEditing, setIsEditing] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [productoOriginal, setProductoOriginal] = useState(null);
-  const [fechaVenta, setFechaVenta] = useState(null);
-  const { existencias } = useExistencias();
-
-  const existenciasActual = existencias['producto']?.[productoSeleccionado?.codigoProducto] ?? productoSeleccionado?.existencias ?? 0;
-
-  useEffect(() => {
-    if (ventaActual && ventaActual.codigoProducto) {
-      setProductoOriginal({ codigoProducto: ventaActual.codigoProducto });
-      setFechaVenta(ventaActual.fecha_venta || new Date().toISOString());
-      if (productoSeleccionado && productoSeleccionado.codigoProducto === ventaActual.codigoProducto) {
-        setPrecioEspecial(
-          ventaActual.total !== ventaActual.art_vendidos * productoSeleccionado.precio ? ventaActual.total : null
-        );
-      } else {
-        setPrecioEspecial(null);
-      }
-    } else {
-      setFechaVenta(new Date().toISOString());
-    }
-  }, [ventaActual, productoSeleccionado]);
-
-  useEffect(() => {
-    if (productoSeleccionado) {
-      setTotal(precioEspecial !== null ? precioEspecial : cantidad * productoSeleccionado.precio);
-    }
-  }, [cantidad, precioEspecial, productoSeleccionado, setTotal]);
-
-  const handleCantidadChange = (event) => {
-    const nuevaCantidad = parseInt(event.target.value, 10);
-    if (isNaN(nuevaCantidad) || nuevaCantidad < 1) return;
-    if (nuevaCantidad > productoSeleccionado.existencias) {
-      setError('No hay suficientes existencias.');
-    } else {
-      setCantidad(nuevaCantidad);
-    }
-  };
-
-  const handlePrecioEspecialChange = (event) => {
-    const nuevoPrecioTotal = parseFloat(event.target.value);
-    if (!isNaN(nuevoPrecioTotal) && nuevoPrecioTotal > 0) {
-      setPrecioEspecial(nuevoPrecioTotal);
-    }
-  };
-
-  const toggleEditing = () => {
-    setIsEditing(!isEditing);
-    if (isEditing) {
-      if (productoSeleccionado?.codigoProducto === productoOriginal?.codigoProducto) {
-        setPrecioEspecial(ventaActual.total);
-      } else {
-        setPrecioEspecial(null);
-      }
-    }
-  };
-
-  const handleCompletarVenta = async () => {
-    setIsLoading(true);
-    const totalVenta = precioEspecial !== null ? precioEspecial : total;
-    await handleregistrarDatos(totalVenta);
-    setIsLoading(false);
-  };
-
+const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProducto, fechaVenta, totalPages,
+    page, setPage, itemsPerPage, monedaTotal, setMonedaTotal, simboloMoneda, totalMostrado, mostrarFactura, isLoading, productosPaginados, existencias, handleCantidadChangeLocal
+  }) => {
   return (
     <Box
       sx={{
-        padding: 2,
-        backgroundColor: "#fff",
-        borderRadius: "8px",
-        boxShadow: 3,
-        maxWidth: "350px",
-        margin: "auto",
-        display: "flex",
-        flexDirection: "column",
-        gap: 1.5,
-        alignItems: "center",
-        marginTop: 2,
-        position: "relative",
+        p: 4,
+        backgroundColor: '#fdfdfd',
+        borderRadius: 3,
+        boxShadow: '0px 10px 20px rgba(0,0,0,0.08)',
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 3,
+        maxWidth: 600,
+        margin: '40px auto'
       }}
     >
-      <Box sx={{ display: "flex", justifyContent: "space-between", width: "100%", alignItems: "center" }}>
-        <Typography variant="h6" color="primary" sx={{ fontWeight: "bold", textAlign: "center", flexGrow: 1 }}>
-          Datos de la Venta
+      <Box sx={{ textAlign: 'center' }}>
+        <Typography variant="h5" fontWeight="bold" color="primary">
+          Datos
         </Typography>
-
-        <Typography
-          variant="caption"
-          color="textSecondary"
-          sx={{
-            backgroundColor: "#f1f1f1",
-            padding: "4px 8px",
-            borderRadius: "8px",
-            fontSize: "12px",
-            fontWeight: "bold",
-          }}
-        >
-          {new Date(fechaVenta).toLocaleDateString("es-ES", { year: 'numeric', month: 'long', day: 'numeric' })}
+        <Typography variant="body2" color="text.secondary">
+          Fecha: {fechaVenta}
         </Typography>
       </Box>
 
-      <Typography variant="body2" color="textSecondary" align="center" sx={{ fontWeight: "bold", marginBottom: 1 }}>
-        {productoSeleccionado.descripcion}
-      </Typography>
+      <Divider />
 
-      <Divider sx={{ marginBottom: 1 }} />
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, minHeight: 120 }}>
+        {productosPaginados.map(({ producto, cantidad }, index) => {
+          const existenciasActual = existencias?.[producto.codigoProducto] ?? producto.existencias ?? 0;
+          const subtotal = producto.precio * cantidad;
+          const monedaSimbolo = producto.moneda === 'USD' ? '$' : 'C$';
 
-      <Typography variant="body2" color="textSecondary" sx={{ fontWeight: "bold" }}>
-        Precio Unitario:
-      </Typography>
-      <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-        ${productoSeleccionado.precio}
-      </Typography>
-
-      <Typography variant="body2" color="textSecondary" sx={{ fontWeight: "bold" }}>
-        Existencias Restantes:
-      </Typography>
-      <Typography variant="body1" sx={{ fontWeight: "bold" }}>
-        {existenciasActual}
-      </Typography>
-
-      <Box sx={{ display: "flex", alignItems: "center", gap: 1, marginTop: 1 }}>
-        <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-          Cantidad:
-        </Typography>
-        <TextField
-          value={cantidad}
-          onChange={handleCantidadChange}
-          type="number"
-          variant="outlined"
-          size="small"
-          fullWidth
-          inputProps={{
-            min: 1,
-            max: productoSeleccionado.existencias,
-          }}
-          sx={{
-            "& .MuiOutlinedInput-root": {
-              borderRadius: "8px",
-            },
-            width: "70px",
-          }}
-        />
-      </Box>
-
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          width: "100%",
-          marginTop: 1,
-          alignItems: "center",
-        }}
-      >
-        <Typography variant="body2" sx={{ fontWeight: "bold" }}>
-          Total:
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center" }}>
-          <Typography variant="body1" sx={{ fontWeight: "bold", marginRight: 1 }}>
-            ${precioEspecial !== null ? precioEspecial : total}
-          </Typography>
-          <IconButton onClick={toggleEditing} size="small">
-            {isEditing ? (
-              <EditOffIcon sx={{ fontSize: 18, color: "#1976d2" }} />
-            ) : (
-              <EditIcon sx={{ fontSize: 18, color: "#1976d2" }} />
-            )}
-          </IconButton>
-          {isEditing && (
-            <TextField
-              value={precioEspecial || ""}
-              onChange={handlePrecioEspecialChange}
-              variant="outlined"
-              size="small"
-              type="number"
-              InputProps={{ inputProps: { min: 0 } }}
+          return (
+            <Box
+              key={producto.codigoProducto}
               sx={{
-                width: "70px",
-                fontSize: "14px",
-                padding: "0 5px",
-                borderRadius: "4px",
-                "& .MuiOutlinedInput-root": { borderRadius: "4px" },
+                display: 'grid',
+                gridTemplateColumns: '2fr 1fr 1fr 1fr 0.5fr',
+                alignItems: 'center',
+                gap: 1,
+                p: 1,
+                borderRadius: 1,
+                backgroundColor: index % 2 === 0 ? '#fafafa' : '#fff',
+                transition: 'background-color 0.2s',
+                '&:hover': { backgroundColor: '#f0f0f0' }
               }}
-            />
-          )}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Typography variant="body2">{producto.descripcion}</Typography>
+                <Tooltip title={`Existencias: ${existenciasActual}`}>
+                  <Chip
+                    variant="dot"
+                    sx={{
+                      width: 12,
+                      height: 12,
+                      borderRadius: '50%',
+                      bgcolor: existenciasActual <= 5 ? 'warning.main' : 'success.main'
+                    }}
+                  />
+                </Tooltip>
+              </Box>
+
+              <TextField
+                type="number"
+                size="small"
+                value={cantidad}
+                onChange={(e) =>
+                  handleCantidadChangeLocal(producto.codigoProducto, e.target.value, existenciasActual)
+                }
+                inputProps={{ min: 1, max: existenciasActual }}
+                sx={{ width: 60 }}
+              />
+
+              <Typography variant="body2" align="right">
+                {monedaSimbolo}{producto.precio.toFixed(2)}
+              </Typography>
+
+              <Typography variant="body2" align="right" fontWeight="bold">
+                {monedaSimbolo}{subtotal.toFixed(2)}
+              </Typography>
+
+              <IconButton
+                color="error"
+                size="small"
+                onClick={() => onEliminarProducto(producto.codigoProducto)}
+              >
+                <DeleteIcon fontSize="small" />
+              </IconButton>
+            </Box>
+          );
+        })}
+      </Box>
+
+      {totalPages > 1 && (
+        <Stack alignItems="center" spacing={1}>
+          <Pagination
+            count={totalPages}
+            page={page}
+            onChange={(_, value) => setPage(value)}
+            color="primary"
+            shape="rounded"
+            size="small"
+            siblingCount={0}
+          />
+          <Typography variant="caption" color="text.secondary">
+            Mostrando {Math.min(page * itemsPerPage, productosSeleccionados.length)} de{' '}
+            {productosSeleccionados.length} productos
+          </Typography>
+        </Stack>
+      )}
+
+      <Divider />
+
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Typography variant="h6" fontWeight="bold" color="primary">
+            Total
+          </Typography>
+
+          <Select
+            size="small"
+            value={monedaTotal}
+            onChange={(e) => setMonedaTotal(e.target.value)}
+          >
+            <MenuItem value="USD">USD</MenuItem>
+            <MenuItem value="NIO">NIO</MenuItem>
+          </Select>
         </Box>
+
+        <Typography variant="h6" fontWeight="bold" color="primary">
+          {simboloMoneda}{totalMostrado.toFixed(2)}
+        </Typography>
       </Box>
 
       <Button
-        variant="outlined"
+        variant="contained"
         color="success"
         fullWidth
-        sx={{
-          marginTop: 2,
-          padding: "8px",
-          fontWeight: "bold",
-          borderRadius: "8px",
-          textTransform: "none",
-        }}
-        onClick={handleCompletarVenta}
+        onClick={mostrarFactura}
         disabled={isLoading}
+        sx={{
+          mt: 2,
+          fontWeight: 'bold',
+          textTransform: 'none',
+          borderRadius: 2,
+          py: 1.5
+        }}
       >
-        {isLoading ? <CircularProgress size={24} color="inherit" /> : "Completar Venta"}
+        {isLoading ? <CircularProgress size={24} color="inherit" /> : 'Completar Venta'}
       </Button>
     </Box>
   );

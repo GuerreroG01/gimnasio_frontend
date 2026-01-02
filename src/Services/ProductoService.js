@@ -83,6 +83,24 @@ const getCategorias = async () => {
     throw error;
   }
 };
+const getProductoByDescripcion = async (descripcion) => {
+  console.log("Buscando productos con descripción:", descripcion);
+  try {
+    const response = await axiosInstance.get(
+      `${API_URL}/buscar`,
+      {
+        params: { descripcion }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error(
+      'Error al obtener el producto por descripción',
+      error.response ? error.response.data : error.message
+    );
+    throw error;
+  }
+};
 
 const ProductoService = {
     getProductos,
@@ -91,7 +109,8 @@ const ProductoService = {
     updateProducto,
     deleteProducto,
     getProductosByCategoria,
-    getCategorias
+    getCategorias,
+    getProductoByDescripcion
 };
 
 export default ProductoService;
