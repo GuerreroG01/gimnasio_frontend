@@ -18,14 +18,13 @@ import IndexPagos from './Pages/Pago/IndexPage';
 import IndexProducto from './Pages/Producto/IndexPage';
 import VentaFormPage from './Pages/Venta/VentaFormPage';
 import VentaIndexPage from './Pages/Venta/IndexPage';
+import Asistencia from './Pages/Asistencia/AsistenciaPage';
+import AsistenciaListado from './Pages/Asistencia/AsistenciaListaPage';
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
 import IndexTipoEjerYPagoPage from './Pages/IndexTipoEjer_y_PagoPage';
 
 import FormularioPagosPage from './Pages/Tipo_Pagos/FormularioPagosPage';
-
-import Asistencia from './Pages/Asistencia/AsistenciaPage';
-import AsistenciaListado from './Pages/Asistencia/AsistenciaListaPage';
 
 import RegisterPage from './Pages/UserAdminLogin/RegisterPage';
 import ConfigPage from './Pages/Configuraciones/ConfiguracionesPage';
@@ -67,6 +66,10 @@ const router = createBrowserRouter([
       { path: '/venta', element: <ProtectedRoute><VentaIndexPage /></ProtectedRoute> },
       { path: '/venta/new', element: <ProtectedRoute><VentaFormPage /></ProtectedRoute> },
       { path: '/venta/:codigo_venta/update', element: <ProtectedRoute><VentaFormPage /></ProtectedRoute> },
+
+            // ASISTENCIA
+      { path: '/asistencia', element: <ProtectedRoute><Asistencia /></ProtectedRoute> },
+      { path: '/asistencia/listado', element: <ProtectedRoute><AsistenciaListado /></ProtectedRoute> },
 /*
       // TIPOS EJERCICIOS Y PAGOS
       { path: '/IndexTipoEjer_y_Pago', element: <ProtectedRoute><IndexTipoEjerYPagoPage /></ProtectedRoute> },
@@ -76,11 +79,7 @@ const router = createBrowserRouter([
       // TIPO PAGOS
       { path: '/tipopagos/nuevo', element: <ProtectedRoute><FormularioPagosPage /></ProtectedRoute> },
       { path: '/tipopagos/editar/:id', element: <ProtectedRoute><FormularioPagosPage /></ProtectedRoute> },
-
-      // ASISTENCIA
-      { path: '/asistencia', element: <ProtectedRoute><Asistencia /></ProtectedRoute> },
-      { path: '/asistencia/listado', element: <ProtectedRoute><AsistenciaListado /></ProtectedRoute> },*/
-
+*/
       // Publicas
       { path: '/Login', element: <LoginPage /> },
       //{ path: '/register', element: <RegisterPage /> },
