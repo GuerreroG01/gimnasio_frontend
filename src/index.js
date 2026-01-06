@@ -20,6 +20,7 @@ import VentaFormPage from './Pages/Venta/VentaFormPage';
 import VentaIndexPage from './Pages/Venta/IndexPage';
 import Asistencia from './Pages/Asistencia/AsistenciaPage';
 import AsistenciaListado from './Pages/Asistencia/AsistenciaListaPage';
+import ConfiguracionesPage from './Pages/Configuraciones/ConfiguracionesPage';
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
 import IndexTipoEjerYPagoPage from './Pages/IndexTipoEjer_y_PagoPage';
@@ -67,9 +68,11 @@ const router = createBrowserRouter([
       { path: '/venta/new', element: <ProtectedRoute><VentaFormPage /></ProtectedRoute> },
       { path: '/venta/:codigo_venta/update', element: <ProtectedRoute><VentaFormPage /></ProtectedRoute> },
 
-            // ASISTENCIA
+      // ASISTENCIA
       { path: '/asistencia', element: <ProtectedRoute><Asistencia /></ProtectedRoute> },
       { path: '/asistencia/listado', element: <ProtectedRoute><AsistenciaListado /></ProtectedRoute> },
+      // CONFIGURACIONES
+      {path: '/configuraciones', element: <ProtectedRoute><ConfiguracionesPage /></ProtectedRoute> },
 /*
       // TIPOS EJERCICIOS Y PAGOS
       { path: '/IndexTipoEjer_y_Pago', element: <ProtectedRoute><IndexTipoEjerYPagoPage /></ProtectedRoute> },
