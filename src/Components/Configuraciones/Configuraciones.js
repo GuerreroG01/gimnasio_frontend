@@ -1,7 +1,7 @@
 import React from 'react';
 import { Container, Typography, Paper, Box, Divider } from '@mui/material';
 import ConfigBackup from './Backup/ConfigBackup';
-//import ConfigInactividad from './Inactivos/ConfigInactividad';
+import ConfigInactividad from './Inactivos/ConfigInactividad';
 
 const Configuraciones = () => {
     return (
@@ -24,9 +24,9 @@ const Configuraciones = () => {
 
                 <Divider sx={{ mb: 4 }} />
 
-                {/*<Box>
+                <Box>
                     <ConfigInactividad />
-                </Box>*/}
+                </Box>
             </Paper>
         </Container>
     );

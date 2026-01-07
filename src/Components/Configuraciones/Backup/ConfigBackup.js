@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { 
     Container, Typography, Card, FormControl, InputLabel, Select, MenuItem, 
     Button, Box, Paper, Divider, Stack, CircularProgress, Alert, Grid
@@ -44,12 +44,12 @@ const mapBackupFromBackend = (data) => ({
 });
 
 const ConfigBackup = () => {
-    const [backup, setBackup] = useState(null);
-    const [loading, setLoading] = useState(true);
-    const [error, setError] = useState(null);
-    const [frecuencia, setFrecuencia] = useState('');
-    const [proximoRespaldo, setProximoRespaldo] = useState('');
-    const [cambiosPendientes, setCambiosPendientes] = useState(false);
+    const [backup, setBackup] = React.useState(null);
+    const [loading, setLoading] = React.useState(true);
+    const [error, setError] = React.useState(null);
+    const [frecuencia, setFrecuencia] = React.useState('');
+    const [proximoRespaldo, setProximoRespaldo] = React.useState('');
+    const [cambiosPendientes, setCambiosPendientes] = React.useState(false);
 
     useEffect(() => {
         const fetchBackupConfig = async () => {
