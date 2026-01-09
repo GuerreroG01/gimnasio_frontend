@@ -57,7 +57,7 @@ const Dashboard = () => {
                         </Paper>
 
                         {/* Lista de Tipos de Cambio */}
-                        <Paper elevation={3} sx={{ p: 2, maxHeight: 400, width: { xs: "100%", md: 350 }, overflow: "auto" }}>
+                        <Paper elevation={3} sx={{ p: 2, maxHeight: 200, width: { xs: "100%", md: 350 }, overflow: "auto" }}>
                             <TipoCambioList />
                         </Paper>
                     </Stack>

@@ -1,21 +1,9 @@
 import { useState, useEffect } from "react";
-import {
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Box,
-  Pagination,
-  Button,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-} from "@mui/material";
-import AddIcon from "@mui/icons-material/Add";
+import { List, ListItem, ListItemText, IconButton, Box, Pagination, Button, Typography, Dialog, DialogTitle, DialogContent,
+    DialogActions} from "@mui/material";
+//import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
+//import DeleteIcon from "@mui/icons-material/Delete";
 import DoubleArrowIcon from '@mui/icons-material/DoubleArrow';
 
 import tipoCambioService from "../../Services/TipoCambioService";
@@ -97,10 +85,10 @@ const TipoCambioList = () => {
         }
     };
 
-    const handleOpenConfirm = (tc) => {
+    /*const handleOpenConfirm = (tc) => {
         setSelectedCambio(tc);
         setOpenConfirm(true);
-    };
+    };*/
     const handleCloseConfirm = () => {
         setSelectedCambio(null);
         setOpenConfirm(false);
@@ -127,15 +115,15 @@ const TipoCambioList = () => {
         <>
         <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
             <Typography variant="h6">Tipos de Cambio</Typography>
-            <IconButton color="primary" onClick={(e) => handleOpenForm(e, null)}>
-            <AddIcon />
-            </IconButton>
+            {/*<IconButton color="primary" onClick={(e) => handleOpenForm(e, null)}>
+                <AddIcon />
+            </IconButton>*/}
         </Box>
 
         <List
             dense
             className="scroll-hide"
-            sx={{ minHeight: { xs: 0, md: 260 }, maxHeight: { xs: "auto", md: 260 }, overflow: "auto" }}
+            sx={{ minHeight: { xs: 0, md: 130 }, maxHeight: { xs: "auto", md: 130 }, overflow: "auto" }}
         >
             {paginatedItems.map((tc) => (
             <ListItem
@@ -171,7 +159,7 @@ const TipoCambioList = () => {
                     className="action-icons"
                 sx={{
                     position: "absolute",
-                    right: 0,
+                    right: 8,
                     top: "50%",
                     transform: "translateY(-50%)",
                     opacity: 0,
@@ -183,9 +171,9 @@ const TipoCambioList = () => {
                 <IconButton size="small" onClick={(e) => handleOpenForm(e, tc)}>
                     <EditIcon fontSize="small" />
                 </IconButton>
-                <IconButton size="small" onClick={() => handleOpenConfirm(tc)}>
+                {/*<IconButton size="small" onClick={() => handleOpenConfirm(tc)}>
                     <DeleteIcon fontSize="small" />
-                </IconButton>
+                </IconButton>*/}
                 </Box>
             </ListItem>
             ))}
