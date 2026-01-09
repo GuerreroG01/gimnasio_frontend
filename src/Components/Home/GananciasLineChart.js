@@ -24,7 +24,6 @@ const GananciasLineChart = () => {
         const fetchData = async () => {
             try {
                 const response = await PagoService.getAñosConPagos();
-                console.log("Datos obtenidos:", response);
 
                 const sortedData = response.sort((a, b) => a.año - b.año);
                 setData(sortedData);

@@ -22,7 +22,7 @@ axiosInstance.interceptors.request.use(
 axiosInstance.interceptors.response.use(
   response => response,
   (error) => {
-    if (error.response?.status === 401) {
+    if (error.response?.status === 401 && window.location.pathname!=='/login') {
       console.log('Sesión expirada o token inválido, cerrando sesión...');
       localStorage.removeItem('token');
       window.location.href = '/login';

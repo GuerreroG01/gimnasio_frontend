@@ -21,6 +21,8 @@ import VentaIndexPage from './Pages/Venta/IndexPage';
 import Asistencia from './Pages/Asistencia/AsistenciaPage';
 import AsistenciaListado from './Pages/Asistencia/AsistenciaListaPage';
 import ConfiguracionesPage from './Pages/Configuraciones/ConfiguracionesPage';
+import MensajesPage from './Pages/Mensajes/MensajesPage';
+import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
 import IndexTipoEjerYPagoPage from './Pages/IndexTipoEjer_y_PagoPage';
@@ -73,6 +75,9 @@ const router = createBrowserRouter([
       { path: '/asistencia/listado', element: <ProtectedRoute><AsistenciaListado /></ProtectedRoute> },
       // CONFIGURACIONES
       {path: '/configuraciones', element: <ProtectedRoute><ConfiguracionesPage /></ProtectedRoute> },
+
+      // Mensajes
+      {path: '/mensajes', element: <ProtectedRoute><MensajesPage /></ProtectedRoute> },
 /*
       // TIPOS EJERCICIOS Y PAGOS
       { path: '/IndexTipoEjer_y_Pago', element: <ProtectedRoute><IndexTipoEjerYPagoPage /></ProtectedRoute> },
@@ -100,10 +105,12 @@ root.render(
   <React.StrictMode>
     <AuthProvider>
       <ExistenciasProvider>
-        <ThemeProvider>
-          <RouterProvider router={router} />
-        </ThemeProvider>
-      </ExistenciasProvider>  
+        <MensajeProvider>
+          <ThemeProvider>
+            <RouterProvider router={router} />
+          </ThemeProvider>
+        </MensajeProvider>
+      </ExistenciasProvider>
     </AuthProvider>
   </React.StrictMode>
 );

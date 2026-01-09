@@ -37,11 +37,29 @@ const getinfoinactivos = async () => {
         throw error;
     }
 };
+const getInactivosByIdMess = async (idMensaje) => {
+    if (!idMensaje) return [];
+
+    try {
+        const response = await axiosInstance.get(
+        `${API_URL}/usuarios-inactivos/mensaje/${idMensaje}`
+        );
+
+        return response.data;
+    } catch (error) {
+        console.error(
+        'Error al obtener clientes inactivos por mensaje',
+        error
+        );
+        throw error;
+    }
+};
 
 const ConfigSistemService = {
     getConfig,
     updateConfig,
-    getinfoinactivos
+    getinfoinactivos,
+    getInactivosByIdMess
 };
 
 export default ConfigSistemService;

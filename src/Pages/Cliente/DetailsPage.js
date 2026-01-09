@@ -77,7 +77,7 @@ export default function DetailsPage(){
     const API_IMAGES = (window._env_ ? window._env_.REACT_APP_IMAGE_URL : process.env.REACT_APP_IMAGE_URL);
     const imageUrl = cliente.foto ? `${API_IMAGES}/${cliente.foto}` : defaultImage;
     const telefonoMostrar = cliente.telefono.trim() === '-' ? 'No proporcionado' : cliente.telefono;
-    const estadoCliente = cliente.estado ? 'Inactivo' : 'Activo';
+    const estadoCliente = cliente.activo ? 'Activo' : 'Inactivo';
     return(
         <DetalleCliente
             imageUrl={imageUrl}

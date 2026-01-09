@@ -7,6 +7,7 @@ import SettingsIcon from '@mui/icons-material/Settings';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';
 import NavegacionMovil from './NavegacionMovil';
 import { AuthContext } from '../../Context/AuthContext';
+import MensajeBadge from './MensajeBadge';
 
 const Logo = styled('img')({
   width: 50,
@@ -46,7 +47,7 @@ const Navegacion = ({ children }) => {
   };
 
   const isActive = (path) => location.pathname.startsWith(path);
-
+  const isMessagesPage= location.pathname === '/mensajes';
   const handleMenuOpen = (event) => setMenuAnchor(event.currentTarget);
   const handleMenuClose = () => setMenuAnchor(null);
 
@@ -140,6 +141,14 @@ const Navegacion = ({ children }) => {
               <Typography variant="body1" sx={{ fontWeight: 500, display: { xs: 'none', md: 'block' } }}>
                 Hola, <strong>{usuario?.toUpperCase()}</strong>
               </Typography>
+
+              <Tooltip title="Mensajes">
+                <Link to="/mensajes">
+                  <Box sx={{ cursor: 'pointer' }}>
+                    <MensajeBadge isActive={isMessagesPage} />
+                  </Box>
+                </Link>
+              </Tooltip>
 
               <Tooltip title="Asistencia">
                 <Link to="/asistencia">
