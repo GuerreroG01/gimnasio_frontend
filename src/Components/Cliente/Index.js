@@ -17,7 +17,7 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
         </Alert>
       )}
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} sx={{ marginTop: 2 }}>
-        <Typography variant="h4" gutterBottom>
+        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
           Clientes
         </Typography>
         <Tooltip title="Nuevo Usuario">

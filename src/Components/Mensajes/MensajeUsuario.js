@@ -6,6 +6,8 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EventIcon from '@mui/icons-material/Event';
 import CardMensaje from './CardMensaje';
 import { AuthContext } from "../../Context/AuthContext";
+import EmptyState from "../../Shared/Components/EmptyState";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
 const MensajeUsuario = () => {
   const [loading, setLoading] = useState(false);
@@ -105,10 +107,14 @@ const MensajeUsuario = () => {
       day: 'numeric',
     }).format(date);
   };
+  const handleCloseNuevoMensaje = () => {
+    setNuevoMensaje(false);
+    setMensajeEditado(null);
+  };
 
   return (
-    <Container maxWidth="md" sx={{ marginTop: 4, position: 'relative' }}>
-      <Typography variant="h4" align="center" gutterBottom>
+    <Container maxWidth="md" sx={{ position: 'relative' }}>
+      <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
         Mensajes
       </Typography>
 
@@ -148,10 +154,12 @@ const MensajeUsuario = () => {
         </Box>
       )}
 
-      {!loading && mensajes.length === 0 && (
-        <Typography variant="body1" color="textSecondary" align="center">
-          No hay mensajes disponibles.
-        </Typography>
+      {!loading && mensajes.length === 0 && !nuevoMensaje && (
+        <EmptyState
+          title="Sin mensajes"
+          message="Aquí aparecerán tus mensajes cuando recibas alguno."
+          Icon={ChatBubbleOutlineIcon}
+        />
       )}
 
       {showAlerts && (
@@ -169,6 +177,7 @@ const MensajeUsuario = () => {
             onSendMessage={handleSaveMessage}
             mensajeEditado={mensajeEditado}
             onUpdateMessage={handleUpdateMessage}
+            onClose={handleCloseNuevoMensaje}
           />
         )}
 
@@ -179,6 +188,7 @@ const MensajeUsuario = () => {
                     onSendMessage={handleSaveMessage}
                     mensajeEditado={mensajeEditado}
                     onUpdateMessage={handleUpdateMessage}
+                    onClose={handleCloseNuevoMensaje}
                   />
                 ) : (
                   <Card

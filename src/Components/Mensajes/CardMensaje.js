@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { Card, CardContent, TextField, Box, IconButton, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import CloseIcon from '@mui/icons-material/Close'; 
 
-const CardMensaje = ({ onSendMessage, mensajeEditado, onUpdateMessage }) => {
+const CardMensaje = ({ onSendMessage, mensajeEditado, onUpdateMessage, onClose  }) => {
     const [texto, setTexto] = useState(mensajeEditado ? mensajeEditado.texto : '');
 
     const handleTextoChange = (e) => {
@@ -25,22 +26,31 @@ const CardMensaje = ({ onSendMessage, mensajeEditado, onUpdateMessage }) => {
     return (
         <Card sx={{ marginTop: 3, marginBottom: 3, boxShadow: 2, height: '130px' }}>
             <CardContent sx={{ padding: 2 }}>
-                <Typography variant="h6" gutterBottom sx={{ fontSize: '1rem', marginBottom: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 2 }}>
+                <Typography variant="h6" sx={{ fontSize: '1rem' }}>
                     {mensajeEditado && mensajeEditado.codigo ? 'Editar Mensaje' : 'Nuevo Mensaje'}
                 </Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                    <TextField
-                        label="Mensaje"
-                        value={texto}
-                        onChange={handleTextoChange}
-                        fullWidth
-                        multiline
-                        rows={1}
-                        sx={{ marginRight: 1, flexGrow: 1 }}
-                    />
-                    <IconButton color="primary" onClick={handleSendMessage}>
-                        <SendIcon />
+
+                {onClose && (
+                    <IconButton size="small" onClick={onClose}>
+                    <CloseIcon />
                     </IconButton>
+                )}
+                </Box>
+
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                <TextField
+                    label="Mensaje"
+                    value={texto}
+                    onChange={handleTextoChange}
+                    fullWidth
+                    multiline
+                    rows={1}
+                    sx={{ marginRight: 1, flexGrow: 1 }}
+                />
+                <IconButton color="primary" onClick={handleSendMessage}>
+                    <SendIcon />
+                </IconButton>
                 </Box>
             </CardContent>
         </Card>

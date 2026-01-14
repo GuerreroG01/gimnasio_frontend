@@ -31,8 +31,7 @@ const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, reg
           }
         }}
       />
-  
-      <Typography variant="h4" sx={{ fontWeight: 'bold', marginBottom: 3, marginTop: 0 }}>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2', marginBottom: 3, marginTop: 0 }}>
         Asistencia
       </Typography>
 

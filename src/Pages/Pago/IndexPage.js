@@ -162,8 +162,8 @@ export default function IndexPage(){
         pago.cliente && pago.cliente.nombreCompleto.toLowerCase().includes(nombreCliente.toLowerCase())
     );
 
-    const indexOfLastPago = page * 12;
-    const indexOfFirstPago = indexOfLastPago - 12;
+    const indexOfLastPago = page * 10;
+    const indexOfFirstPago = indexOfLastPago - 10;
     const currentPagos = filteredPagos.slice(indexOfFirstPago, indexOfLastPago);
 
     const handlePagoDeleted = (deletedPagoId) => {

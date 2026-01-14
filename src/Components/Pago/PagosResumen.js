@@ -10,7 +10,7 @@ const PagosResumen = ({ diaseleccionado, pagosDayData }) => {
     return (
         <Grid container spacing={2} sx={{ marginTop: 2, justifyContent: 'center' }}>
             <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ width: '100%', boxShadow: 3, borderRadius: 3, padding: 2, border: '1px solid #e0e0e0' }}>
+                <Card sx={{ width: '90%', boxShadow: 3, borderRadius: 3, padding: 2, maxHeight: 150, border: '1px solid #e0e0e0' }}>
                     <CardContent>
                         {/* Encabezado */}
                         <Typography variant="h6" sx={{ fontWeight: 600, color: '#1976d2', textAlign: 'center' }}>

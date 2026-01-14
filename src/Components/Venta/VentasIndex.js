@@ -1,6 +1,8 @@
 import { Box, CircularProgress, Typography, IconButton, Collapse, FormControl, InputLabel, Select, MenuItem, Grid } from '@mui/material';
 import { UnfoldLessDouble as UnfoldLessDoubleIcon, UnfoldMoreDouble as UnfoldMoreDoubleIcon } from '@mui/icons-material';
 import VentasContent from './VentasContent';
+import EmptyState from '../../Shared/Components/EmptyState'
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
 const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () => {}, selectedAnio, setSelectedAnio, selectedMes, setSelectedMes,
   selectedDia, setSelectedDia, selectedFecha, limitAnio, setLimitAnio, limitMes, setLimitMes, limitDia, setLimitDia, fechaLimite, anios = [],
@@ -29,7 +31,7 @@ const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () 
   const filteredDias = limitDias.filter(d => !minLimitDate || !limitAnio || !limitMes || new Date(limitAnio, limitMes - 1, d) > minLimitDate);
 
   return (
-    <Box sx={{ padding: 3, maxWidth: 900, margin: 'auto', textAlign: 'center' }}>
+    <Box sx={{ padding: 1, maxWidth: 900, margin: 'auto', textAlign: 'center' }}>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
         Ventas
       </Typography>
@@ -78,10 +80,21 @@ const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () 
         </Grid>
       )}
 
-      {selectedFecha && (
-        loadingVentas
-          ? <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}><CircularProgress /></Box>
-          : <VentasContent selectedFecha={selectedFecha} fechaLimite={fechaLimite} />
+      {selectedFecha ? (
+        loadingVentas ? (
+          <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}>
+            <CircularProgress />
+          </Box>
+        ) : (
+          <VentasContent selectedFecha={selectedFecha} fechaLimite={fechaLimite} />
+        )
+      ) : (
+        <EmptyState
+          title="Sin registros de ventas"
+          message="Actualmente no hay ventas registradas en el sistema."
+          Icon={EventNoteIcon}
+          minHeight={260}
+        />
       )}
     </Box>
   );

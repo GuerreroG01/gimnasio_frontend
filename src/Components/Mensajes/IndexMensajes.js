@@ -46,7 +46,7 @@ const IndexMensajes = () => {
   };
 
   return (
-    <Box sx={{ display: 'flex', height: '100%', marginTop: 4 }}>
+    <Box sx={{ display: 'flex', height: '100%', marginTop: 1}}>
       <Tabs
         orientation="vertical"
         variant="scrollable"

@@ -65,6 +65,9 @@ const getAñosConAsistencia = async () => {
     );
     return response.data;
   } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return [];
+    }
     console.error('Error al obtener los datos anuales de asistencias');
     throw error;
   }
@@ -77,6 +80,9 @@ const getMesesConAsistencia = async (year) => {
     );
     return response.data;
   } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return [];
+    }
     console.error('Error al obtener los datos mensuales de asistencias');
     throw error;
   }
@@ -89,6 +95,9 @@ const getDiasConAsistencia = async (year, month) => {
     );
     return response.data;
   } catch (error) {
+    if (error.response && error.response.status === 404) {
+      return [];
+    }
     console.error(
       'Error al obtener los días con asistencias:',
       error.response ? error.response.data : error.message

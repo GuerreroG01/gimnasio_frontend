@@ -4,12 +4,14 @@ import {
 import UnfoldMoreDoubleIcon from '@mui/icons-material/UnfoldMoreDouble';
 import UnfoldLessDoubleIcon from '@mui/icons-material/UnfoldLessDouble';
 import AsistenciaContent from './AsistenciaContent';
+import EmptyState from '../../Shared/Components/EmptyState';
+import EventNoteIcon from '@mui/icons-material/EventNote';
 
 const AsistenciaListado = ({ availableYears, year, setYear, availableMonths, month, setMonth, availableDays, day, setDay,
   handleToggleDateLimit, showDateLimit, availableMonthsLimit, monthLimit, setMonthLimit, availableDaysLimit, dayLimit, setDayLimit, 
   yearLimit, setYearLimit, months }) => {
   return (
-    <Box sx={{ p: 4 }}>
+    <Box sx={{ p: 1 }}>
       <Typography variant="h4" sx={{ fontWeight: 'bold', mb: 3, color: '#1976d2', textAlign: 'center' }}>
         Registro de Asistencia
       </Typography>
@@ -75,7 +77,24 @@ const AsistenciaListado = ({ availableYears, year, setYear, availableMonths, mon
           </FormControl>
         </Zoom>
       </Paper>
-      {year && month && day && <AsistenciaContent year={year} month={month} day={day} yearLimit={yearLimit} monthLimit={monthLimit} dayLimit={dayLimit} showDateLimit={showDateLimit} />}
+      {year && month && day ? (
+        <AsistenciaContent 
+          year={year} 
+          month={month} 
+          day={day} 
+          yearLimit={yearLimit} 
+          monthLimit={monthLimit} 
+          dayLimit={dayLimit} 
+          showDateLimit={showDateLimit} 
+        />
+      ) : (
+        <EmptyState
+          title="Sin registros de asistencia"
+          message="Actualmente no hay asistencias registradas en el sistema."
+          Icon={EventNoteIcon}
+          minHeight={260}
+        />
+      )}
     </Box>
   );
 };

@@ -5,6 +5,8 @@ import { Typography, Card, CardContent, Container, Box, Skeleton, Alert, IconBut
 import SettingsIcon from '@mui/icons-material/Settings';
 import EventIcon from '@mui/icons-material/Event';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import EmptyState from "../../Shared/Components/EmptyState";
+import ChatBubbleOutlineIcon from "@mui/icons-material/ChatBubbleOutline";
 
 const MensajeSistema = () => {
     const [loading, setLoading] = useState(false);
@@ -60,8 +62,8 @@ const MensajeSistema = () => {
     }, []);
 
     return (
-        <Container maxWidth="md" sx={{ marginTop: 4 }}>
-            <Typography variant="h4" align="center" gutterBottom>
+        <Container maxWidth="md">
+            <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                 Mensajes del Sistema
             </Typography>
 
@@ -85,9 +87,11 @@ const MensajeSistema = () => {
             )}
 
             {!loading && mensajes.length === 0 && (
-                <Typography variant="body1" color="textSecondary" align="center">
-                    No hay mensajes disponibles.
-                </Typography>
+                <EmptyState
+                    title="Sin mensajes"
+                    message="Aquí aparecerán tus mensajes cuando recibas alguno."
+                    Icon={ChatBubbleOutlineIcon}
+                />
             )}
 
             <Box sx={{ marginTop: 3 }}>

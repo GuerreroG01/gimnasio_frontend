@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Box, Divider, Card, CardContent, Typography, Grid, IconButton, Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import { keyframes } from '@mui/system';
-import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import {/* Edit as EditIcon,*/ Delete as DeleteIcon } from '@mui/icons-material';
+//import { useNavigate } from 'react-router-dom';
 import DetailsPago from './DetailsPago';
 import pagoService from '../../Services/PagoService';
 import TiempoPagoService from '../../Services/TiempoPagoService';
@@ -25,7 +25,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
   const [pagoAEliminar, setPagoAEliminar] = useState(null);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [infopago, setinfopago] = useState(null);
-  const navigate = useNavigate();
+  //const navigate = useNavigate();
 
 
   const handleOpenModal = (pago) => {
@@ -109,7 +109,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
 
   return (
     <>
-      <Grid container spacing={3}>
+      <Grid container spacing={2} sx={{ marginTop: 2 }}>
         {pagos && pagos.length > 0 ? (
           pagos.map((pago) => (
             <Grid item xs={12} sm={6} md={4} key={pago.codigoPago}>

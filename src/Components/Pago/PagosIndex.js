@@ -15,7 +15,7 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
     return (
         <Box sx={{ width: '90%', margin: 'auto' }}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
-                <Typography variant="h4" gutterBottom>
+                <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                     Pagos Registrados
                 </Typography>
             </Box>
@@ -155,7 +155,7 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
 
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 3 }}>
                 <Pagination
-                    count={Math.ceil(filteredPagos.length / 12)}
+                    count={Math.ceil(filteredPagos.length / 10)}
                     page={page}
                     onChange={handlePageChange}
                     color="primary"

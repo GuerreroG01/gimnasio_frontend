@@ -7,6 +7,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import tipo_PagosService from "../../Services/Tipo_PagosService";
 import TipoPagoForm from "./TipoPagoForm";
 import "../../Components/TipoPago/Style.css";
+import EmptyState from '../../Shared/Components/EmptyState';
+import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
 
 const ITEMS_PER_PAGE = 4;
 
@@ -124,57 +126,69 @@ const TipoPagoList = () => {
         </IconButton>
       </Box>
 
-      <List
-        dense
-        className="scroll-hide"
-        sx={{ minHeight: { xs: 0, md: 260 }, maxHeight: { xs: "auto", md: 260 }, overflow: "auto" }}
-      >
-        {paginatedItems.map((tp) => (
-          <ListItem
-            key={tp.codigoPago}
-            sx={{
-              position: "relative",
-              mb: 1,
-              borderRadius: 1,
-              transition: "all 0.3s ease",
-              backgroundColor:
-                tp.activo === 1 || tp.activo === true
-                  ? "rgba(76, 175, 80, 0.15)"
-                  : "rgba(244, 67, 54, 0.15)",
-              "&:hover": {
-                transform: "scale(1.02)",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
-                "& .action-icons": { opacity: 1 },
-              },
-            }}
-          >
-            <ListItemText
-              primary={tp.descripcion}
-              secondary={`Monto: ${tp.monto} ${tp.moneda}, Duración: ${tp.duracion} ${tp.unidadTiempo}`}
-            />
-            <Box
-              className="action-icons"
+      {tipoPagos.length === 0 ? (
+        <EmptyState
+          title="Aún no hay planes de membresía"
+          message="Cuando agregues planes semanales, mensuales o anuales, aparecerán aquí para que los puedas gestionar."
+          Icon={PaymentsOutlinedIcon}
+        />
+      ) : (
+        <List
+          dense
+          className="scroll-hide"
+          sx={{
+            minHeight: { xs: 0, md: 260 },
+            maxHeight: { xs: "auto", md: 260 },
+            overflow: "auto",
+          }}
+        >
+          {paginatedItems.map((tp) => (
+            <ListItem
+              key={tp.codigoPago}
               sx={{
-                position: "absolute",
-                right: 0,
-                top: "50%",
-                transform: "translateY(-50%)",
-                opacity: 0,
-                transition: "opacity 0.3s",
-                display: "flex",
-                gap: 0.5,
+                position: "relative",
+                mb: 1,
+                borderRadius: 1,
+                transition: "all 0.3s ease",
+                backgroundColor:
+                  tp.activo === 1 || tp.activo === true
+                    ? "rgba(76, 175, 80, 0.15)"
+                    : "rgba(244, 67, 54, 0.15)",
+                "&:hover": {
+                  transform: "scale(1.02)",
+                  boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                  "& .action-icons": { opacity: 1 },
+                },
               }}
             >
-              <IconButton size="small" onClick={(e) => handleOpenForm(e, tp)}>
-                <EditIcon fontSize="small" />
-              </IconButton>
-              <IconButton size="small" onClick={() => handleOpenConfirm(tp)}>
-                <DeleteIcon fontSize="small" />
-              </IconButton>
-            </Box>
-          </ListItem>
-        ))}
-      </List>
+              <ListItemText
+                primary={tp.descripcion}
+                secondary={`Monto: ${tp.monto} ${tp.moneda}, Duración: ${tp.duracion} ${tp.unidadTiempo}`}
+              />
+              <Box
+                className="action-icons"
+                sx={{
+                  position: "absolute",
+                  right: 0,
+                  top: "50%",
+                  transform: "translateY(-50%)",
+                  opacity: 0,
+                  transition: "opacity 0.3s",
+                  display: "flex",
+                  gap: 0.5,
+                }}
+              >
+                <IconButton size="small" onClick={(e) => handleOpenForm(e, tp)}>
+                  <EditIcon fontSize="small" />
+                </IconButton>
+                <IconButton size="small" onClick={() => handleOpenConfirm(tp)}>
+                  <DeleteIcon fontSize="small" />
+                </IconButton>
+              </Box>
+            </ListItem>
+          ))}
+        </List>
+      )}
 
       {tipoPagos.length > ITEMS_PER_PAGE && (
         <Box display="flex" justifyContent="center" mt={1}>
