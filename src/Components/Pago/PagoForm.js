@@ -1,237 +1,246 @@
-import { TextField, Button, Grid, Autocomplete, Container, Typography, Alert, Snackbar, IconButton, CircularProgress, ToggleButton, ToggleButtonGroup } from '@mui/material';
-import { Payment, AttachMoney, Edit, EditOff, CalendarToday } from '@mui/icons-material';
-import SeleccionCliente from './SeleccionCliente';
-import FechaVencimiento from './FechaVencimiento';
+import { Divider, InputAdornment, Autocomplete, Grid, Paper, Box, Button, TextField, MenuItem, FormControlLabel, Checkbox, Typography, CircularProgress} from '@mui/material';
+import dayjs from 'dayjs';
+import { obtenerSimboloMoneda, obtenerMonedaEquivalente } from '../../Utils/MonedaUtils';
 
-const PagoForm = ({ clienteId, editMode, handleSubmit, selectedUserName, handleClickEditIcon, showSeleccionCliente, rangoPagoUnidad,
-  setDiasSeleccionados, setUserEditedSelect, handleChange, pagoData, setPagoData, loading, errorMessage, 
-  setErrorMessage, handleSelectCliente, handleRangoPagoUnidadChange, loadingTiposPago, tiposPago, setSearchText, setTipoPagoSeleccionado }) => {
-    
+const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes, handleInputChange, tiposPago, loadingTiposPago,
+  handleTipoPagoInputChange, handleTipoPagoChange, cambioEquivalente
+ }) => {
+  if (loading) return <CircularProgress />;
   return (
-    <Grid container spacing={2}>
-      <Grid item xs={12} md={6}>
-        <Container
-          maxWidth="sm"
+    <Paper
+      elevation={4}
+      sx={{
+        maxWidth: 1100,
+        margin: 'auto',
+        padding: 4,
+        borderRadius: 3,
+        backgroundColor: '#fff',
+      }}
+    >
+      <Typography variant="h5" gutterBottom fontWeight="bold">
+        {pagoId ? 'Actualizar Pago' : 'Registrar Pago'}
+      </Typography>
+
+      <Box component="form" onSubmit={formik.handleSubmit}>
+        <Box
           sx={{
-            backgroundColor: '#f9f9f9',
-            borderRadius: 2,
-            boxShadow: 3,
-            p: 4,
-            mt: 3,
+            display: 'flex',
+            flexDirection: { xs: 'column', sm: 'row' },
           }}
         >
-          <Typography
-            variant="h4"
-            align="center"
-            gutterBottom
-            sx={{ fontWeight: 'bold', color: '#333' }}
-          >
-            {editMode ? 'Editar Pago' : 'Registrar Pago'}
-          </Typography>
-
-          <form onSubmit={handleSubmit}>
-            <Grid container spacing={3}>
-              <Grid item xs={12} sm={6} container direction="column" spacing={2}>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Cliente"
-                    fullWidth
-                    disabled
-                    value={selectedUserName}
-                    sx={{ backgroundColor: 'white', borderRadius: 1 }}
-                    InputProps={{
-                      endAdornment: !editMode && (
-                        <IconButton onClick={handleClickEditIcon}>
-                          {showSeleccionCliente ? <Edit /> : <EditOff />}
-                        </IconButton>
-                      ),
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Monto"
-                    fullWidth
-                    name="Monto"
-                    value={pagoData.Monto || ''}
-                    onChange={(e) =>
-                      setPagoData({ ...pagoData, Monto: e.target.value })
-                    }
-                    required
-                    InputProps={{
-                      startAdornment: <AttachMoney sx={{ mr: 1, color: '#6c757d' }} />,
-                    }}
-                  />
-                </Grid>
-                <Grid item xs={12}>
-                  <TextField
-                    label="Fecha de pago"
-                    type="date"
-                    fullWidth
-                    name="FechaPago"
-                    value={pagoData.FechaPago}
-                    onChange={handleChange}
-                    required
-                    disabled={editMode}
-                    InputLabelProps={{ shrink: true }}
-                    InputProps={{
-                      startAdornment: <CalendarToday sx={{ mr: 1, color: '#6c757d' }} />,
-                    }}
-                  />
-                </Grid>
-              </Grid>
-              <Grid item xs={12} sm={6} container direction="column" spacing={2}>
-                <Grid item xs={12} sx={{ width: 250 }}>
-                  <ToggleButtonGroup
-                    value={rangoPagoUnidad}
-                    exclusive
-                    onChange={handleRangoPagoUnidadChange}
-                    fullWidth
-                    sx={{
-                      borderRadius: 2,
-                      boxShadow: 1,
-                      '& .MuiToggleButton-root': {
-                        flex: 1,
-                        border: 'none',
-                        fontWeight: 500,
-                        '&.Mui-selected': {
-                          backgroundColor: 'primary.main',
-                          color: 'white',
-                        },
-                      },
-                    }}
-                  >
-                    <ToggleButton value="meses">Meses</ToggleButton>
-                    <ToggleButton value="dias">Días</ToggleButton>
-                  </ToggleButtonGroup>
-                </Grid>
-                <Grid container spacing={2} sx={{ maxWidth: 250, margin: '0 auto' }}>
-                  <Grid item xs={12}>
+          {/* COLUMNA IZQUIERDA */}
+          <Box sx={{ width: { xs: '100%', sm: '50%' } }}>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Autocomplete
+                  sx={{
+                    width: { xs: '100%', sm: 250, md: 250 },
+                  }}
+                  options={clientes}
+                  getOptionLabel={(option) =>
+                    `${option.nombres} ${option.apellidos}`
+                  }
+                  loading={loadingClientes}
+                  noOptionsText="No hay resultados"
+                  onInputChange={handleInputChange}
+                  onChange={(event, value) =>
+                    formik.setFieldValue("CodigoCliente", value ? value.codigo : "")
+                  }
+                  value={
+                    clientes.find((c) => c.codigo === formik.values.CodigoCliente) ||
+                    (formik.values.CodigoCliente
+                      ? { codigo: formik.values.CodigoCliente, nombres: "", apellidos: "", telefono: "" }
+                      : null)
+                  }
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.codigo}>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <span>
+                          {option.nombres} {option.apellidos}
+                        </span>
+                        <small style={{ color: "#888" }}>
+                          Código: {option.codigo} | Tel: {option.telefono}
+                        </small>
+                      </div>
+                    </li>
+                  )}
+                  renderInput={(params) => (
                     <TextField
-                      label={rangoPagoUnidad === 'meses' ? 'Meses a pagar' : 'Días a pagar'}
-                      type="number"
-                      fullWidth
-                      name="MesesPagados"
-                      value={pagoData.MesesPagados}
-                      onChange={handleChange}
-                      required
+                      {...params}
+                      label="Cliente"
+                      error={formik.touched.CodigoCliente && Boolean(formik.errors.CodigoCliente)}
+                      helperText={formik.touched.CodigoCliente && formik.errors.CodigoCliente}
                       InputProps={{
-                        startAdornment: <Payment sx={{ mr: 1, color: '#6c757d' }} />,
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loadingClientes ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
                       }}
                     />
-                  </Grid>
-                  {rangoPagoUnidad === 'dias' && (
-                    <Grid item xs={12} md={6}>
-                      <Autocomplete
-                        sx={{ width: 245 }}
-                        fullWidth={false}
-                        loading={loadingTiposPago}
-                        options={tiposPago}
-                        getOptionLabel={(option) => option.descripcion}
-                        filterOptions={(x) => x}
-                        onInputChange={(event, value, reason) => {
-                          if (reason === 'input') {
-                            setSearchText(value);
-                          }
-                        }}
-                        onChange={(event, value) => {
-                          setUserEditedSelect(true);
-                          setTipoPagoSeleccionado(value);
-
-                          if (value) {
-                            setDiasSeleccionados(value.duracion);
-                            setPagoData((prev) => ({
-                              ...prev,
-                              MesesPagados: value.duracion,
-                              Monto: value.monto,
-                            }));
-                          }
-                        }}
-                        renderInput={(params) => (
-                          <TextField
-                            {...params}
-                            label="Tipos de Pagos"
-                            InputProps={{
-                              ...params.InputProps,
-                              endAdornment: (
-                                <>
-                                  {loadingTiposPago && <CircularProgress size={20} />}
-                                  {params.InputProps.endAdornment}
-                                </>
-                              ),
-                            }}
-                          />
-                        )}
-                      />
-                    </Grid>
                   )}
-                </Grid>
+                />
               </Grid>
-              <TextField
-                label="Detalle del pago (opcional)"
-                multiline
-                rows={3}
-                fullWidth
-                name="DetallePago"
-                value={pagoData.DetallePago}
-                onChange={handleChange}
-                sx={{ maxWidth: 380 }}
-              />
               <Grid item xs={12}>
-                <Button
-                  type="submit"
-                  fullWidth
-                  size="large"
-                  variant="contained"
-                  color="success"
-                  disabled={loading}
+                <Autocomplete
                   sx={{
-                    fontWeight: 'bold',
-                    borderRadius: 2,
-                    boxShadow: 2,
-                    mt: 4,
-                    '&:hover': { boxShadow: 4 },
+                    width: { xs: '100%', sm: 250, md: 250 },
                   }}
-                >
-                  {loading ? (
-                    <CircularProgress size={24} sx={{ color: 'white' }} />
-                  ) : editMode ? (
-                    'Actualizar'
-                  ) : (
-                    'Registrar'
+                  options={tiposPago}
+                  getOptionLabel={(option) => option.descripcion}
+                  loading={loadingTiposPago}
+                  onInputChange={handleTipoPagoInputChange}
+                  onChange={handleTipoPagoChange}
+                  noOptionsText="No hay resultados"
+                  renderOption={(props, option) => (
+                    <li {...props} key={option.codigoPago}>
+                      <div style={{ display: "flex", flexDirection: "column" }}>
+                        <span>{option.descripcion}</span>
+                        <small style={{ color: "#888" }}>
+                          Monto: {option.monto} | Duración: {option.duracion} {option.unidadTiempo}
+                        </small>
+                      </div>
+                    </li>
                   )}
-                </Button>
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Tipo de Pago"
+                      InputProps={{
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loadingTiposPago ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      }}
+                    />
+                  )}
+                />
               </Grid>
-
+              <Grid item xs={12} sm={12} md={12}>
+                <TextField
+                  multiline
+                  minRows={3}
+                  sx={{
+                    width: { xs: '100%', sm: 250, md: 250 },
+                  }}
+                  label="Detalle"
+                  name="DetallePago"
+                  value={formik.values.DetallePago}
+                  onChange={formik.handleChange}
+                  error={formik.touched.DetallePago && Boolean(formik.errors.DetallePago)}
+                  helperText={formik.touched.DetallePago && formik.errors.DetallePago}
+                />
+              </Grid>
+              <Grid item xs={12}>
+                <TextField
+                  select
+                  fullWidth
+                  label="Moneda"
+                  name="Moneda"
+                  value={formik.values.Moneda}
+                  onChange={formik.handleChange}
+                  error={formik.touched.Moneda && Boolean(formik.errors.Moneda)}
+                  helperText={formik.touched.Moneda && formik.errors.Moneda}
+                >
+                  {monedas.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </Grid>
             </Grid>
-          </form>
-        </Container>
-      </Grid>
-      <Grid item xs={12} md={6}>
-        <Container sx={{ position: 'relative', paddingTop: 3 }}>
-          {showSeleccionCliente  && (
-            <SeleccionCliente
-              onSelectCliente={handleSelectCliente}
-            />
-          )}
-          <Snackbar
-            open={errorMessage !== ''}
-            autoHideDuration={5000}
-            onClose={() => setErrorMessage('')}
-          >
-            <Alert onClose={() => setErrorMessage('')} severity="error" sx={{ width: '100%' }}>
-              {typeof errorMessage === 'string' ? errorMessage : 'Hubo un error'}
-            </Alert>
-          </Snackbar>
-          <FechaVencimiento
-            clienteId={pagoData.CodigoCliente}
-            fechaPago={pagoData.FechaPago}
-            mesesPagados={pagoData.MesesPagados}
-            rangoPagoUnidad={rangoPagoUnidad}
+          </Box>
+          <Divider
+            orientation="vertical"
+            flexItem
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              borderColor: 'grey.300',
+              mx: 2,
+            }}
+
           />
-        </Container>
-      </Grid>
-    </Grid>
+          {/* COLUMNA DERECHA */}
+          <Box sx={{ width: { xs: '100%', sm: '50%' } }}>
+            <Grid item xs={12} sm={4}>
+              <Paper variant="outlined" sx={{ p: 2 }}>
+                <Grid container spacing={2}>
+
+                  {/* COLUMNA IZQUIERDA */}
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="caption" color="text.secondary">
+                      Monto
+                    </Typography>
+                    <Typography variant="h6" mb={1}>
+                      {obtenerSimboloMoneda(formik.values.Moneda)} {formik.values.Monto.toFixed(2)}
+                    </Typography>
+                    <TextField
+                      fullWidth
+                      label="Efectivo"
+                      name="Efectivo"
+                      type="number"
+                      variant="standard"
+                      value={formik.values.Efectivo}
+                      onChange={formik.handleChange}
+                      sx={{ mb: 1 }}
+                    />
+
+                    <Typography variant="caption" color="text.secondary">
+                      Cambio
+                    </Typography>
+                    <Typography variant="h6">
+                      {obtenerSimboloMoneda(formik.values.Moneda)} {formik.values.Cambio.toFixed(2)}
+                    </Typography>
+                    {cambioEquivalente > 0 && (
+                      <Typography variant="caption" color="text.secondary">
+                        Equivalente: {obtenerSimboloMoneda(obtenerMonedaEquivalente(formik.values.Moneda))}{' '}
+                        {cambioEquivalente.toFixed(2)}
+                      </Typography>
+                    )}
+                  </Grid>
+                  <Grid item xs={12} sm={6}>
+                    <Typography variant="caption" color="text.secondary">
+                      Fecha de Pago
+                    </Typography>
+                    <Typography variant="body2" mb={2}>
+                      {formik.values.FechaPago
+                        ? dayjs(formik.values.FechaPago).format('DD/MM/YYYY')
+                        : '--'}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      Duración
+                    </Typography>
+                    <Typography variant="body2">
+                      {formik.values.MesesPagados}{' '}
+                      {formik.values.IntervaloPago ? 'Meses' : 'Días'}
+                    </Typography>
+                  </Grid>
+                </Grid>
+              </Paper>
+            </Grid>
+          </Box>
+        </Box>
+
+        {/* BOTONES */}
+        <Box mt={3} display="flex" gap={2}>
+          <Button
+            type="submit"
+            variant="contained"
+            color="primary"
+            sx={{ minWidth: 180 }}
+            disabled={formik.isSubmitting}
+          >
+            {pagoId ? 'Actualizar' : 'Registrar'}
+          </Button>
+        </Box>
+      </Box>
+    </Paper>
   );
 };
 export default PagoForm;

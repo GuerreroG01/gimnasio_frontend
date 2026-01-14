@@ -3,7 +3,8 @@ import ReactDOM from 'react-dom/client';
 import './index.css';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
-
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import { AuthProvider } from './Context/AuthContext';
 import { ExistenciasProvider } from './Context/ExistenciaContext';
@@ -22,6 +23,7 @@ import Asistencia from './Pages/Asistencia/AsistenciaPage';
 import AsistenciaListado from './Pages/Asistencia/AsistenciaListaPage';
 import ConfiguracionesPage from './Pages/Configuraciones/ConfiguracionesPage';
 import MensajesPage from './Pages/Mensajes/MensajesPage';
+import Prueba from './Pages/Pago/FormPage';
 import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
@@ -78,6 +80,8 @@ const router = createBrowserRouter([
 
       // Mensajes
       {path: '/mensajes', element: <ProtectedRoute><MensajesPage /></ProtectedRoute> },
+      {path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
+
 /*
       // TIPOS EJERCICIOS Y PAGOS
       { path: '/IndexTipoEjer_y_Pago', element: <ProtectedRoute><IndexTipoEjerYPagoPage /></ProtectedRoute> },
@@ -103,15 +107,17 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 
 root.render(
   <React.StrictMode>
-    <AuthProvider>
-      <ExistenciasProvider>
-        <MensajeProvider>
-          <ThemeProvider>
-            <RouterProvider router={router} />
-          </ThemeProvider>
-        </MensajeProvider>
-      </ExistenciasProvider>
-    </AuthProvider>
+    <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <AuthProvider>
+        <ExistenciasProvider>
+          <MensajeProvider>
+            <ThemeProvider>
+              <RouterProvider router={router} />
+            </ThemeProvider>
+          </MensajeProvider>
+        </ExistenciasProvider>
+      </AuthProvider>
+    </LocalizationProvider>
   </React.StrictMode>
 );
 

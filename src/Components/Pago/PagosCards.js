@@ -5,6 +5,7 @@ import { Edit as EditIcon, Delete as DeleteIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import DetailsPago from './DetailsPago';
 import pagoService from '../../Services/PagoService';
+import TiempoPagoService from '../../Services/TiempoPagoService';
 
 
 const fadeInUp = keyframes`
@@ -29,15 +30,15 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
 
   const handleOpenModal = (pago) => {
     console.log("Datos del pago seleccionado:", pago);
-    const fetchinfopago = async () => {
-      if (pago && pago.codigoCliente && pago.fechaPago) {
+
+    const fetchInfoPago = async () => {
+      if (pago && pago.codigoPago) {
         try {
-          const fechaData = await pagoService.getTiempoPagoCliente(pago.codigoCliente, pago.fechaPago);
-          console.log("Información del pago obtenida:", fechaData);
-  
-          if (fechaData) {
-            setinfopago(fechaData);
-          } else if (fechaData && fechaData.message === 'Registro no encontrado.') {
+          const response = await TiempoPagoService.getByCodigoPago(pago.codigoPago);
+
+          if (response && response.data) {
+            setinfopago(response.data);
+          } else {
             setinfopago('No hay antecedente de vencimiento para este pago');
           }
         } catch (error) {
@@ -45,9 +46,10 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
           setinfopago('Error al obtener la información');
         }
       }
-    };    
+    };
+
     setPagoSeleccionado(pago);
-    fetchinfopago();
+    fetchInfoPago();
     setOpenModal(true);
   };
 
@@ -55,9 +57,9 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
     setOpenModal(false);
   };
 
-  const handleEditClick = (id) => {
+  /*const handleEditClick = (id) => {
     navigate(`/pagos/${id}/update`);
-  };
+  };*/
   
   const handleDeleteClick = (pago, event) => {
     event.stopPropagation();
@@ -154,7 +156,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
                       },
                     }}
                   >
-                    <IconButton
+                    {/*<IconButton
                       sx={{
                         position: 'absolute',
                         top: 10,
@@ -167,7 +169,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
                       }}
                     >
                       <EditIcon />
-                    </IconButton>
+                    </IconButton>*/}
                     <IconButton
                       sx={{
                         position: 'absolute',

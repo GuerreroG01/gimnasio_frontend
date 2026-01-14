@@ -22,11 +22,16 @@ const createFecha = (fechaData) => {
 const updateByPago = (id, data) =>
   axiosInstance.put(`${API_URL}/${id}`, data);
 
+const getByCodigoPago = (codigoPago) => {
+  return axiosInstance.get(`${API_URL}/codigo/${codigoPago}`);
+};
+
 const TiempoPagoService = {
   getFechasByClienteId,
   getFechaById,
   createFecha,
-  updateByPago
+  updateByPago,
+  getByCodigoPago
 };
 
 export default TiempoPagoService;

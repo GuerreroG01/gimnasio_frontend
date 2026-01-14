@@ -3,8 +3,6 @@ import React from 'react';
 import { Modal, Box, Typography, IconButton } from '@mui/material';
 
 const DetailsPago = ({ open, onClose, pago, infopago }) => {
-  console.log('InfoPago:', infopago);
-
   if (!infopago) return <Typography>Cargando información...</Typography>;
 
   const clienteNombre = pago.usuario ? pago.usuario.nombreCompleto : 'Cliente no encontrado';
@@ -13,8 +11,6 @@ const DetailsPago = ({ open, onClose, pago, infopago }) => {
   const mesesPagados = pago.intervaloPago ? `Meses Pagados: ${pago.mesesPagados}` : `Días Pagados: ${pago.mesesPagados}`;
   const monto = `Monto: $${pago.monto}`;
   const detallePago = `Detalle: ${pago.detallePago}`;
-
-  const fechaVencimiento = infopago.fechasUsuario?.fechaVencimiento ? new Date(infopago.fechasUsuario.fechaVencimiento) : null;
 
   return (
     <Modal
@@ -80,13 +76,18 @@ const DetailsPago = ({ open, onClose, pago, infopago }) => {
           {detallePago}
         </Typography>
 
-        {fechaVencimiento ? (
+        {infopago?.fechaVencimiento ? (
           <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
-            {`Fecha de Vencimiento: ${fechaVencimiento.getDate().toString().padStart(2, '0')} ${new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(fechaVencimiento)} ${fechaVencimiento.getFullYear()}`}
+            Fecha de Vencimiento:{' '}
+            {new Intl.DateTimeFormat('es-ES', {
+              day: '2-digit',
+              month: 'long',
+              year: 'numeric',
+            }).format(new Date(infopago.fechaVencimiento))}
           </Typography>
         ) : (
           <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
-            {"Fecha de Vencimiento: Fecha inválida"}
+            Fecha de Vencimiento: Fecha inválida
           </Typography>
         )}
 

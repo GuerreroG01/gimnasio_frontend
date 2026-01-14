@@ -1,256 +1,255 @@
-import React, { useEffect, useCallback } from 'react';
-import { useLocation, useParams, useNavigate } from 'react-router-dom';
-import PagoForm from "../../Components/Pago/PagoForm";
-import pagoService from '../../Services/PagoService';
+import React, { useEffect, useState, useRef } from 'react';
+import * as Yup from 'yup';
+import { useFormik } from 'formik';
+import pagosService from '../../Services/PagoService';
+import PagoForm from '../../Components/Pago/PagoForm';
 import ClienteService from '../../Services/ClienteService';
+import TiposPagoService from '../../Services/Tipo_PagosService';
+import TipoCambioService from '../../Services/TipoCambioService';
 import TiempoPagoService from '../../Services/TiempoPagoService';
-import TipoPagoService from '../../Services/Tipo_PagosService';
+import { convertirPrecio, obtenerMonedaEquivalente } from '../../Utils/MonedaUtils';
+import { useNavigate, useLocation } from 'react-router-dom';
 
-export default function FormPage() {
-  const location = useLocation();
-  const clienteIdFromLocation = location.state?.clienteId || null;
+export default function FormPage({ pagoId, onSuccess }) {
+    const location = useLocation();
+    const { clienteId } = location.state || {};
+    const monedas = [
+        { value: 'NIO', label: 'NIO' },
+        { value: 'USD', label: 'USD' },
+    ];
+    const [clientes, setClientes] = React.useState([]);
+    const [loadingClientes, setLoadingClientes] = useState(false);
+    const [tiposPago, setTiposPago] = useState([]);
+    const [loadingTiposPago, setLoadingTiposPago] = useState(false);
+    const [loading, setLoading] = useState(false);
+    let fechaActual = new Date();
+    const fechaPago = new Date(fechaActual.getTime() - 6 * 60 * 60 * 1000);
+    const [initialValues, setInitialValues] = useState({
+        CodigoCliente: clienteId || '',
+        MesesPagados: 1,
+        FechaPago: fechaPago,
+        Moneda: 'NIO',
+        Efectivo: 0,
+        Cambio: 0,
+        Monto: 0,
+        DetallePago: '',
+        IntervaloPago: false,
+    });
+    const [montoBase, setMontoBase]= React.useState(0);
+    const [tipoCambio, setTipoCambio] = React.useState([]); 
+    const [cambioEquivalente, setCambioEquivalente] = React.useState(0);
+    const navigate= useNavigate();
 
-  const { id } = useParams();
-  const navigate = useNavigate();
+    const validationSchema = Yup.object({
+        CodigoCliente: Yup.number().required('Cliente requerido'),
+        MesesPagados: Yup.number().min(1, 'Debe ser al menos 1').required('Requerido'),
+        FechaPago: Yup.date().required('Fecha requerida'),
+        Moneda: Yup.string().required('Moneda requerida'),
+        Efectivo: Yup.number().min(0, 'Debe ser >= 0').required('Requerido'),
+        Monto: Yup.number().min(0, 'Debe ser >= 0').required('Requerido'),
+        Cambio: Yup.number().min(0, 'Debe ser >= 0'),
+        DetallePago: Yup.string().max(50, 'Máximo 50 caracteres'),
+    });
 
-  const ahora = new Date();
-  const fechaLocal = ahora.toLocaleDateString('es-ES', { timeZone: 'America/Managua', year: 'numeric', month: '2-digit', day: '2-digit' })
-                        .split('/').reverse().join('-');
+    const formik = useFormik({
+        enableReinitialize: true,
+        initialValues,
+        validationSchema,
+        onSubmit: async (values, { setSubmitting, resetForm }) => {
+            setSubmitting(true);
+            try {
+                const rango = parseInt(values.MesesPagados, 10);
+                if (!values.FechaPago || isNaN(new Date(values.FechaPago)) || isNaN(rango)) {
+                    throw new Error('Datos inválidos');
+                }
 
-  const [pagoData, setPagoData] = React.useState({
-    CodigoCliente: '',
-    MesesPagados: '',
-    FechaPago: fechaLocal,
-    Monto: '',
-    DetallePago: ''
-  });
+                const datosPago = {
+                    CodigoPago: values.CodigoPago,
+                    CodigoCliente: values.CodigoCliente,
+                    MesesPagados: rango,
+                    FechaPago: values.FechaPago,
+                    Moneda: values.Moneda,
+                    Efectivo: values.Efectivo,
+                    Cambio: values.Cambio,
+                    Monto: values.Monto,
+                    DetallePago: values.DetallePago,
+                    IntervaloPago: values.IntervaloPago ? 1 : 0
+                };
 
-  const [selectedUserName, setSelectedUserName] = React.useState('');
-  const [showSeleccionCliente, setShowSeleccionCliente] = React.useState(false);
-  const [editMode, setEditMode] = React.useState(false);
-  const [loading, setLoading] = React.useState(false);
-  const [rangoPagoUnidad, setRangoPagoUnidad] = React.useState('dias');
-  const [errorMessage, setErrorMessage] = React.useState('');
-  const [diasSeleccionados, setDiasSeleccionados] = React.useState(7);
-  const [tipoPagoSeleccionado, setTipoPagoSeleccionado] = React.useState(null);
-  const [tiposPago, setTiposPago] = React.useState([]);
-  const [loadingTiposPago, setLoadingTiposPago] = React.useState(false);
-  const [searchText, setSearchText] = React.useState('');
+                const pagoGuardado = pagoId
+                    ? await pagosService.updatePago(pagoId, datosPago)
+                    : await pagosService.createPago(datosPago);
 
-  const fetchMonto = useCallback(async (meses, unidad) => {
-    try {
-      const tiposPagos = await TipoPagoService.getTipoPagos();
-      if (!tiposPagos) return 0;
+                const codigoPago = pagoId ? values.CodigoPago : pagoGuardado.codigoPago;
 
-      const duracionNum = Number(meses);
-      const tipoExacto = tiposPagos.find(tp => tp.unidadTiempo.toLowerCase() === unidad && tp.duracion === duracionNum);
-      if (tipoExacto) return tipoExacto.monto;
+                let fechaBase = new Date(values.FechaPago);
+                try {
+                    const ultimoPago = await pagosService.getUltimoPagoVigente(values.CodigoCliente, !!pagoId);
+                    if (ultimoPago?.fechaVencimiento) fechaBase = new Date(ultimoPago.fechaVencimiento);
+                } catch (err) {
+                    console.warn('No se pudo obtener último pago vigente', err);
+                }
 
-      const tipoBase = tiposPagos.find(tp => tp.unidadTiempo.toLowerCase() === unidad && tp.duracion === 1);
-      return tipoBase ? tipoBase.monto * duracionNum : 0;
+                const fechaVencimiento = new Date(fechaBase);
+                if (values.IntervaloPago === false) {
+                    fechaVencimiento.setDate(fechaVencimiento.getDate() + rango);
+                } else {
+                    fechaVencimiento.setMonth(fechaVencimiento.getMonth() + rango);
+                }
 
-    } catch (error) {
-      console.error('Error al obtener tipos de pago', error);
-      return 0;
-    }
-  }, []);
+                const tiempoPagoRecords = await TiempoPagoService.getFechasByClienteId(values.CodigoCliente);
+                const tiempoPagoExistente = tiempoPagoRecords.data.find(tp => tp.codigoPago === codigoPago);
+                const tiempoPagoData = {
+                    ClienteId: values.CodigoCliente,
+                    CodigoPago: codigoPago,
+                    FechaPago: values.FechaPago,
+                    FechaVencimiento: fechaVencimiento.toISOString().split('T')[0]
+                };
+                if (tiempoPagoExistente) tiempoPagoData.Id = tiempoPagoExistente.id;
 
-  const handleSelectCliente = useCallback(async (codigoCliente, userName) => {
-    setPagoData(prev => ({ ...prev, CodigoCliente: codigoCliente }));
-    setSelectedUserName(userName);
-    setShowSeleccionCliente(false);
+                if (tiempoPagoExistente) {
+                    await TiempoPagoService.updateByPago(tiempoPagoData.Id, tiempoPagoData);
+                } else {
+                    await TiempoPagoService.createFecha(tiempoPagoData);
+                }
 
-    if (editMode) return;
+                resetForm();
+                onSuccess?.(pagoGuardado);
+                navigate('/pagos');
+            } catch (error) {
+                console.error(error);
+                alert(error.message || 'Error al procesar el pago');
+            } finally {
+                setSubmitting(false);
+            }
+        },
+    });
 
-    try {
-      let ultimoPago = null;
-      try {
-        ultimoPago = await pagoService.getUltimoPagoVigente(codigoCliente, editMode);
-      } catch (err) {
-        if (!(err.response && err.response.status === 404)) throw err;
-      }
-
-      if (ultimoPago) {
-        const dias = [7, 15].includes(ultimoPago.mesesPagados) ? ultimoPago.mesesPagados : ultimoPago.mesesPagados;
-        setDiasSeleccionados(dias);
-        setRangoPagoUnidad(ultimoPago.intervaloPago ? 'meses' : 'dias');
-        setPagoData(prev => ({
-          ...prev,
-          MesesPagados: ultimoPago.mesesPagados,
-          Monto: ultimoPago.monto,
-          intervaloPago: ultimoPago.intervaloPago
-        }));
-      } else {
-        setRangoPagoUnidad('dias');
-        setDiasSeleccionados(7);
-        const monto = await fetchMonto(7, 'dias');
-        setPagoData(prev => ({ ...prev, Monto: monto }));
-      }
-    } catch (error) {
-      console.error('Error al obtener último pago:', error);
-      setRangoPagoUnidad('dias');
-      setDiasSeleccionados(7);
-      const monto = await fetchMonto(7, 'dias');
-      setPagoData(prev => ({ ...prev, MesesPagados: 7, Monto: monto }));
-    }
-  }, [editMode, fetchMonto]);
-
-  useEffect(() => {
-    if (!editMode && clienteIdFromLocation) {
-      ClienteService.getClienteById(clienteIdFromLocation)
-        .then(res => {
-          if (res?.data) handleSelectCliente(clienteIdFromLocation, `${res.data.nombres} ${res.data.apellidos}`);
-        })
-        .catch(err => console.error('Error al cargar cliente inicial', err));
-    }
-  }, [clienteIdFromLocation, editMode, handleSelectCliente]);
-
-  useEffect(() => {
-    if (!tipoPagoSeleccionado) fetchMonto(pagoData.MesesPagados, rangoPagoUnidad).then(monto => setPagoData(prev => ({ ...prev, Monto: monto })));
-  }, [pagoData.MesesPagados, rangoPagoUnidad, tipoPagoSeleccionado, fetchMonto]);
-
-  useEffect(() => {
-    if (!editMode) setPagoData(prev => ({ ...prev, MesesPagados: rangoPagoUnidad === 'meses' ? 1 : diasSeleccionados }));
-  }, [rangoPagoUnidad, diasSeleccionados, editMode]);
-
-  useEffect(() => {
-    if (id) {
-      setEditMode(true);
-      (async () => {
-        try {
-          const pago = await pagoService.getPagoById(id);
-          if (!pago) return;
-          setPagoData({
-            CodigoPago: pago.codigoPago,
-            CodigoCliente: pago.codigoCliente,
-            MesesPagados: pago.mesesPagados,
-            FechaPago: pago.fechaPago?.split('T')[0] || '',
-            Monto: pago.monto,
-            DetallePago: pago.detallePago,
-            intervaloPago: pago.intervaloPago
-          });
-          setRangoPagoUnidad(pago.intervaloPago ? 'meses' : 'dias');
-          const user = await ClienteService.getClienteById(pago.codigoCliente);
-          if (user?.data) setSelectedUserName(`${user.data.nombres} ${user.data.apellidos}`);
-        } catch (error) {
-          console.error('Error al cargar pago/cliente', error);
-          setErrorMessage('Error al cargar pago o cliente');
+    useEffect(() => {
+        if (pagoId) {
+        setLoading(true);
+        pagosService
+            .getPagoById(pagoId)
+            .then((data) => {
+            setInitialValues({
+                ...data,
+                FechaPago: data.FechaPago ? new Date(data.FechaPago) : new Date(),
+            });
+            })
+            .finally(() => setLoading(false));
         }
-      })();
-    }
-  }, [id]);
+    }, [pagoId]);
 
-  const handleChange = e => {
-    const { name, value } = e.target;
-    if (name === 'MesesPagados') setTipoPagoSeleccionado(null);
-    setPagoData(prev => ({ ...prev, [name]: value }));
-  };
+    useEffect(() => {
+        TipoCambioService.getTipoCambios()
+            .then((data) => setTipoCambio(data))
+            .catch((err) => console.error(err));
+    }, []);
 
-  const handleSubmit = async e => {
-    e.preventDefault();
-    setLoading(true);
-    setErrorMessage('');
+    useEffect(() => {
+        if (!montoBase) return;
 
-    try {
-      const rango = parseInt(pagoData.MesesPagados, 10);
-      if (!pagoData.FechaPago || isNaN(new Date(pagoData.FechaPago)) || isNaN(rango)) {
-        setErrorMessage('Datos inválidos');
-        setLoading(false);
-        return;
-      }
+        const montoConvertido = convertirPrecio(montoBase, 'NIO', formik.values.Moneda, tipoCambio);
+        formik.setFieldValue("Monto", montoConvertido);
+    }, [formik, formik.values.Moneda, tipoCambio, montoBase]);
 
-      const datosPago = {
-        CodigoPago: pagoData.CodigoPago,
-        CodigoCliente: pagoData.CodigoCliente,
-        MesesPagados: rango,
-        FechaPago: pagoData.FechaPago,
-        Monto: pagoData.Monto,
-        DetallePago: pagoData.DetallePago,
-        IntervaloPago: rangoPagoUnidad === 'meses' ? 1 : 0
-      };
+    useEffect(() => {
+        const efectivo = parseFloat(formik.values.Efectivo) || 0;
+        const monto = parseFloat(formik.values.Monto) || 0;
 
-      const pagoGuardado = editMode
-        ? await pagoService.updatePago(pagoData.CodigoPago, datosPago)
-        : await pagoService.createPago(datosPago);
+        const cambio = Math.max(0, efectivo - monto);
+        formik.setFieldValue("Cambio", cambio);
 
-      const codigoPago = editMode ? pagoData.CodigoPago : pagoGuardado.codigoPago;
+        const monedaDestino = obtenerMonedaEquivalente(formik.values.Moneda);
+        const cambioEquivalente = convertirPrecio(cambio, formik.values.Moneda, monedaDestino, tipoCambio);
+        setCambioEquivalente(cambioEquivalente);
+    }, [formik, formik.values.Efectivo, formik.values.Monto, formik.values.Moneda, tipoCambio]);
 
-      // Calcular fecha de vencimiento
-      let fechaBase = new Date(pagoData.FechaPago);
-      try {
-        const ultimoPago = await pagoService.getUltimoPagoVigente(pagoData.CodigoCliente, editMode);
-        if (ultimoPago?.fechaVencimiento) fechaBase = new Date(ultimoPago.fechaVencimiento);
-      } catch {}
-      
-      const fechaVencimiento = new Date(fechaBase);
-      if (rangoPagoUnidad === 'dias') fechaVencimiento.setDate(fechaVencimiento.getDate() + rango);
-      else fechaVencimiento.setMonth(fechaVencimiento.getMonth() + rango);
+    useEffect(() => {
+        if (clienteId) {
+            ClienteService.getClienteById(clienteId)
+                .then((res) => {
+                    const clienteData = res.data;
+                    setClientes([clienteData]);
+                    formik.setFieldValue('CodigoCliente', clienteData.codigo);
+                })
+                .catch(err => console.error(err));
+        }
+    }, [formik, clienteId]);
 
-      const tiempoPagoRecords = await TiempoPagoService.getFechasByClienteId(pagoData.CodigoCliente);
-      const tiempoPagoExistente = tiempoPagoRecords.data.find(tp => tp.codigoPago === codigoPago);
-      const tiempoPagoData = {
-        ClienteId: pagoData.CodigoCliente,
-        CodigoPago: codigoPago,
-        FechaPago: pagoData.FechaPago,
-        FechaVencimiento: fechaVencimiento.toISOString().split('T')[0]
-      };
-      if (tiempoPagoExistente) tiempoPagoData.Id = tiempoPagoExistente.id;
+    const autocompleteDelay = 1000;
+    const searchTimeout = useRef(null);
 
-      if (editMode) await TiempoPagoService.updateByPago(tiempoPagoData.Id, tiempoPagoData);
-      else await TiempoPagoService.createFecha(tiempoPagoData);
+    const handleBuscarClienteDebounced = (inputValue) => {
+        if (!inputValue) return;
 
-      navigate('/pagos');
-      setPagoData({ CodigoCliente: '', MesesPagados: '', FechaPago: new Date().toISOString().split('T')[0], Monto: '', DetallePago: '' });
-      setSelectedUserName('');
-    } catch (error) {
-      console.error(error);
-      setErrorMessage('Error al procesar el pago');
-    } finally {
-      setLoading(false);
-    }
-  };
+        setLoadingClientes(true);
 
-  const handleClickEditIcon = () => setShowSeleccionCliente(prev => !prev);
-  const handleRangoPagoUnidadChange = (_, newValue) => { if (newValue !== null) { setTipoPagoSeleccionado(null); setRangoPagoUnidad(newValue); } };
+        ClienteService.buscarCliente(inputValue, '')
+            .then((res) => {
+            if (res.data.length > 0) {
+                setClientes(res.data);
+            } else {
+                return ClienteService.buscarCliente('', inputValue).then((res2) => {
+                setClientes(res2.data);
+                });
+            }
+            })
+            .finally(() => setLoadingClientes(false));
+    };
 
-  useEffect(() => {
-    const timeoutId = setTimeout(() => {
-      if (searchText?.length >= 2) {
-        TipoPagoService.searchTipoPagoByName(searchText)
-          .then(res => setTiposPago(res.data))
-          .catch(console.error)
-          .finally(() => setLoadingTiposPago(false));
-      } else setTiposPago([]);
-    }, 1000);
-    return () => clearTimeout(timeoutId);
-  }, [searchText]);
+    const handleInputChange = (event, value, reason) => {
+        if (reason !== 'input') return;
+        setLoadingClientes(true);
+        if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
-  return (
-    <PagoForm
-      clienteId={clienteIdFromLocation}
-      editMode={editMode}
-      handleSubmit={handleSubmit}
-      selectedUserName={selectedUserName}
-      handleClickEditIcon={handleClickEditIcon}
-      showSeleccionCliente={showSeleccionCliente}
-      rangoPagoUnidad={rangoPagoUnidad}
-      diasSeleccionados={diasSeleccionados}
-      setDiasSeleccionados={setDiasSeleccionados}
-      setUserEditedSelect={setTipoPagoSeleccionado}
-      handleChange={handleChange}
-      pagoData={pagoData}
-      setPagoData={setPagoData}
-      loading={loading}
-      errorMessage={errorMessage}
-      setErrorMessage={setErrorMessage}
-      handleSelectCliente={handleSelectCliente}
-      handleRangoPagoUnidadChange={handleRangoPagoUnidadChange}
-      loadingTiposPago={loadingTiposPago}
-      tiposPago={tiposPago}
-      searchText={searchText}
-      setSearchText={setSearchText}
-      tipoPagoSeleccionado={tipoPagoSeleccionado}
-      setTipoPagoSeleccionado={setTipoPagoSeleccionado}
-    />
-  );
+        searchTimeout.current = setTimeout(() => {
+            handleBuscarClienteDebounced(value);
+        }, autocompleteDelay);
+    };
+    const tipoPagoSearchTimeout = useRef(null);
+    const handleBuscarTipoPagoDebounced = (inputValue) => {
+        if (!inputValue) return;
+
+        setLoadingTiposPago(true);
+        TiposPagoService.searchTipoPagoByName(inputValue)
+        .then((res) => setTiposPago(res.data))
+        .finally(() => setLoadingTiposPago(false));
+    };
+
+    const handleTipoPagoInputChange = (event, value, reason) => {
+        if (reason !== 'input') return;
+        if (tipoPagoSearchTimeout.current) clearTimeout(tipoPagoSearchTimeout.current);
+        setLoadingTiposPago(true);
+        tipoPagoSearchTimeout.current = setTimeout(() => {
+        handleBuscarTipoPagoDebounced(value);
+        }, autocompleteDelay);
+    };
+    const handleTipoPagoChange = (event, value) => {
+        if (!value) return;
+        setMontoBase(value.monto);
+
+        const montoConvertido = convertirPrecio(value.monto, 'NIO', formik.values.Moneda, tipoCambio);
+
+        formik.setFieldValue("MesesPagados", value.unidadTiempo.toLowerCase() === "dias" ? value.duracion : value.duracion);
+        formik.setFieldValue("Monto", montoConvertido);
+        formik.setFieldValue('IntervaloPago', value.unidadTiempo.toLowerCase() === 'dias' ? false : true );
+    };
+
+    return (
+        <PagoForm
+            formik={formik}
+            loading={loading}
+            pagoId={pagoId}
+            monedas={monedas}
+            clientes={clientes}
+            loadingClientes={loadingClientes}
+            handleInputChange={handleInputChange}
+            tiposPago={tiposPago}
+            loadingTiposPago={loadingTiposPago}
+            handleTipoPagoInputChange={handleTipoPagoInputChange}
+            handleTipoPagoChange={handleTipoPagoChange}
+            cambioEquivalente={cambioEquivalente}
+        />
+    );
 }
