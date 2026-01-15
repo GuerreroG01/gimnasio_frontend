@@ -16,25 +16,31 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
           {alerta.mensaje}
         </Alert>
       )}
-      <Box display="flex" justifyContent="space-between" alignItems="center" mb={2} sx={{ marginTop: 2 }}>
-        <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-          Clientes
-        </Typography>
-        <Tooltip title="Nuevo Usuario">
-          <IconButton color="primary" onClick={handleCreateNew}>
-            <PersonAddAltOutlinedIcon />
-          </IconButton>
-        </Tooltip>
-      </Box>
-      <FiltroClientes
-        nombreCliente={nombreCliente}
-        setNombreCliente={setNombreCliente}
-        apellidoCliente={apellidoCliente}
-        setApellidoCliente={setApellidoCliente}
-        showFilters={showFilters}
-        setShowFilters={setShowFilters}
-        setLoadingFilter={setLoadingFilter}
-      />
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} sx={{ mt: 2 }}>
+  {/* Contenedor del título + filtros */}
+  <Box display="flex" alignItems="center" gap={2}>
+    <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
+      Clientes
+    </Typography>
+
+    <FiltroClientes
+      nombreCliente={nombreCliente}
+      setNombreCliente={setNombreCliente}
+      apellidoCliente={apellidoCliente}
+      setApellidoCliente={setApellidoCliente}
+      showFilters={showFilters}
+      setShowFilters={setShowFilters}
+      setLoadingFilter={setLoadingFilter}
+    />
+  </Box>
+
+  {/* Botón nuevo cliente */}
+  <Tooltip title="Nuevo Usuario">
+    <IconButton color="primary" onClick={handleCreateNew}>
+      <PersonAddAltOutlinedIcon />
+    </IconButton>
+  </Tooltip>
+</Box>
       {!showFilters && (
         <Box
           display="flex"

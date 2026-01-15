@@ -5,7 +5,7 @@ import { Modal, Box, Typography, IconButton } from '@mui/material';
 const DetailsPago = ({ open, onClose, pago, infopago }) => {
   if (!infopago) return <Typography>Cargando información...</Typography>;
 
-  const clienteNombre = pago.usuario ? pago.usuario.nombreCompleto : 'Cliente no encontrado';
+  const clienteNombre = pago.cliente ? pago.cliente.nombreCompleto : 'Cliente no encontrado';
 
   const fechaPago = new Date(pago.fechaPago);
   const mesesPagados = pago.intervaloPago ? `Meses Pagados: ${pago.mesesPagados}` : `Días Pagados: ${pago.mesesPagados}`;

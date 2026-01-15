@@ -48,13 +48,13 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
-          mb: 3,
+          mb: 1,
         }}
       >
         <FormControl
           sx={{
             minWidth: 220,
-            mt: -5,
+            mt: -3,
             "& .MuiInputLabel-root": {
               color: "text.primary",
               fontWeight: 500,
@@ -106,7 +106,7 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
             direction="down"
             sx={{
               position: 'fixed',
-              bottom: 270,
+              bottom: { xl: 330, lg: 250, md: 200, sm: 185, xs: 185 },
               right: 32,
               zIndex: 1500,
             }}
