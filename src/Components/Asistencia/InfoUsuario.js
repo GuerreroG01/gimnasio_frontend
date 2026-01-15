@@ -7,6 +7,7 @@ import { differenceInMonths, differenceInDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import alertaAudio from '../../assets/Audio/alarma.wav';
 import vigenteAudio from '../../assets/Audio/Vigente.mp3';
+import { obtenerSimboloMoneda } from '../../Utils/MonedaUtils';
 
 const InfoUsuario = ({ cliente }) => {
   const calcularDiasRestantes = useCallback((fechaVencimiento) => {
@@ -196,27 +197,7 @@ const InfoUsuario = ({ cliente }) => {
                       Monto del Pago
                     </Typography>
                     <Typography variant="body2" sx={{ color: 'gray' }}>
-                      {cliente.ultimoPago ? `$${cliente.ultimoPago.monto}` : 'No disponible'}
-                    </Typography>
-                  </Card>
-                </Grid>
-
-                <Grid item xs={12} sm={12} md={4}>
-                  <Card 
-                    sx={{ 
-                      padding: 2, 
-                      borderRadius: 2, 
-                      boxShadow: 2, 
-                      backgroundColor: '#f5f5f5',
-                      transition: 'all 0.3s ease', 
-                      '&:hover': { boxShadow: 4 } 
-                    }}
-                  >
-                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                      Tiempo de Pago
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'gray' }}>
-                      {cliente.ultimoPago && cliente.ultimoPago.intervaloPago ? 'Meses' : 'Días'}
+                      {cliente.ultimoPago ? `${obtenerSimboloMoneda(cliente.ultimoPago.moneda)}${cliente.ultimoPago.monto}` : 'No disponible'}
                     </Typography>
                   </Card>
                 </Grid>
@@ -297,7 +278,7 @@ const InfoUsuario = ({ cliente }) => {
                       backgroundColor: '#f5f5f5', 
                       position: 'relative', 
                       width: '100%',
-                      minWidth: 160,
+                      minWidth: cliente.ultimoTiempoPago ? 160 : 200,
                       height: 'auto',
                       transition: 'all 0.3s ease', 
                       '&:hover': { boxShadow: 4 } 

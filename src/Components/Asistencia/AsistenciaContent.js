@@ -94,7 +94,6 @@ const AsistenciaContent = ({ year, month, day, yearLimit, monthLimit, dayLimit, 
   };
   const totalPages = Math.ceil(asistance.length / rowsPerPage);
   const isSorted = orderBy !== 'codigo';
-  console.log("Fecha seleccionada:", `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`);
   return (
     <Box sx={{ px: 3, mt: -2 }}>
       <Typography variant="h5" sx={{ fontWeight: 'bold', color: '#1976d2', mb: 3, textAlign: 'center' }}>

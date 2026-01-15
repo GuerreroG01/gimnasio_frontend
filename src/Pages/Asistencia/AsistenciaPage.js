@@ -90,7 +90,7 @@ export default function AsistenciaPage(){
             const id = setTimeout(() => {
             setShowInfo(false);
             setFade(false);
-            }, 10000);
+            }, 100000);
             setTimeoutId(id);
 
         } catch (err) {
