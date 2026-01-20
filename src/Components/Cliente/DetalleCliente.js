@@ -7,7 +7,7 @@ import './DetalleCliente.css';
 const DetalleCliente = ({ imageUrl, cliente, id, navigate, telefonoMostrar, estadoCliente, formatDate, handleAddFecha, formatMonthYear, calculateProgress, getColorBasedOnDate }) => {
   console.log('DetalleCliente renderizado con cliente:', cliente);
   return (
-    <Box sx={{ padding: 3 }}>
+    <Box sx={{ padding: 1 }}>
       <Typography variant="h4" gutterBottom>
         Detalles
       </Typography>
@@ -28,6 +28,9 @@ const DetalleCliente = ({ imageUrl, cliente, id, navigate, telefonoMostrar, esta
           </Typography>
           <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>
             <strong>Teléfono:</strong> {telefonoMostrar}
+          </Typography>
+          <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>
+            <strong>Correo Electrónico:</strong> {cliente.correo}
           </Typography>
           <Typography variant="subtitle1" color="text.secondary" sx={{ mb: 1 }}>
             <strong>Estado:</strong> {estadoCliente}

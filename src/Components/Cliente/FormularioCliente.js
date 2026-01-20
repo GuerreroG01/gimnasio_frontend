@@ -5,7 +5,7 @@ import {
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 
 const FormularioCliente = ({
-  id, cliente, setCliente, fileName, imagePreview, exitocreacion,
+  id, cliente, setCliente, fecha, formatDate, fileName, imagePreview, exitocreacion,
   mensaje_error, mensajeAlerta, setMensajeAlerta, cargando,
   handleChange, handleFileChange, handleSubmitCreate,
   handleSubmitUpdate, handleTelefonoChange, navigate
@@ -22,9 +22,22 @@ const FormularioCliente = ({
         backgroundColor: '#fff'
       }}
     >
-      <Typography variant="h5" gutterBottom fontWeight="bold">
-        {id ? 'Actualizar Cliente' : 'Nuevo Cliente'}
-      </Typography>
+      <Box
+        sx={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          mb: 2
+        }}
+      >
+        <Typography variant="h5" fontWeight="bold">
+          {id ? 'Actualizar Cliente' : 'Nuevo Cliente'}
+        </Typography>
+
+        <Typography variant="body1" color="text.secondary">
+          {formatDate(fecha)}
+        </Typography>
+      </Box>
 
       <form onSubmit={id ? handleSubmitUpdate : handleSubmitCreate}>
 
@@ -32,7 +45,7 @@ const FormularioCliente = ({
           sx={{
             display: "flex",
             gap: 3,
-            flexDirection: { xs: "column", sm: "row" }, // <--- EN XS (celular) se apila, desde sm se pone lado a lado
+            flexDirection: { xs: "column", sm: "row" },
           }}
         >
 
@@ -118,26 +131,19 @@ const FormularioCliente = ({
                   name="observaciones"
                   value={cliente.observaciones}
                   onChange={handleChange}
-                  sx={{ width: "100%", maxWidth: "900px" }}
+                  sx={{ width: "90%", maxWidth: "900px" }}
                 />
               </Grid>
-
-              <Grid item xs={12} sm={6}>
+              
+              <Grid item xs={12} sm={6} sx={{ ml: { md: -2.8 } }}>
                 <TextField
                   fullWidth
-                  label="Fecha de Ingreso"
-                  type="date"
-                  name="fechaIngreso"
-                  value={
-                    cliente.fechaIngreso
-                      ? cliente.fechaIngreso.split('T')[0]
-                      : new Date().toISOString().split('T')[0]
-                  }
-                  InputLabelProps={{ shrink: true }}
-                  disabled
+                  label="Correo Electrónico"
+                  name="correo"
+                  value={cliente.correo}
+                  onChange={handleChange}
                 />
               </Grid>
-
             </Grid>
             <Grid item xs={12}>
                 <FormControlLabel

@@ -2,15 +2,23 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ClienteService from '../../Services/ClienteService';
 import FormularioCliente from "../../Components/Cliente/FormularioCliente";
+import { toZonedTime } from 'date-fns-tz';
+import { format } from 'date-fns';
+import { es } from 'date-fns/locale';
 export default function FormPage(){
     const { id } = useParams();
     const navigate = useNavigate();
+    let fechaActual = new Date();
+    const fecha = new Date(fechaActual.getTime() - 6 * 60 * 60 * 1000)
+        .toISOString()
+        .split('T')[0];
     const [cliente, setCliente] = useState({
         nombres: '',
         apellidos: '',
         telefono: '',
+        correo : '',
         foto: null,
-        fechaIngreso: new Date().toISOString().split('T')[0],
+        fechaIngreso: fecha,
         activo: true,
         observaciones: ''
     });
@@ -71,6 +79,7 @@ export default function FormPage(){
         formData.append('Nombres', clienteConDefaults.nombres);
         formData.append('Apellidos', clienteConDefaults.apellidos);
         formData.append('Telefono', clienteConDefaults.telefono);
+        formData.append('Correo', clienteConDefaults.correo);
         if (clienteConDefaults.foto) {
             formData.append('Foto', clienteConDefaults.foto);
         }
@@ -118,6 +127,7 @@ export default function FormPage(){
         formData.append('nombres', clienteConDefaults.nombres);
         formData.append('apellidos', clienteConDefaults.apellidos);
         formData.append('telefono', clienteConDefaults.telefono);
+        formData.append('correo', clienteConDefaults.correo);
         if (clienteConDefaults.foto) {
         formData.append('foto', clienteConDefaults.foto);
         }
@@ -158,9 +168,14 @@ export default function FormPage(){
         setmensaje_error('Solo se aceptan dígitos en el teléfono');
         }
     };
+    const formatDate = (date) => {
+        if (!date) return 'No proporcionado';
+        const zonedDate = toZonedTime(new Date(date), 'America/Managua');
+        return format(zonedDate, 'dd MMMM yyyy', { locale: es });
+    };
     return(
         <FormularioCliente 
-            id={id} cliente={cliente} setCliente={setCliente}
+            id={id} cliente={cliente} setCliente={setCliente} fecha={fechaActual} formatDate={formatDate}
             fileName={fileName} imagePreview={imagePreview} exitocreacion={exitocreacion} mensaje_error={mensaje_error}
             mensajeAlerta={mensajeAlerta} setMensajeAlerta={setMensajeAlerta} cargando={cargando} handleChange={handleChange}
             handleFileChange={handleFileChange} handleSubmitCreate={handleSubmitCreate} handleSubmitUpdate={handleSubmitUpdate}

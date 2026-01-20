@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useCallback } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import pagosService from '../../Services/PagoService';
@@ -184,7 +184,7 @@ export default function FormPage({ pagoId, onSuccess }) {
         }
     }, [values.Efectivo, values.Monto, values.Moneda, values.Cambio, tipoCambio, cambioEquivalente, setFieldValue]);
 
-    const cargarUltimoPago = async (codigoCliente) => {
+    const cargarUltimoPago = useCallback(async (codigoCliente) => {
         try {
             const existePago = await pagosService.checkFechaClienteExist(codigoCliente);
             if (!existePago) return;
@@ -224,7 +224,7 @@ export default function FormPage({ pagoId, onSuccess }) {
         } catch (err) {
             console.error('Error cargando último pago:', err);
         }
-    };
+    }, [setValues, setFieldValue]);
     
     useEffect(() => {
         if (clienteId) {
@@ -233,10 +233,11 @@ export default function FormPage({ pagoId, onSuccess }) {
                     const clienteData = res.data;
                     setClientes([clienteData]);
                     setFieldValue('CodigoCliente', clienteData.codigo);
+                    cargarUltimoPago(clienteData.codigo);
                 })
                 .catch(err => console.error(err));
         }
-    }, [clienteId, setFieldValue]);
+    }, [clienteId, setFieldValue, cargarUltimoPago]);
 
     const autocompleteDelay = 1000;
     const searchTimeout = useRef(null);
