@@ -7,7 +7,6 @@ import DetailsPago from './DetailsPago';
 import pagoService from '../../Services/PagoService';
 import TiempoPagoService from '../../Services/TiempoPagoService';
 
-
 const fadeInUp = keyframes`
   0% {
     opacity: 0;
@@ -72,21 +71,11 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
       console.log(`Eliminando el pago con código: ${pagoAEliminar.codigoPago}`);
   
       try {
-        let fechaPagoFormateada;
-  
-        if (typeof pagoAEliminar.fechaPago === 'string') {
-          fechaPagoFormateada = new Date(pagoAEliminar.fechaPago).toISOString().split('T')[0];
-        } else if (pagoAEliminar.fechaPago instanceof Date) {
-          fechaPagoFormateada = pagoAEliminar.fechaPago.toISOString().split('T')[0];
-        } else {
-          throw new Error('La fecha de pago no tiene un formato válido');
-        }
-        const fechaClienteExiste = await pagoService.checkFechaClienteExist(pagoAEliminar.codigoCliente, fechaPagoFormateada);
+        const fechaClienteExiste = await pagoService.checkFechaClienteExist(pagoAEliminar.codigoPago);
   
         if (fechaClienteExiste) {
           await pagoService.deleteFecha({
-            ClienteId: pagoAEliminar.codigoCliente,
-            FechaPago: fechaPagoFormateada,
+            CodigoPago: pagoAEliminar.codigoPago,
           });
         } else {
           console.log('No se encontró el registro del tiempo pagado.');
@@ -106,12 +95,12 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
   const handleDeleteCancel = () => {
     setOpenDeleteModal(false);
   };
+  if (!pagos || pagos.length === 0) return null;
 
   return (
     <>
       <Grid container spacing={2} sx={{ marginTop: 2 }}>
-        {pagos && pagos.length > 0 ? (
-          pagos.map((pago) => (
+          {pagos.map((pago) => (
             <Grid item xs={12} sm={6} md={4} key={pago.codigoPago}>
               <Card
                 sx={{
@@ -136,7 +125,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
                   </Typography>
                   <Divider sx={{ marginY: 1 }} />
                   <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
-                    <strong>Monto:</strong> ${pago.monto.toLocaleString()}
+                    <strong>Monto:</strong> ${Number(pago.monto).toLocaleString()}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     <strong>Fecha de Pago:</strong> {new Date(pago.fechaPago).toLocaleDateString()}
@@ -185,12 +174,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
                 </CardContent>
               </Card>
             </Grid>
-          ))
-        ) : (
-          <Typography variant="body1" sx={{ width: '100%', textAlign: 'center' }}>
-            No se encontraron pagos para este mes y año.
-          </Typography>
-        )}
+          ))}
       </Grid>
 
       {openModal && (

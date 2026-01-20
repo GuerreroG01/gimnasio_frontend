@@ -41,9 +41,9 @@ const getUltimoPagoVigente = (clienteId, esEdicion = false) =>
       throw error;
     });
 
-const getTiempoPagoCliente = (clienteId, fechaPago) =>
+const getTiempoPagoCliente = (codigoPago) => //Cambiado
   axiosInstance
-    .get(`${API_URL}/GetFechas_Cliente`, { params: { clienteId, fechaPago } })
+    .get(`${API_URL}/GetFechas_Cliente`, { params: { codigoPago } })
     .then(r => r.data)
     .catch(error => {
       if (error.response?.status === 404)
@@ -51,9 +51,9 @@ const getTiempoPagoCliente = (clienteId, fechaPago) =>
       throw error;
     });
 
-const checkFechaClienteExist = (usuarioId, fechaPago) =>
+const checkFechaClienteExist = (codigoPago) => //Cambiado
   axiosInstance
-    .get(`${API_URL}/CheckPagoClienteExist/${usuarioId}/${fechaPago}`)
+    .get(`${API_URL}/CheckPagoExist/${codigoPago}`)
     .then(r => r.data.exists);
 
 const getUltimoPagoPorCliente = (usuarioId) =>

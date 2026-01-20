@@ -1,7 +1,7 @@
 import React from 'react';
 import { Box, Button, IconButton, Typography, Tooltip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Menu, MenuItem } from '@mui/material';
 import { Link, useLocation, useNavigate, Outlet } from 'react-router-dom';
-import GymLogo from '../../assets/Images/gym-logo.png';
+import GymLogo from '../../assets/Images/logo-gym.avif';
 import { styled } from '@mui/material/styles';
 import SettingsIcon from '@mui/icons-material/Settings';
 import PersonPinCircleIcon from '@mui/icons-material/PersonPinCircle';

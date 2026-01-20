@@ -1,9 +1,9 @@
-import { Divider, InputAdornment, Autocomplete, Grid, Paper, Box, Button, TextField, MenuItem, FormControlLabel, Checkbox, Typography, CircularProgress} from '@mui/material';
+import { Divider, Autocomplete, Grid, Paper, Box, Button, TextField, MenuItem, Typography, CircularProgress} from '@mui/material';
 import dayjs from 'dayjs';
 import { obtenerSimboloMoneda, obtenerMonedaEquivalente } from '../../Utils/MonedaUtils';
 
 const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes, handleInputChange, tiposPago, loadingTiposPago,
-  handleTipoPagoInputChange, handleTipoPagoChange, cambioEquivalente
+  handleTipoPagoInputChange, handleTipoPagoChange, cambioEquivalente, cargarUltimoPago
  }) => {
   if (loading) return <CircularProgress />;
   return (
@@ -43,9 +43,14 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
                   loading={loadingClientes}
                   noOptionsText="No hay resultados"
                   onInputChange={handleInputChange}
-                  onChange={(event, value) =>
-                    formik.setFieldValue("CodigoCliente", value ? value.codigo : "")
-                  }
+                  onChange={(event, value) => {
+                    const codigo = value ? value.codigo : "";
+                    formik.setFieldValue("CodigoCliente", codigo);
+
+                    if (codigo) {
+                      cargarUltimoPago(codigo);
+                    }
+                  }}
                   value={
                     clientes.find((c) => c.codigo === formik.values.CodigoCliente) ||
                     (formik.values.CodigoCliente
@@ -70,14 +75,18 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
                       label="Cliente"
                       error={formik.touched.CodigoCliente && Boolean(formik.errors.CodigoCliente)}
                       helperText={formik.touched.CodigoCliente && formik.errors.CodigoCliente}
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {loadingClientes ? <CircularProgress color="inherit" size={20} /> : null}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
+                      slotProps={{
+                        input: {
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loadingClientes ? (
+                                <CircularProgress color="inherit" size={20} />
+                              ) : null}
+                              {params.InputProps?.endAdornment}
+                            </>
+                          ),
+                        },
                       }}
                     />
                   )}
@@ -89,11 +98,19 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
                     width: { xs: '100%', sm: 250, md: 250 },
                   }}
                   options={tiposPago}
-                  getOptionLabel={(option) => option.descripcion}
                   loading={loadingTiposPago}
-                  onInputChange={handleTipoPagoInputChange}
-                  onChange={handleTipoPagoChange}
                   noOptionsText="No hay resultados"
+                  value={formik.values.TipoPago || null}
+                  isOptionEqualToValue={(option, value) =>
+                    option.codigoPago === value.codigoPago
+                  }
+                  getOptionLabel={(option) => option?.descripcion || ""}
+                  onChange={(event, value) => {
+                    formik.setFieldValue("TipoPago", value);
+                    handleTipoPagoChange(event, value);
+                  }}
+                  onInputChange={handleTipoPagoInputChange}
+
                   renderOption={(props, option) => (
                     <li {...props} key={option.codigoPago}>
                       <div style={{ display: "flex", flexDirection: "column" }}>
@@ -104,18 +121,23 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
                       </div>
                     </li>
                   )}
+
                   renderInput={(params) => (
                     <TextField
-                      {...params}
                       label="Tipo de Pago"
-                      InputProps={{
-                        ...params.InputProps,
-                        endAdornment: (
-                          <>
-                            {loadingTiposPago ? <CircularProgress color="inherit" size={20} /> : null}
-                            {params.InputProps.endAdornment}
-                          </>
-                        ),
+                      {...params}
+                      slotProps={{
+                        input: {
+                          ...params.InputProps,
+                          endAdornment: (
+                            <>
+                              {loadingTiposPago ? (
+                                <CircularProgress color="inherit" size={20} />
+                              ) : null}
+                              {params.InputProps?.endAdornment}
+                            </>
+                          ),
+                        },
                       }}
                     />
                   )}

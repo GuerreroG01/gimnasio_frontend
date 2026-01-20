@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as Yup from 'yup';
 import { useFormik } from 'formik';
 import pagosService from '../../Services/PagoService';
@@ -18,13 +18,13 @@ export default function FormPage({ pagoId, onSuccess }) {
         { value: 'USD', label: 'USD' },
     ];
     const [clientes, setClientes] = React.useState([]);
-    const [loadingClientes, setLoadingClientes] = useState(false);
-    const [tiposPago, setTiposPago] = useState([]);
-    const [loadingTiposPago, setLoadingTiposPago] = useState(false);
-    const [loading, setLoading] = useState(false);
+    const [loadingClientes, setLoadingClientes] = React.useState(false);
+    const [tiposPago, setTiposPago] = React.useState([]);
+    const [loadingTiposPago, setLoadingTiposPago] = React.useState(false);
+    const [loading, setLoading] = React.useState(false);
     let fechaActual = new Date();
     const fechaPago = new Date(fechaActual.getTime() - 6 * 60 * 60 * 1000);
-    const [initialValues, setInitialValues] = useState({
+    const [initialValues, setInitialValues] = React.useState({
         CodigoCliente: clienteId || '',
         MesesPagados: 1,
         FechaPago: fechaPago,
@@ -85,7 +85,11 @@ export default function FormPage({ pagoId, onSuccess }) {
                 let fechaBase = new Date(values.FechaPago);
                 try {
                     const ultimoPago = await pagosService.getUltimoPagoVigente(values.CodigoCliente, !!pagoId);
-                    if (ultimoPago?.fechaVencimiento) fechaBase = new Date(ultimoPago.fechaVencimiento);
+                    if (ultimoPago?.fechaVencimiento && new Date(ultimoPago.fechaVencimiento) > new Date(values.FechaPago)) {
+                        fechaBase = new Date(ultimoPago.fechaVencimiento);
+                    } else {
+                        fechaBase = new Date(values.FechaPago);
+                    }
                 } catch (err) {
                     console.warn('No se pudo obtener último pago vigente', err);
                 }
@@ -110,6 +114,7 @@ export default function FormPage({ pagoId, onSuccess }) {
                 if (tiempoPagoExistente) {
                     await TiempoPagoService.updateByPago(tiempoPagoData.Id, tiempoPagoData);
                 } else {
+                    console.log('Creando nuevo registro de TiempoPago:', tiempoPagoData);
                     await TiempoPagoService.createFecha(tiempoPagoData);
                 }
 
@@ -124,6 +129,7 @@ export default function FormPage({ pagoId, onSuccess }) {
             }
         },
     });
+    const { values, setFieldValue, setValues } = formik;
 
     useEffect(() => {
         if (pagoId) {
@@ -149,33 +155,88 @@ export default function FormPage({ pagoId, onSuccess }) {
     useEffect(() => {
         if (!montoBase) return;
 
-        const montoConvertido = convertirPrecio(montoBase, 'NIO', formik.values.Moneda, tipoCambio);
-        formik.setFieldValue("Monto", montoConvertido);
-    }, [formik, formik.values.Moneda, tipoCambio, montoBase]);
+        const montoConvertido = convertirPrecio(montoBase, 'NIO', values.Moneda, tipoCambio);
+        setFieldValue("Monto", montoConvertido);
+    }, [values.Moneda, tipoCambio, montoBase, setFieldValue]);
 
     useEffect(() => {
-        const efectivo = parseFloat(formik.values.Efectivo) || 0;
-        const monto = parseFloat(formik.values.Monto) || 0;
+        if (!montoBase) return;
 
+        const montoConvertido = convertirPrecio(montoBase, 'NIO', values.Moneda, tipoCambio);
+        if (values.Monto !== montoConvertido) {
+            setFieldValue("Monto", montoConvertido);
+        }
+    }, [values.Moneda, tipoCambio, montoBase, values.Monto, setFieldValue]);
+
+    useEffect(() => {
+        const efectivo = parseFloat(values.Efectivo) || 0;
+        const monto = parseFloat(values.Monto) || 0;
         const cambio = Math.max(0, efectivo - monto);
-        formik.setFieldValue("Cambio", cambio);
 
-        const monedaDestino = obtenerMonedaEquivalente(formik.values.Moneda);
-        const cambioEquivalente = convertirPrecio(cambio, formik.values.Moneda, monedaDestino, tipoCambio);
-        setCambioEquivalente(cambioEquivalente);
-    }, [formik, formik.values.Efectivo, formik.values.Monto, formik.values.Moneda, tipoCambio]);
+        if (values.Cambio !== cambio) {
+            setFieldValue("Cambio", cambio);
+        }
 
+        const monedaDestino = obtenerMonedaEquivalente(values.Moneda);
+        const cambioEq = convertirPrecio(cambio, values.Moneda, monedaDestino, tipoCambio);
+        if (cambioEq !== cambioEquivalente) {
+            setCambioEquivalente(cambioEq);
+        }
+    }, [values.Efectivo, values.Monto, values.Moneda, values.Cambio, tipoCambio, cambioEquivalente, setFieldValue]);
+
+    const cargarUltimoPago = async (codigoCliente) => {
+        try {
+            const existePago = await pagosService.checkFechaClienteExist(codigoCliente);
+            if (!existePago) return;
+            const ultimoPago = await pagosService.getUltimoPagoPorCliente(codigoCliente);
+            if (!ultimoPago) return;
+
+            const tipoPago = await TiposPagoService.obtenerTipoPagoPorPago(
+                ultimoPago.mesesPagados,
+                ultimoPago.intervaloPago,
+                ultimoPago.monto
+            );
+            console.log('Tipo de pago asociado al último pago:', tipoPago);
+
+            const fechaPago = new Date();
+            const intervaloPago = !!ultimoPago.intervaloPago;
+
+            setValues({
+                CodigoCliente: codigoCliente,
+                MesesPagados: ultimoPago.mesesPagados,
+                FechaPago: fechaPago,
+                Moneda: ultimoPago.moneda,
+                Efectivo: 0,
+                Cambio: 0,
+                Monto: ultimoPago.monto,
+                DetallePago: ultimoPago.detallePago,
+                IntervaloPago: intervaloPago,
+                CodigoPago: undefined,
+            });
+
+            setMontoBase(ultimoPago.monto);
+
+            if (tipoPago) {
+                setFieldValue("TipoPago", tipoPago);
+                setTiposPago([tipoPago]);
+            }
+
+        } catch (err) {
+            console.error('Error cargando último pago:', err);
+        }
+    };
+    
     useEffect(() => {
         if (clienteId) {
             ClienteService.getClienteById(clienteId)
                 .then((res) => {
                     const clienteData = res.data;
                     setClientes([clienteData]);
-                    formik.setFieldValue('CodigoCliente', clienteData.codigo);
+                    setFieldValue('CodigoCliente', clienteData.codigo);
                 })
                 .catch(err => console.error(err));
         }
-    }, [formik, clienteId]);
+    }, [clienteId, setFieldValue]);
 
     const autocompleteDelay = 1000;
     const searchTimeout = useRef(null);
@@ -250,6 +311,7 @@ export default function FormPage({ pagoId, onSuccess }) {
             handleTipoPagoInputChange={handleTipoPagoInputChange}
             handleTipoPagoChange={handleTipoPagoChange}
             cambioEquivalente={cambioEquivalente}
+            cargarUltimoPago={cargarUltimoPago}
         />
     );
 }

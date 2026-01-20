@@ -6,6 +6,8 @@ import { useNavigate } from 'react-router-dom';
 import FiltroPagos from './FiltroPagos';
 import PagosCards from './PagosCards';
 import PagosResumen from './PagosResumen';
+import EmptyState from '../../Shared/Components/EmptyState';
+import PaymentIcon from '@mui/icons-material/Payment';
 
 const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months, handleDayChange, handleMonthChange, handleYearChange,
     availableDays, availableMonths, availableYears, loadingSelectors, pagosDayData, loading, error, page, handlePageChange, currentPagos,
@@ -151,7 +153,19 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
                 </Typography>
             )}
 
-            <PagosCards pagos={currentPagos} onPagoDeleted={handlePagoDeleted} />
+            {!loading && !error && currentPagos.length === 0 ? (
+            <Box
+                sx={{ minHeight: '50vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            >
+                <EmptyState
+                    title="No hay pagos encontrados"
+                    message="Sin pagos registrados para esta fecha."
+                    Icon={PaymentIcon}
+                />
+            </Box>
+            ) : (
+                <PagosCards pagos={currentPagos} onPagoDeleted={handlePagoDeleted} />
+            )}
 
             <Box sx={{ display: 'flex', justifyContent: 'center', marginTop: 3 }}>
                 <Pagination
