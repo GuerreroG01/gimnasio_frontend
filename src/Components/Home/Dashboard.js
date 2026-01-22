@@ -11,6 +11,7 @@ import Reloj from "./Reloj";
 //import DashboardResumen from './DashboardResumen';
 import TipoPagoList from "../TipoPago/TipoPagoList";
 import TipoCambioList from "../TipoCambio/TipoCambioList";
+import RutinasList from "../ProgramaFit/RutinasFit/RutinasList";
 
 const Dashboard = () => {
     return (
@@ -59,6 +60,9 @@ const Dashboard = () => {
                         {/* Lista de Tipos de Cambio */}
                         <Paper elevation={3} sx={{ p: 2, maxHeight: 200, width: { xs: "100%", md: 350 }, overflow: "auto" }}>
                             <TipoCambioList />
+                        </Paper>
+                        <Paper elevation={3} sx={{ p: 2, maxHeight: 400, width: { xs: "100%", md: 350 }, overflow: "auto" }}>
+                            <RutinasList />
                         </Paper>
                     </Stack>
                 </Grid>
