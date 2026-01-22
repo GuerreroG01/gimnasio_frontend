@@ -31,6 +31,7 @@ const EjercicioList = ({ programaId }) => {
     const [openConfirm, setOpenConfirm] = useState(false);
     const [selectedEjercicio, setSelectedEjercicio] = useState(null);
     const [videoFile, setVideoFile] = useState(null);
+    const [removeVideo, setRemoveVideo] = useState(false);
 
     const loadEjercicios = useCallback(async (pageNumber = 1) => {
         try {
@@ -86,10 +87,8 @@ const EjercicioList = ({ programaId }) => {
             if (rutina.series < 1 || rutina.repeticiones < 1)
                 throw new Error("Series y repeticiones deben ser mayores a 0");
 
-            if (rutina.id) {
-                console.log("Actualizando ejercicio:", rutina.id, ' datos recibidos par actualizar:', rutina, ' demostracion:', rutina.videoFile);
-                await ProgramaFitService.putRutina(rutina.id, rutina, videoFile);
-                console.log("Ejercicio actualizado:", rutina.id);
+            if (rutina.id){
+                await ProgramaFitService.putRutina(rutina.id, rutina, videoFile, removeVideo);
             } else {
                 const { id, ...rutinaSinId } = rutina;
                 await ProgramaFitService.postRutinas(rutinaSinId, videoFile);
@@ -248,6 +247,7 @@ const EjercicioList = ({ programaId }) => {
                 onSubmit={handleSubmitForm}
                 loading={loading}
                 videoFile={videoFile} setVideoFile={setVideoFile}
+                removeVideo={removeVideo} setRemoveVideo={setRemoveVideo}
             />
         </>
     );

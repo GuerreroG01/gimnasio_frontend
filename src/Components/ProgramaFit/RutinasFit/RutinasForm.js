@@ -5,6 +5,7 @@ import TimerIcon from "@mui/icons-material/Timer";
 import MovieIcon from "@mui/icons-material/Movie";
 import FindReplaceIcon from "@mui/icons-material/FindReplace";
 import CloseIcon from '@mui/icons-material/Close';
+import RemoveIcon from '@mui/icons-material/Remove';
 
 const fieldSx = {
     "& .MuiOutlinedInput-root": {
@@ -20,7 +21,7 @@ const fieldSx = {
     },
 };
 
-const RutinasForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading, videoFile, setVideoFile }) => {
+const RutinasForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading, videoFile, setVideoFile, removeVideo, setRemoveVideo }) => {
     const API_DEMOSTRACIONES = (window._env_ ? window._env_.REACT_APP_VIDEODEMOSTRACION_URL : process.env.REACT_APP_VIDEODEMOSTRACION_URL);
     const demostracion = data.demostracion ? `${API_DEMOSTRACIONES}/${data.demostracion}` : null;
     const isString = typeof demostracion === "string";
@@ -171,48 +172,83 @@ const RutinasForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loadin
 
                         <Grid item xs={12}>
                             <Box display="flex" alignItems="center" gap={1}>
-                                <Tooltip title={videoFile ? "Reemplazar video" : data?.demostracion ? "Reemplazar video" : "Agregar video"}>
-                                    <Box sx={{ position: "relative", width: 40, height: 40 }}>
-                                        {(videoFile || data?.demostracion) ? (
-                                            <FindReplaceIcon
-                                                onClick={() => document.getElementById("video-input").click()}
-                                                sx={{
-                                                    cursor: loading ? "not-allowed" : "pointer",
-                                                    color: loading ? "text.disabled" : "primary.main",
-                                                    fontSize: 40,
-                                                    position: "absolute",
-                                                    top: 0,
-                                                    left: 0,
-                                                }}
-                                            />
-                                        ) : (
-                                            <MovieIcon
-                                                onClick={() => document.getElementById("video-input").click()}
-                                                sx={{
-                                                    cursor: loading ? "not-allowed" : "pointer",
-                                                    color: loading ? "text.disabled" : "primary.main",
-                                                    fontSize: 40,
-                                                    position: "absolute",
-                                                    top: 0,
-                                                    left: 0,
-                                                }}
-                                            />
-                                        )}
+                                <Box display="flex" alignItems="center" gap={1}>
+                                    <Tooltip
+                                        title={
+                                            videoFile
+                                                ? "Reemplazar video"
+                                                : data?.demostracion
+                                                ? "Reemplazar video"
+                                                : "Agregar video"
+                                        }
+                                    >
+                                        <Box sx={{ position: "relative", width: 40, height: 40 }}>
+                                            {(videoFile || (data?.demostracion && !removeVideo)) ? (
+                                                <FindReplaceIcon
+                                                    onClick={() => document.getElementById("video-input").click()}
+                                                    sx={{
+                                                        cursor: loading ? "not-allowed" : "pointer",
+                                                        color: loading ? "text.disabled" : "primary.main",
+                                                        fontSize: 40,
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        left: 0,
+                                                    }}
+                                                />
+                                            ) : (
+                                                <MovieIcon
+                                                    onClick={() => document.getElementById("video-input").click()}
+                                                    sx={{
+                                                        cursor: loading ? "not-allowed" : "pointer",
+                                                        color: loading ? "text.disabled" : "primary.main",
+                                                        fontSize: 40,
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        left: 0,
+                                                    }}
+                                                />
+                                            )}
 
-                                        {loading && (
-                                            <CircularProgress
-                                                size={40}
-                                                sx={{
-                                                    color: "primary.main",
-                                                    position: "absolute",
-                                                    top: 0,
-                                                    left: 0,
-                                                    zIndex: 1,
-                                                }}
-                                            />
-                                        )}
-                                    </Box>
-                                </Tooltip>
+                                            {loading && (
+                                                <CircularProgress
+                                                    size={40}
+                                                    sx={{
+                                                        color: "primary.main",
+                                                        position: "absolute",
+                                                        top: 0,
+                                                        left: 0,
+                                                        zIndex: 1,
+                                                    }}
+                                                />
+                                            )}
+                                        </Box>
+                                    </Tooltip>
+                                    <Typography variant="body2">
+                                        <strong>
+                                            {removeVideo
+                                                ? "Video eliminado"
+                                                : videoFile
+                                                ? videoFile.name
+                                                : data?.demostracion ?? ""}
+                                        </strong>
+                                    </Typography>
+                                    {(videoFile || data?.demostracion) && (
+                                        <IconButton
+                                            size="small"
+                                            color="error"
+                                            disabled={loading}
+                                            onClick={() => {
+                                                setVideoFile(null);
+                                                setRemoveVideo(true);
+
+                                                const input = document.getElementById("video-input");
+                                                if (input) input.value = "";
+                                            }}
+                                        >
+                                            <RemoveIcon fontSize="small" />
+                                        </IconButton>
+                                    )}
+                                </Box>
                                 <input
                                     id="video-input"
                                     type="file"
@@ -221,13 +257,9 @@ const RutinasForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loadin
                                     onChange={(e) => {
                                     const file = e.target.files[0];
                                         setVideoFile(file || null);
+                                        setRemoveVideo(false);
                                     }}
                                 />
-                                <Typography variant="body2">
-                                    <strong>
-                                        {videoFile ? videoFile.name : data?.demostracion ? data.demostracion : ""}
-                                    </strong>
-                                </Typography>
                             </Box>
                             {isString && (
                                 <Box mt={2}>

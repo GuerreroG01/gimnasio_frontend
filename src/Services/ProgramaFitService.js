@@ -91,7 +91,7 @@ const postRutinas = async (rutina, videoFile) => {
     return response.data;
 };
 
-const putRutina = async (id, rutina, videoFile) => {
+const putRutina = async (id, rutina, videoFile, removeVideo) => {
     const formData = new FormData();
     formData.append("Ejercicio", rutina.ejercicio);
     formData.append("Series", rutina.series);
@@ -102,10 +102,10 @@ const putRutina = async (id, rutina, videoFile) => {
         formData.append("ContenidoPlanId", rutina.ContenidoPlanId);
     }
 
-    if (videoFile) {
-        formData.append("video", videoFile);
-    }
+    if (videoFile) formData.append("video", videoFile);
 
+    formData.append("removeVideo", removeVideo ? "true" : "false");
+    console.log("Datos para actualizar rutina:", id, rutina, videoFile, removeVideo);
     const response = await axiosInstance.put(`${API_URL}/rutinas/${id}`, formData, {
         headers: { "Content-Type": "multipart/form-data" },
     });
