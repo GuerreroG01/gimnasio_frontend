@@ -1,5 +1,5 @@
 import { Box, TextField, Button, Stack, Typography, CircularProgress, Popover, Paper, InputAdornment, Grid, Alert,
-  AlertTitle, MenuItem, Select, FormControl, InputLabel } from "@mui/material";
+  AlertTitle, MenuItem, Select, FormControl, InputLabel, useTheme } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import InventoryIcon from "@mui/icons-material/Inventory";
@@ -10,10 +10,10 @@ import IconButton from '@mui/material/IconButton';
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
     borderRadius: 2,
-    backgroundColor: "#fafafa",
+    backgroundColor: theme => theme.palette.background.paper,
     height: 48,
     "&:hover fieldset": {
-      borderColor: "primary.main",
+      borderColor: theme => theme.palette.primary.main,
     },
     "&.Mui-focused fieldset": {
       borderWidth: 2,
@@ -33,6 +33,12 @@ const ProductoForm = ({
   error,
   handleDelete
 }) => {
+  const theme = useTheme();
+  const normalizedCategoria = currentProducto.categoria
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(' ');
+
   return (
     <Popover
       open={open}
@@ -119,10 +125,10 @@ const ProductoForm = ({
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth size="small" disabled={loading}>
+              <FormControl fullWidth size="small" disabled={loading} sx={{ backgroundColor: theme.palette.background.paper }}>
                 <InputLabel>Categoría</InputLabel>
                 <Select
-                  value={currentProducto.categoria}
+                  value={normalizedCategoria}
                   onChange={handleChange}
                   name="categoria"
                   label="Categoría"
@@ -173,7 +179,7 @@ const ProductoForm = ({
             </Grid>
 
             <Grid item xs={6}>
-              <FormControl fullWidth size="small" disabled={loading}>
+              <FormControl fullWidth size="small" disabled={loading} sx={{ backgroundColor: theme.palette.background.paper }}>
                 <InputLabel>Moneda</InputLabel>
                 <Select
                   value={currentProducto.moneda}

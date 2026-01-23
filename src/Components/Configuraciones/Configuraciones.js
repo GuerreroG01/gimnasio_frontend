@@ -5,7 +5,7 @@ import ConfigInactividad from './Inactivos/ConfigInactividad';
 
 const Configuraciones = () => {
     return (
-        <Container maxWidth="lg" sx={{ mt: 4 }}>
+        <Container maxWidth="xl" sx={{ mt: 4 }}>
             <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
                 <Typography 
                     variant="h4" 

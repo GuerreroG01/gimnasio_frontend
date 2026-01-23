@@ -1,11 +1,12 @@
 import { useNavigate } from 'react-router-dom';
-import { Box, CircularProgress, Typography, TextField, Grid, Snackbar, Alert, Fade, ToggleButton } from '@mui/material';
+import { Box, CircularProgress, useTheme, Typography, TextField, Grid, Snackbar, Alert, Fade, ToggleButton } from '@mui/material';
 import CheckIcon from '@mui/icons-material/Check';
 import InfoUsuario from './InfoUsuario';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 
 const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, registrarAsistencia, setRegistrarAsistencia, error, openSnackbar, setOpenSnackbar, loading, cliente, fade }) => {
   const navigate = useNavigate();
+  const theme = useTheme();
   return (
     <Box sx={{ 
       padding: 3, 
@@ -46,7 +47,7 @@ const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, reg
               onKeyDown={handleKeyDown}
               fullWidth={false}
               margin="normal"
-              sx={{ backgroundColor: '#fff', borderRadius: 2, boxShadow: 1 }}
+              sx={{ backgroundColor: theme.palette.background.paper, borderRadius: 2, boxShadow: 1 }}
             />
             <ToggleButton
               value="check"
@@ -76,7 +77,7 @@ const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, reg
         <Grid container spacing={2}>
           {cliente && (
             <Grid item xs={12}>
-              <InfoUsuario cliente={cliente} />
+              <InfoUsuario cliente={cliente} theme={theme} />
             </Grid>
           )}
         </Grid>

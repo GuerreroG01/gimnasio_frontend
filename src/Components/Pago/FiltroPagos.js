@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Box, TextField, FormControlLabel, Grid } from '@mui/material';
+import { Box, TextField, FormControlLabel, Grid, useTheme } from '@mui/material';
 import { styled } from '@mui/material/styles';
 import Switch from '@mui/material/Switch';
 import AccountCircle from '@mui/icons-material/AccountCircle';
@@ -7,7 +7,7 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 const FiltroPagos = ({ nombreCliente, setNombreCliente }) => {
   const [showFilters, setShowFilters] = useState(false);
   const [tempNombreCliente, setTempNombreCliente] = useState(nombreCliente);
-
+  const theme = useTheme();
   useEffect(() => {
     setTempNombreCliente(nombreCliente);
   }, [showFilters, nombreCliente]);
@@ -68,7 +68,7 @@ const FiltroPagos = ({ nombreCliente, setNombreCliente }) => {
       flexDirection="column"
       sx={{
         p: 2,
-        bgcolor: '#f9f9f9',
+        bgcolor: theme.palette.mode === 'dark' ? '#424242' : '#f9f9f9',
         borderRadius: 2,
         boxShadow: 2,
         maxWidth: 400,
@@ -99,7 +99,7 @@ const FiltroPagos = ({ nombreCliente, setNombreCliente }) => {
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                backgroundColor: '#ffffff',
+                backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#f9f9f9',
                 borderRadius: 1,
                 boxShadow: 1,
                 p: 1,
@@ -114,7 +114,7 @@ const FiltroPagos = ({ nombreCliente, setNombreCliente }) => {
                 onChange={handleChange}
                 fullWidth
                 sx={{
-                  backgroundColor: '#f4f4f4',
+                  backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#f9f9f9',
                   borderRadius: 1,
                 }}
               />

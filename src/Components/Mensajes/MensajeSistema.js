@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import mensajeService from '../../Services/MensajeService';
 import configSistemaService from '../../Services/ConfigSistemService';
-import { Typography, Card, CardContent, Container, Box, Skeleton, Alert, IconButton, Popover, Avatar, List, ListItem, ListItemAvatar, ListItemText, Tooltip, CircularProgress } from '@mui/material';
+import { Typography, useTheme, Card, CardContent, Container, Box, Skeleton, Alert, IconButton, Popover, Avatar, List, ListItem, ListItemAvatar, ListItemText, Tooltip, CircularProgress } from '@mui/material';
 import SettingsIcon from '@mui/icons-material/Settings';
 import EventIcon from '@mui/icons-material/Event';
 import VisibilityIcon from '@mui/icons-material/Visibility';
@@ -15,6 +15,7 @@ const MensajeSistema = () => {
     const [anchorEl, setAnchorEl] = useState(null);
     const [usuariosInactivos, setUsuariosInactivos] = useState([]);
     const [loadingInactivos, setLoadingInactivos] = useState(false);
+    const theme = useTheme();
 
     const fetchMessages = async () => {
         setLoading(true);
@@ -100,7 +101,7 @@ const MensajeSistema = () => {
                         key={mensaje.codigo}
                         sx={{
                             marginBottom: 2,
-                            bgcolor: '#e0e0e0',
+                            bgcolor: theme.palette.background.paper,
                             borderLeft: '6px solid #1976d2',
                             boxShadow: 'none',
                             borderRadius: 1,
@@ -118,12 +119,21 @@ const MensajeSistema = () => {
                                 bottom: '10px',
                                 display: 'flex',
                                 alignItems: 'center',
-                                bgcolor: 'rgba(255,255,255,0.9)',
+                                bgcolor: (theme) =>
+                                    theme.palette.mode === 'dark'
+                                        ? theme.palette.background.default
+                                        : theme.palette.background.paper,
                                 borderRadius: 1,
                                 padding: '2px 6px',
-                                boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                                boxShadow: (theme) =>
+                                    theme.palette.mode === 'dark'
+                                        ? '0 1px 4px rgba(255,255,255,0.1)'
+                                        : '0 1px 4px rgba(0,0,0,0.2)',
                                 fontSize: '0.75rem',
-                                color: '#1976d2',
+                                color: (theme) =>
+                                    theme.palette.mode === 'dark'
+                                        ? theme.palette.primary.light
+                                        : theme.palette.primary.main,
                                 fontWeight: '500',
                                 userSelect: 'none',
                             }}
@@ -137,7 +147,7 @@ const MensajeSistema = () => {
                             <Tooltip title="Información detallada de clientes inactivos" arrow>
                                 <span>
                                     <IconButton
-                                    size="large"
+                                    size="medium"
                                     disabled={loadingInactivos}
                                     onClick={(e) => handleOpenInactivos(e, mensaje.codigo)}
                                     sx={{ position: 'relative' }}

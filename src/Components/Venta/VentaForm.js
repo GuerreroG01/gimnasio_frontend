@@ -1,4 +1,4 @@
-import { Container, Grid, Box, Divider, Snackbar, TextField, Typography, InputAdornment, IconButton, CircularProgress } from '@mui/material';
+import { Container, Grid, Box, Divider, Snackbar, useTheme, alpha, TextField, Typography, InputAdornment, IconButton, CircularProgress } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ProductoCard from './ProductoCard';
 import DatosVenta from './DatosVenta';
@@ -9,6 +9,7 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
   handleCompletarVenta, totalPages, page, setPage, itemsPerPage, monedaTotal, setMonedaTotal, simboloMoneda, totalMostrado, mostrarFactura,
   productosPaginados, isLoading, loadingFind, existencias, handleCantidadChangeLocal, efectivo, setEfectivo, cambio, cambioEquivalente, simboloCambioEquivalente, 
   monedaCambioEquivalente, totalEquivalente, simboloTotalEquivalente, monedaTotalEquivalente }) => {
+  const theme = useTheme();
 
   if (mostrarPago) {
     return (
@@ -28,6 +29,7 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
         simboloTotalEquivalente={simboloTotalEquivalente}
         monedaTotalEquivalente={monedaTotalEquivalente}
         handleGuardarVenta={handleGuardarVenta}
+        theme={theme}
       />
     );
   }
@@ -45,7 +47,7 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
           <Box
             sx={{
               padding: 3,
-              backgroundColor: '#f4f4f4',
+              backgroundColor: theme => theme.palette.background.paper,
               borderRadius: '8px',
               boxShadow: 3,
               marginTop: 4,
@@ -55,7 +57,7 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
             <Typography
               variant="h6"
               align="center"
-              sx={{ marginBottom: 3, fontWeight: 'bold' }}
+              sx={{ marginBottom: 3, fontWeight: 'bold', color: (theme) => theme.palette.text.primary }}
             >
               {editMode ? 'Editar venta' : 'Seleccione productos'}
             </Typography>
@@ -98,6 +100,7 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
                     isSelected={productosSeleccionados.some(
                       (p) => p.producto.codigoProducto === producto.codigoProducto
                     )}
+                    theme={theme}
                   />
                 </Grid>
               ))}
@@ -127,6 +130,7 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
             isLoading={isLoading}
             existencias={existencias}
             handleCantidadChangeLocal={handleCantidadChangeLocal}
+            theme={theme} alpha={alpha}
           />
         </Grid>
       </Grid>

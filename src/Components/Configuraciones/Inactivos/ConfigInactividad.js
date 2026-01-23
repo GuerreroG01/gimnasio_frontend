@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import {
   Box, Container, Typography, Paper, TextField,
   Checkbox, CircularProgress, Alert, Stack, Divider,
-  MenuItem
+  MenuItem, useTheme
 } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import ConfigSistemService from '../../../Services/ConfigSistemService';
@@ -12,6 +12,7 @@ const ConfigInactividad = () => {
   const [loading, setLoading] = React.useState(true);
   const [mensaje, setMensaje] = React.useState(null);
   const [cambiosPendientes, setCambiosPendientes] = React.useState(false);
+  const theme = useTheme();
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -113,10 +114,16 @@ const ConfigInactividad = () => {
                     flexDirection: { xs: 'column', md: 'row' },
                     alignItems: { md: 'center' },
                     justifyContent: 'space-between',
-                    border: '1px solid #e0e0e0',
+                    border: (theme) =>
+                      `1px solid ${
+                      theme.palette.mode === 'dark' ? theme.palette.divider : '#e0e0e0'
+                    }`,
                     borderRadius: 2,
                     p: 2,
-                    backgroundColor: estaInactivo ? '#f0f0f0' : '#ffffff',
+                    backgroundColor: (theme) =>
+                      estaInactivo
+                        ? theme.palette.action.disabledBackground
+                        : theme.palette.background.paper,
                     opacity: estaInactivo ? 0.6 : 1,
                     transition: 'background-color 0.3s, opacity 0.3s',
                   }}
@@ -143,7 +150,7 @@ const ConfigInactividad = () => {
                             width: '100px',
                             '& .MuiFilledInput-root': {
                               borderRadius: 2,
-                              backgroundColor: '#f5f5f5',
+                              backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#f5f5f5',
                             },
                           }}
                         >

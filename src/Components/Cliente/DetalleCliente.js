@@ -1,11 +1,11 @@
 import {
-  Box, Typography, Button, Card, CardContent, CardMedia, Grid, Divider
+  Box, Typography, Button, Card, CardContent, CardMedia, Grid, useTheme, Divider
 } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import './DetalleCliente.css';
 
 const DetalleCliente = ({ imageUrl, cliente, id, navigate, telefonoMostrar, estadoCliente, formatDate, handleAddFecha, formatMonthYear, calculateProgress, getColorBasedOnDate }) => {
-  console.log('DetalleCliente renderizado con cliente:', cliente);
+  const theme = useTheme();
   return (
     <Box sx={{ padding: 1 }}>
       <Typography variant="h4" gutterBottom>
@@ -43,7 +43,7 @@ const DetalleCliente = ({ imageUrl, cliente, id, navigate, telefonoMostrar, esta
         </CardContent>
       </Card>
 
-      <Typography variant="h6" gutterBottom>
+      <Typography variant="h6" gutterBottom sx={{ color: (theme) => theme.palette.text.primary }}>
         Pagos Asociados
       </Typography>
       <Box display="flex" gap={2} mb={2}>
@@ -88,8 +88,13 @@ const DetalleCliente = ({ imageUrl, cliente, id, navigate, telefonoMostrar, esta
                   className="linearProgressFill"
                   style={{
                     height: `${calculateProgress(fecha.fechaPago, fecha.fechaVencimiento)}%`,
-                    backgroundColor: getColorBasedOnDate(fecha.fechaPago, fecha.fechaVencimiento),
+                    backgroundColor: getColorBasedOnDate(
+                      fecha.fechaPago,
+                      fecha.fechaVencimiento,
+                      theme
+                    ),
                   }}
+
                 />
               </Card>
             </Grid>

@@ -1,11 +1,10 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Card, CardContent, TextField, Box, IconButton, Typography } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
 import CloseIcon from '@mui/icons-material/Close'; 
 
 const CardMensaje = ({ onSendMessage, mensajeEditado, onUpdateMessage, onClose  }) => {
-    const [texto, setTexto] = useState(mensajeEditado ? mensajeEditado.texto : '');
-
+    const [texto, setTexto] = React.useState(mensajeEditado ? mensajeEditado.texto : '');
     const handleTextoChange = (e) => {
         setTexto(e.target.value);
     };

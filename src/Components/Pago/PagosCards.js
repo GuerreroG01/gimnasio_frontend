@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Divider, Card, CardContent, Typography, Grid, IconButton, Dialog, DialogActions, DialogContent, Button } from '@mui/material';
+import { Box, Divider, useTheme, Card, CardContent, Typography, Grid, IconButton, Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import { keyframes } from '@mui/system';
 import {/* Edit as EditIcon,*/ Delete as DeleteIcon } from '@mui/icons-material';
 //import { useNavigate } from 'react-router-dom';
@@ -25,7 +25,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [infopago, setinfopago] = useState(null);
   //const navigate = useNavigate();
-
+  const theme = useTheme();
 
   const handleOpenModal = (pago) => {
     console.log("Datos del pago seleccionado:", pago);
@@ -116,7 +116,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
                 }}
                 onClick={() => handleOpenModal(pago)}
               >
-                <CardContent sx={{ position: 'relative', padding: 3, backgroundColor: '#fefefe' }}>
+                <CardContent sx={{ position: 'relative', padding: 3, backgroundColor: theme.palette.mode === 'dark' ? '#232222' : '#f9f9f9' }}>
                   <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#1976d2', marginBottom: 1 }}>
                     No. Pago: {pago.codigoPago}
                   </Typography>

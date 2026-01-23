@@ -8,10 +8,10 @@ import PaymentsIcon from "@mui/icons-material/Payments";
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
     borderRadius: 2,
-    backgroundColor: "#fafafa",
+    backgroundColor: theme => theme.palette.background.paper,
     height: 48,
     "&:hover fieldset": {
-      borderColor: "primary.main",
+      borderColor: theme => theme.palette.primary.main,
     },
     "&.Mui-focused fieldset": {
       borderWidth: 2,
@@ -111,7 +111,6 @@ const TipoPagoForm = ({
                 sx={fieldSx}
                 slotProps={{
                   htmlInput: {
-                    min: 0,
                     step: 10,
                   },
                   input: {
@@ -167,9 +166,6 @@ const TipoPagoForm = ({
                 disabled={loading}
                 sx={fieldSx}
                 slotProps={{
-                  htmlInput: {
-                    min: 1,
-                  },
                   input: {
                     startAdornment: (
                       <InputAdornment position="start">

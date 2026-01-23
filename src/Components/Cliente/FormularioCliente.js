@@ -1,6 +1,6 @@
 import {
   TextField, Checkbox, FormControlLabel, Button, Box, Typography,
-  Alert, AlertTitle, CircularProgress, Grid, Paper
+  Alert, AlertTitle, CircularProgress, Grid, Paper, useTheme
 } from '@mui/material';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 
@@ -10,7 +10,7 @@ const FormularioCliente = ({
   handleChange, handleFileChange, handleSubmitCreate,
   handleSubmitUpdate, handleTelefonoChange, navigate
 }) => {
-
+  const theme = useTheme();
   return (
     <Paper
       elevation={4}
@@ -19,7 +19,7 @@ const FormularioCliente = ({
         margin: 'auto',
         padding: 4,
         borderRadius: 3,
-        backgroundColor: '#fff'
+        backgroundColor: theme.palette.background.paper
       }}
     >
       <Box

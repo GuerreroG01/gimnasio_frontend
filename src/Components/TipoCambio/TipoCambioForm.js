@@ -1,14 +1,14 @@
-import { Box, TextField, Button, Stack, Typography, CircularProgress, Popover, Paper, InputAdornment, Grid } from "@mui/material";
+import { Box, TextField, Button, Stack, Typography, CircularProgress, Popover, Paper, useTheme, InputAdornment, Grid } from "@mui/material";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import TodayIcon from "@mui/icons-material/Today";
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
     borderRadius: 2,
-    backgroundColor: "#fafafa",
+    backgroundColor: theme => theme.palette.background.paper,
     height: 48,
     "&:hover fieldset": {
-      borderColor: "primary.main",
+      borderColor: theme => theme.palette.primary.main,
     },
     "&.Mui-focused fieldset": {
       borderWidth: 2,
@@ -17,6 +17,7 @@ const fieldSx = {
 };
 
 const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading }) => {
+    const theme = useTheme();
     return (
         <Popover
             open={open}
@@ -87,7 +88,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
                             <AttachMoneyIcon fontSize="small" />
                             </InputAdornment>
                         ),
-                        inputProps: { min: 0, step: 0.000001 },
+                        inputProps: { min: 0.000001 },
                         }}
                     />
                     </Grid>

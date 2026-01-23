@@ -1,10 +1,11 @@
-import { Divider, Autocomplete, Grid, Paper, Box, Button, TextField, MenuItem, Typography, CircularProgress} from '@mui/material';
+import { Divider, useTheme, Autocomplete, Grid, Paper, Box, Button, TextField, MenuItem, Typography, CircularProgress} from '@mui/material';
 import dayjs from 'dayjs';
 import { obtenerSimboloMoneda, obtenerMonedaEquivalente } from '../../Utils/MonedaUtils';
 
 const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes, handleInputChange, tiposPago, loadingTiposPago,
   handleTipoPagoInputChange, handleTipoPagoChange, cambioEquivalente, cargarUltimoPago
  }) => {
+  const theme = useTheme();
   if (loading) return <CircularProgress />;
   return (
     <Paper
@@ -14,7 +15,7 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
         margin: 'auto',
         padding: 4,
         borderRadius: 3,
-        backgroundColor: '#fff',
+        backgroundColor: theme.palette.background.paper,
       }}
     >
       <Typography variant="h5" gutterBottom fontWeight="bold">
@@ -183,10 +184,9 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
             flexItem
             sx={{
               display: { xs: 'none', sm: 'block' },
-              borderColor: 'grey.300',
+              borderColor: (theme) => theme.palette.divider,
               mx: 2,
             }}
-
           />
           {/* COLUMNA DERECHA */}
           <Box sx={{ width: { xs: '100%', sm: '50%' } }}>

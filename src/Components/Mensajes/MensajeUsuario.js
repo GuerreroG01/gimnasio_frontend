@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import mensajeService from '../../Services/MensajeService';
-import { Button, IconButton, Tooltip, Alert, Typography, Card, CardContent, Container, Box, Skeleton, } from '@mui/material';
+import { Button, IconButton, Tooltip, Alert, Typography, Card, CardContent, useTheme, Container, Box, Skeleton, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventIcon from '@mui/icons-material/Event';
@@ -28,6 +28,7 @@ const MensajeUsuario = () => {
     .reverse()
     .join('-');
   const { usuario } = React.useContext(AuthContext);
+  const theme = useTheme();
 
   const fetchMessages = async () => {
     setLoading(true);
@@ -211,12 +212,21 @@ const MensajeUsuario = () => {
                           right: 12,
                           display: 'flex',
                           alignItems: 'center',
-                          bgcolor: 'rgba(255,255,255,0.9)',
+                          bgcolor: (theme) =>
+                            theme.palette.mode === 'dark'
+                              ? theme.palette.background.default
+                              : theme.palette.background.paper,
                           borderRadius: 1,
                           padding: '2px 6px',
-                          boxShadow: '0 1px 4px rgba(0,0,0,0.2)',
+                          boxShadow: (theme) =>
+                            theme.palette.mode === 'dark'
+                              ? '0 1px 4px rgba(255,255,255,0.1)'
+                              : '0 1px 4px rgba(0,0,0,0.2)',
                           fontSize: '0.75rem',
-                          color: 'primary.main',
+                          color: (theme) =>
+                            theme.palette.mode === 'dark'
+                              ? theme.palette.primary.light
+                              : theme.palette.primary.main,
                           fontWeight: 500,
                           userSelect: 'none',
                           zIndex: 1,

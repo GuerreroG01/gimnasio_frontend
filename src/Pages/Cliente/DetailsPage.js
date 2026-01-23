@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
+import { useTheme, alpha } from '@mui/material/styles';
 import ClienteService from '../../Services/ClienteService';
 import TiempoPagoService from '../../Services/TiempoPagoService';
 import DetalleCliente from "../../Components/Cliente/DetalleCliente";
@@ -12,7 +13,7 @@ export default function DetailsPage(){
     const { id } = useParams();
     const navigate = useNavigate();
     const [cliente, setCliente] = useState(null);
-
+    const theme = useTheme();
     useEffect(() => {
     const fetchData = async () => {
         try {
@@ -62,14 +63,20 @@ export default function DetailsPage(){
         return Math.max(0, Math.min(100, (elapsedTime / totalTime) * 100));
     };
 
-    const getColorBasedOnDate = (fechaPago, fechaVencimiento) => {
+    const getColorBasedOnDate = (fechaPago, fechaVencimiento, theme) => {
         const now = new Date();
         const vencimiento = new Date(fechaVencimiento);
 
-        if (now >= vencimiento) {
-            return 'rgba(255, 99, 71, 0.7)';
+        const isExpired = now >= vencimiento;
+
+        if (isExpired) {
+            return theme.palette.mode === 'dark'
+            ? alpha(theme.palette.error.light, 0.7)
+            : alpha(theme.palette.error.main, 0.7);
         } else {
-            return 'rgba(144, 238, 144, 0.7)';
+            return theme.palette.mode === 'dark'
+            ? alpha(theme.palette.success.light, 0.7)
+            : alpha(theme.palette.success.main, 0.7);
         }
     };
 

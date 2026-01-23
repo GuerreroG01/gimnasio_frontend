@@ -1,8 +1,8 @@
 import CloseIcon from '@mui/icons-material/Close';
-import React from 'react';
-import { Modal, Box, Typography, IconButton } from '@mui/material';
+import { Modal, Box, Typography, useTheme, IconButton } from '@mui/material';
 
 const DetailsPago = ({ open, onClose, pago, infopago }) => {
+  const theme = useTheme();
   if (!infopago) return <Typography>Cargando información...</Typography>;
 
   const clienteNombre = pago.cliente ? pago.cliente.nombreCompleto : 'Cliente no encontrado';
@@ -26,7 +26,7 @@ const DetailsPago = ({ open, onClose, pago, infopago }) => {
     >
       <Box 
         sx={{
-          backgroundColor: 'white',
+          backgroundColor: theme.palette.background.paper,
           padding: 4,
           borderRadius: 3,
           boxShadow: 10,

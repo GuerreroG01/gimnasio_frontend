@@ -7,3 +7,15 @@
 .scroll-hide::-webkit-scrollbar {
   display: none; /* Chrome, Safari y Opera */
 }
+
+/* Chrome, Edge, Safari */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox (y estándar) */
+input[type="number"] {
+  appearance: textfield;
+}

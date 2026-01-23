@@ -1,10 +1,10 @@
-import { Badge } from '@mui/material';
+import { Badge, useTheme } from '@mui/material';
 import MailOutlineIcon from '@mui/icons-material/MailOutline';
 import { useMensajes } from '../../Context/MensajeContext';
 
 const MensajeBadge = ({ color = 'success', iconSize = 26 }) => {
   const { noLeidos } = useMensajes();
-
+  const theme = useTheme();
   // 🔹 total de mensajes no leídos (usuarios + sistema)
   const total = noLeidos.usuarios + noLeidos.sistema;
 
@@ -18,10 +18,10 @@ const MensajeBadge = ({ color = 'success', iconSize = 26 }) => {
       <MailOutlineIcon
         sx={{
           fontSize: iconSize,
-          color: total > 0 ? '#28A745' : '#555',
+          color: total > 0 ? theme.palette.success.main : theme.palette.text.secondary,
           cursor: 'pointer',
           '&:hover': {
-            color: '#28A745',
+            color: theme.palette.success.main,
           },
         }}
       />

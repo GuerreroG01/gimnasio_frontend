@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Box, Chip, Avatar, TextField, Tooltip, Grid, IconButton } from '@mui/material';
+import { Box, useTheme, Chip, Avatar, TextField, Tooltip, Grid, IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
@@ -10,6 +10,7 @@ const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setA
   const [tempApellidoCliente, setTempApellidoCliente] = React.useState(apellidoCliente);
   const [filteredName, setFilteredName] = React.useState('');
   const [filteredLastName, setFilteredLastName] = React.useState('');
+  const theme = useTheme();
   useEffect(() => {
     setTempNombreCliente(nombreCliente);
     setTempApellidoCliente(apellidoCliente);
@@ -108,7 +109,7 @@ const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setA
                 <Box sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: '#f9f9f9',
+                  backgroundColor: theme.palette.background.paper,
                   borderRadius: 1,
                   p: 0.5,
                   boxShadow: 1,
@@ -123,7 +124,7 @@ const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setA
                     value={tempNombreCliente}
                     onChange={handleChange}
                     fullWidth
-                    sx={{ backgroundColor: '#ffffff', borderRadius: 1 }}
+                    sx={{ backgroundColor: theme.palette.background.default, borderRadius: 1 }}
                   />
                   <IconButton onClick={handleBuscar}>
                     <SearchIcon />
@@ -136,9 +137,8 @@ const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setA
                       avatar={<Avatar>{filteredName.charAt(0).toUpperCase()}</Avatar>}
                       label={filteredName}
                       onDelete={() => handleClearFilter('nombre')}
-                      deleteIcon={<CloseIcon />}
-                      color="success"
-                      sx={{ fontSize: '0.875rem', borderRadius: 2 }}
+                      deleteIcon={<CloseIcon sx={{ color: theme.palette.error.main }} />}
+                      sx={{ fontSize: '0.875rem', borderRadius: 2, color: theme.palette.text.primary }}
                     />
                   </Box>
                 )}
@@ -148,7 +148,7 @@ const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setA
                 <Box sx={{
                   display: 'flex',
                   alignItems: 'center',
-                  backgroundColor: '#f9f9f9',
+                  backgroundColor: theme.palette.background.paper,
                   borderRadius: 1,
                   p: 0.5,
                   boxShadow: 1,
@@ -163,7 +163,7 @@ const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setA
                     value={tempApellidoCliente}
                     onChange={handleChange}
                     fullWidth
-                    sx={{ backgroundColor: '#ffffff', borderRadius: 1 }}
+                    sx={{ backgroundColor: theme.palette.background.default, borderRadius: 1 }}
                   />
                   <IconButton onClick={handleBuscar}>
                     <SearchIcon />
@@ -176,9 +176,8 @@ const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setA
                       avatar={<Avatar>{filteredLastName.charAt(0).toUpperCase()}</Avatar>}
                       label={filteredLastName}
                       onDelete={() => handleClearFilter('apellido')}
-                      deleteIcon={<CloseIcon />}
-                      color="success"
-                      sx={{ fontSize: '0.875rem', borderRadius: 2 }}
+                      deleteIcon={<CloseIcon sx={{ color: theme.palette.error.main }} />}
+                      sx={{ fontSize: '0.875rem', borderRadius: 2, color: theme.palette.text.primary }}
                     />
                   </Box>
                 )}

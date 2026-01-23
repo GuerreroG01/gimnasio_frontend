@@ -3,7 +3,7 @@ import {
   Typography, Grid, Dialog, DialogActions, DialogContent,
   DialogTitle, Button, Container, Box,
   Alert, AlertTitle, SpeedDial, SpeedDialIcon, SpeedDialAction,
-  FormControl, InputLabel, Select, MenuItem, Pagination
+  FormControl, InputLabel, Select, MenuItem, Pagination, useTheme
 } from '@mui/material';
 
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
@@ -23,6 +23,7 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
   const itemsPerPage = 8;
+  const theme = useTheme();
 
   const actions = [
     { icon: <AddIcon />, name: 'Nuevo Producto', onClick: (e) => handleOpenNew(e) },
@@ -61,10 +62,10 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
             },
             "& .MuiOutlinedInput-root": {
               borderRadius: 2.5,
-              backgroundColor: "#f9f9f9",
+              backgroundColor: theme.palette.background.paper,
               height: 48,
               "& fieldset": {
-                borderColor: "#ccc",
+                borderColor: theme.palette.divider,
               },
               "&:hover fieldset": {
                 borderColor: "#3f51b5",

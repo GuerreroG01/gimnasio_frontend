@@ -1,5 +1,5 @@
 import {
-    Box, Typography, MenuItem, Select, InputLabel, FormControl, CircularProgress, Pagination, IconButton, Grid
+    Box, Typography, MenuItem, Select, InputLabel, FormControl, CircularProgress, Pagination, IconButton, Grid, useTheme
 } from '@mui/material';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 import { useNavigate } from 'react-router-dom';
@@ -13,7 +13,7 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
     availableDays, availableMonths, availableYears, loadingSelectors, pagosDayData, loading, error, page, handlePageChange, currentPagos,
     handlePagoDeleted, filteredPagos }) => {
     const navigate = useNavigate();
-
+    const theme = useTheme();
     return (
         <Box sx={{ width: '90%', margin: 'auto' }}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
@@ -129,9 +129,9 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
                         onClick={() => navigate('/pagos/form')}
                         sx={{
                             fontSize: 30,
-                            backgroundColor: '#1976d2',
-                            color: 'white',
-                            '&:hover': { backgroundColor: '#1565c0' },
+                            backgroundColor: theme.palette.primary.main,
+                            color: theme.palette.primary.contrastText,
+                            '&:hover': { backgroundColor: theme.palette.primary.dark },
                             padding: 1,
                             alignSelf: { xs: 'flex-end', sm: 'center' }
                         }}

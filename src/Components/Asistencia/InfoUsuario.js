@@ -9,7 +9,7 @@ import alertaAudio from '../../assets/Audio/alarma.wav';
 import vigenteAudio from '../../assets/Audio/Vigente.mp3';
 import { obtenerSimboloMoneda } from '../../Utils/MonedaUtils';
 
-const InfoUsuario = ({ cliente }) => {
+const InfoUsuario = ({ cliente, theme }) => {
   const calcularDiasRestantes = useCallback((fechaVencimiento) => {
     const fechaActual = new Date();
     const vencimiento = new Date(fechaVencimiento);
@@ -122,7 +122,7 @@ const InfoUsuario = ({ cliente }) => {
                 padding: 3, 
                 borderRadius: 2, 
                 boxShadow: 3, 
-                backgroundColor: '#fff',
+                backgroundColor: theme.palette.background.paper,
                 transition: 'all 0.3s ease',
                 '&:hover': { boxShadow: 6 }
               }}
@@ -153,7 +153,7 @@ const InfoUsuario = ({ cliente }) => {
                 padding: 3, 
                 borderRadius: 2, 
                 boxShadow: 3, 
-                backgroundColor: '#fff',
+                backgroundColor: theme.palette.background.card,
                 transition: 'all 0.3s ease', 
                 '&:hover': { boxShadow: 6 }
               }}
@@ -168,7 +168,7 @@ const InfoUsuario = ({ cliente }) => {
                       padding: 2, 
                       borderRadius: 2, 
                       boxShadow: 2, 
-                      backgroundColor: '#f5f5f5',
+                      backgroundColor: theme.palette.background.card,
                       transition: 'all 0.3s ease', 
                       '&:hover': { boxShadow: 4 } 
                     }}
@@ -188,7 +188,7 @@ const InfoUsuario = ({ cliente }) => {
                       padding: 2, 
                       borderRadius: 2, 
                       boxShadow: 2, 
-                      backgroundColor: '#f5f5f5',
+                      backgroundColor: theme.palette.background.card,
                       transition: 'all 0.3s ease', 
                       '&:hover': { boxShadow: 4 } 
                     }}
@@ -209,7 +209,7 @@ const InfoUsuario = ({ cliente }) => {
                         padding: 2, 
                         borderRadius: 2, 
                         boxShadow: 2, 
-                        backgroundColor: '#f5f5f5',
+                        backgroundColor: theme.palette.background.card,
                         transition: 'all 0.3s ease', 
                         '&:hover': { boxShadow: 4 } 
                       }}
@@ -234,7 +234,7 @@ const InfoUsuario = ({ cliente }) => {
                           padding: 2, 
                           borderRadius: 2, 
                           boxShadow: 2, 
-                          backgroundColor: '#f5f5f5',
+                          backgroundColor: theme.palette.background.card,
                           transition: 'all 0.3s ease', 
                           '&:hover': { boxShadow: 4 } 
                         }}
@@ -255,7 +255,7 @@ const InfoUsuario = ({ cliente }) => {
                       padding: 2, 
                       borderRadius: 2, 
                       boxShadow: 2, 
-                      backgroundColor: '#f5f5f5',
+                      backgroundColor: theme.palette.background.card,
                       transition: 'all 0.3s ease', 
                       '&:hover': { boxShadow: 4 } 
                     }}
@@ -275,7 +275,7 @@ const InfoUsuario = ({ cliente }) => {
                       padding: 1,
                       borderRadius: 2, 
                       boxShadow: 2, 
-                      backgroundColor: '#f5f5f5', 
+                      backgroundColor: theme.palette.background.card, 
                       position: 'relative', 
                       width: '100%',
                       minWidth: cliente.ultimoTiempoPago ? 160 : 200,

@@ -1,4 +1,4 @@
-import { Container, Box, Typography, IconButton, Tooltip, Modal, Button, Alert, Pagination, Stack } from '@mui/material';
+import { Container, useTheme, Box, Typography, IconButton, Tooltip, Modal, Button, Alert, Pagination, Stack } from '@mui/material';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import FiltroClientes from './FiltroClientes';
 import TableClientes from './TableClientes';
@@ -6,42 +6,34 @@ import './Style.css';
 import CircularProgress from '@mui/material/CircularProgress';
 
 const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCliente, setApellidoCliente, showFilters, setShowFilters, letrasDisponibles, letraSeleccionada, setLetraSeleccionada, loadingFilter, setLoadingFilter, handleCreateNew,
-    clienteFiltrados, loading, page, rowsPerPage, handleEdit, handleDeleteOpen, handleDeleteConfirm, handleViewDetails, mostrarPaginacion, handleChangePage, modalOpen, setModalOpen
+    clienteFiltrados, loading, page, rowsPerPage, handleEdit, handleDeleteOpen, handleDeleteConfirm, handleViewDetails, mostrarPaginacion, handleChangePage, modalOpen, setModalOpen, showLetras
 }) => {
-
+  const theme = useTheme();
   return (
-    <Container>
+    <Container maxWidth="xl" sx={{backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
       {alerta.mensaje && (
         <Alert severity={alerta.tipo} onClose={() => setAlerta({ mensaje: '', tipo: '' })} sx={{ marginBottom: 2 }}>
           {alerta.mensaje}
         </Alert>
       )}
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} sx={{ mt: 2 }}>
-  {/* Contenedor del título + filtros */}
-  <Box display="flex" alignItems="center" gap={2}>
-    <Typography variant="h4" sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-      Clientes
-    </Typography>
+      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+        {/* Contenedor del título + filtros */}
+        <Box display="flex" alignItems="center" gap={1}>
+          <Typography variant="h4" sx={{ fontWeight: 'bold', color: theme.palette.primary.main }}>
+            Clientes
+          </Typography>
 
-    <FiltroClientes
-      nombreCliente={nombreCliente}
-      setNombreCliente={setNombreCliente}
-      apellidoCliente={apellidoCliente}
-      setApellidoCliente={setApellidoCliente}
-      showFilters={showFilters}
-      setShowFilters={setShowFilters}
-      setLoadingFilter={setLoadingFilter}
-    />
-  </Box>
-
-  {/* Botón nuevo cliente */}
-  <Tooltip title="Nuevo Usuario">
-    <IconButton color="primary" onClick={handleCreateNew}>
-      <PersonAddAltOutlinedIcon />
-    </IconButton>
-  </Tooltip>
-</Box>
-      {!showFilters && (
+          <FiltroClientes
+            nombreCliente={nombreCliente}
+            setNombreCliente={setNombreCliente}
+            apellidoCliente={apellidoCliente}
+            setApellidoCliente={setApellidoCliente}
+            showFilters={showFilters}
+            setShowFilters={setShowFilters}
+            setLoadingFilter={setLoadingFilter}
+          />
+        </Box>
+        {showLetras && (
         <Box
           display="flex"
           flexWrap="wrap"
@@ -51,43 +43,50 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
         >
           {letrasDisponibles.map((letra) => (
             <Box
-            key={letra.primeraLetra}
-            sx={{
-              position: 'relative',
-              width: '30px',
-              height: '30px',
-              borderRadius: '50%',
-              backgroundColor: '#1976d2',
-              display: 'flex',
-              justifyContent: 'center',
-              alignItems: 'center',
-              cursor: 'pointer',
-              transition: 'all 0.3s ease',
-              transform: letraSeleccionada === letra.primeraLetra ? 'scale(1.2)' : 'scale(1)',
-              '&:hover': {
-                transform: 'scale(1.2)',
-              },
-            }}
-            onClick={() => setLetraSeleccionada(letra.primeraLetra)}
-          >
-            <Typography
-              className={letraSeleccionada === letra.primeraLetra ? 'letra blinking' : ''} 
-              variant="caption"
+              key={letra.primeraLetra}
               sx={{
-                position: 'absolute',
-                opacity: letraSeleccionada === letra.primeraLetra ? 1 : 1,
-                color: 'white',
-                fontSize: '14px',
-                fontWeight: 'bold',
-                transition: 'opacity 0.3s ease',
+                position: 'relative',
+                width: '30px',
+                height: '30px',
+                borderRadius: '50%',
+                backgroundColor: '#1976d2',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                transform: letraSeleccionada === letra.primeraLetra ? 'scale(1.2)' : 'scale(1)',
+                '&:hover': {
+                  transform: 'scale(1.2)',
+                },
               }}
+              onClick={() => setLetraSeleccionada(letra.primeraLetra)}
             >
-              {letra.primeraLetra}
-            </Typography>
-          </Box>                                  
+              <Typography
+                className={letraSeleccionada === letra.primeraLetra ? 'letra blinking' : ''} 
+                variant="caption"
+                sx={{
+                  position: 'absolute',
+                  opacity: letraSeleccionada === letra.primeraLetra ? 1 : 1,
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
+                  transition: 'opacity 0.3s ease',
+                }}
+              >
+                {letra.primeraLetra}
+              </Typography>
+            </Box>                                  
           ))}
         </Box>
       )}
+        {/* Botón nuevo cliente */}
+        <Tooltip title="Nuevo Usuario">
+          <IconButton color="primary" onClick={handleCreateNew}>
+            <PersonAddAltOutlinedIcon />
+          </IconButton>
+        </Tooltip>
+      </Box>
       {loadingFilter ? (
         <Box display="flex" justifyContent="center" mt={2}>
           <CircularProgress />
@@ -130,17 +129,17 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
                   borderRadius: '8px',
                   fontSize: '14px',
                   backgroundColor: 'transparent',
-                  border: '2px solid #1976d2',
+                  border: `2px solid ${theme.palette.primary.main}`,
                   transition: 'transform 0.3s ease',
                   '&:hover': {
                     transform: 'scale(1.1)',
-                    backgroundColor: '#e3f2fd',
+                    backgroundColor: theme.palette.action.hover,
                   },
                 },
                 '& .MuiPaginationItem-root.Mui-selected': {
-                  backgroundColor: '#1976d2',
+                  backgroundColor: theme.palette.primary.main,
                   color: 'white',
-                  border: '2px solid #1976d2',
+                  border: `2px solid ${theme.palette.primary.main}`,
                   transform: 'scale(1.1)',
                 },
               }}
@@ -149,8 +148,8 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
         </Box>
       )}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <Box sx={{ p: 2, backgroundColor: 'white', borderRadius: 2, boxShadow: 3, width: '300px', margin: 'auto', marginTop: '20%' }}>
-          <Typography variant="h6" gutterBottom>
+        <Box sx={{ p: 2, backgroundColor: theme.palette.background.paper, borderRadius: 2, boxShadow: 3, width: '300px', margin: 'auto', marginTop: '20%' }}>
+          <Typography variant="h6" gutterBottom sx={{ color: theme.palette.text.primary }}>
             ¿Estás seguro de eliminar este usuario?
           </Typography>
           <Box display="flex" justifyContent="space-between">

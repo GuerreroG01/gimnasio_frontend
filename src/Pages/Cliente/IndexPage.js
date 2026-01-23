@@ -20,6 +20,7 @@ export default function IndexPage(){
     const [letraSeleccionada, setLetraSeleccionada] = React.useState('');
     const [showFilters, setShowFilters] = React.useState(false);
     const navigate = useNavigate();
+    const [showLetras, setShowLetras] = React.useState(true);
     const fetchLetrasDisponibles = async () => {
         try {
           const response = await ClienteService.getClientePorPrimeraLetra();
@@ -137,6 +138,15 @@ export default function IndexPage(){
                 paginationButtons.push(i + 1);
             }
         }
+    useEffect(() => {
+        if (showFilters) {
+            setShowLetras(false);
+        } else {
+            const timer = setTimeout(() => setShowLetras(true), 500);
+            return () => clearTimeout(timer);
+        }
+    }, [showFilters]);
+
     return(
         <Index
             alerta={alerta} setAlerta={setAlerta}
@@ -154,6 +164,7 @@ export default function IndexPage(){
             handleDeleteConfirm={handleDeleteConfirm}  handleViewDetails={handleViewDetails}
             mostrarPaginacion={mostrarPaginacion}   handleChangePage={handleChangePage}
             modalOpen={modalOpen}    setModalOpen={setModalOpen}
+            showLetras={showLetras}
         />
     );
 }

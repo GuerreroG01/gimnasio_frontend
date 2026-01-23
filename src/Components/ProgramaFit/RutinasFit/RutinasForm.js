@@ -10,7 +10,7 @@ import RemoveIcon from '@mui/icons-material/Remove';
 const fieldSx = {
     "& .MuiOutlinedInput-root": {
             borderRadius: 2,
-            backgroundColor: "#fafafa",
+            backgroundColor: paper => paper.palette.mode === "light" ? "#F9FAFB" : paper.palette.background.default,
             height: 48,
             "&:hover fieldset": {
             borderColor: "primary.main",

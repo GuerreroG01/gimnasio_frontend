@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { LineChart } from "@mui/x-charts";
 import PagoService from "../../Services/PagoService";
-import { CircularProgress, Box, FormControl, InputLabel, MenuItem, Select, Container, Typography, Snackbar, Alert, useMediaQuery, useTheme } from "@mui/material";
+import { CircularProgress, Box, FormControl, InputLabel, MenuItem, Select, Typography, Snackbar, Alert, useMediaQuery, useTheme } from "@mui/material";
 import InsightsIcon from '@mui/icons-material/Insights';
 
 const GananciasLineChart = () => {
@@ -16,7 +16,7 @@ const GananciasLineChart = () => {
     const theme = useTheme();
     const isSmallScreen = useMediaQuery(theme.breakpoints.down("sm"));
     const isMediumScreen = useMediaQuery(theme.breakpoints.down("md"));
-    const chartWidth = isSmallScreen ? 300 : isMediumScreen ? 500 : 600;
+    const chartWidth = isSmallScreen ? 500 : isMediumScreen ? 500 : 700;
     const chartHeight = isSmallScreen ? 250 : 350;
     const leftMargin = isSmallScreen ? 70 : 50;
 
@@ -80,7 +80,7 @@ const GananciasLineChart = () => {
     }
 
     return (
-        <Container sx={{ textAlign: "center", mt: 4, width: "100%" }}>
+        <Box sx={{ textAlign: "center", mt: 4, width: "100%" }}>
             <Box sx={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 1 }}>
                 <InsightsIcon color="primary" />
                 <Typography variant="h5" gutterBottom>
@@ -110,7 +110,7 @@ const GananciasLineChart = () => {
                     </Select>
                 </FormControl>
             </Box>
-            <Box sx={{ width: "100%", display: "flex", justifyContent: "center" }}>
+            <Box sx={{ width: "100%", maxWidth: "100%", display: "flex", justifyContent: "center" }}>
                 <LineChart
                     width={chartWidth}
                     height={chartHeight}
@@ -124,7 +124,7 @@ const GananciasLineChart = () => {
                     El año final no puede ser menor al año inicial.
                 </Alert>
             </Snackbar>
-        </Container>
+        </Box>
     );
 };
 export default GananciasLineChart;

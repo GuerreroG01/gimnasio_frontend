@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Card, CardContent, Typography } from '@mui/material';
 import { useExistencias } from '../../Context/ExistenciaContext';
 
-const ProductoCard = ({ producto, onSelect, isSelected, esProductoEditando }) => {
+const ProductoCard = ({ producto, onSelect, isSelected, esProductoEditando, theme }) => {
     const handleClick = () => {
         onSelect(producto);
     };
@@ -25,9 +25,11 @@ const ProductoCard = ({ producto, onSelect, isSelected, esProductoEditando }) =>
                 height: '100%',
                 transition: 'transform 0.3s ease, box-shadow 0.3s ease',
                 transform: isSelected || esProductoEditando ? 'scale(1.05)' : 'scale(1)',
-                boxShadow: isSelected || esProductoEditando ? '0px 4px 12px rgba(0, 0, 0, 0.3)' : 'none',
+                boxShadow: isSelected || esProductoEditando ? theme.shadows[6] : 'none',
                 cursor: 'pointer',
-                backgroundColor: esProductoEditando ? '#ffecb3' : 'white',
+                backgroundColor: esProductoEditando
+                    ? theme.palette.warning.light
+                    : theme.palette.background.paper,
                 '&:hover': {
                     transform: 'scale(1.05)',
                     boxShadow: '0px 8px 20px rgba(0, 0, 0, 0.2)',

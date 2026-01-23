@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { 
     Container, Typography, Card, FormControl, InputLabel, Select, MenuItem, 
-    Button, Box, Paper, Divider, Stack, CircularProgress, Alert, Grid
+    Button, Box, Paper, Divider, Stack, CircularProgress, Alert, Grid, useTheme
 } from '@mui/material';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import Tooltip from '@mui/material/Tooltip';
@@ -50,6 +50,7 @@ const ConfigBackup = () => {
     const [frecuencia, setFrecuencia] = React.useState('');
     const [proximoRespaldo, setProximoRespaldo] = React.useState('');
     const [cambiosPendientes, setCambiosPendientes] = React.useState(false);
+    const theme = useTheme();
 
     useEffect(() => {
         const fetchBackupConfig = async () => {
@@ -166,7 +167,7 @@ const ConfigBackup = () => {
 
     return (
         <Container maxWidth={false} sx={{ mt: 4 }}>
-            <Paper elevation={4} sx={{ p: 4, borderRadius: 3, backgroundColor: '#f9f9f9' }}>
+            <Paper elevation={4} sx={{ p: 4, borderRadius: 3, backgroundColor: theme.palette.background.paper }}>
                 <Typography variant="h4" textAlign="center" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
                     <BackupIcon sx={{ fontSize: 40, verticalAlign: 'middle', mr: 1 }} />
                     Configuración de Respaldo

@@ -1,8 +1,8 @@
 import { 
-    Grid, Container, Box, Typography, Paper, Stack
+    Grid, Container, Box, Typography, Paper, Stack,
+    useTheme
 } from "@mui/material";
 import HomeIcon from '@mui/icons-material/Home';
-
 import GananciasLineChart from "./GananciasLineChart";
 //import PagosAnualChart from "./PagosAnualChart";
 //import GananciasMensualesChart from "./GananciasMensualesChart";
@@ -14,9 +14,10 @@ import TipoCambioList from "../TipoCambio/TipoCambioList";
 import RutinasList from "../ProgramaFit/RutinasFit/RutinasList";
 
 const Dashboard = () => {
+    const theme = useTheme();
     return (
-        <Container maxWidth="xl">
-            <Box mt={4} mb={2} textAlign="left">
+        <Container maxWidth="xl" sx={{ bgcolor: theme.palette.background.paper, minHeight: "100vh" }}>
+            <Box mb={2} textAlign="left">
                 <Stack direction="row" alignItems="center" spacing={1}>
                     <HomeIcon color="primary" fontSize="large" />
                     <Typography variant="h4" fontWeight="bold" color="primary">
@@ -25,9 +26,9 @@ const Dashboard = () => {
                 </Stack>
             </Box>
 
-            <Grid container spacing={4}>
+            <Grid container spacing={2}>
                 {/* Gráfico principal */}
-                <Grid item xs={12} sm={6} md={6} lg={6} sx={{ display: { xs: "flex", sm: "block" }}}>
+                <Grid item xs={12} sm={8} md={12} lg={6} sx={{ display: { xs: "flex", sm: "block" }}}>
                     <Paper 
                         elevation={3} 
                         sx={{ 
@@ -45,10 +46,10 @@ const Dashboard = () => {
                 </Grid>
 
                 {/* Panel derecho con Reloj, TipoPagoList y TipoCambioList */}
-                <Grid item xs={12} sm={5} md={4} lg={4} container justifyContent="flex-end" sx={{ pl: { sm: 2, md: 4 } }}>
+                <Grid item xs={12} sm={5} md={4} lg={4} container justifyContent="flex-end" sx={{ pl: { sm: 2, md: 10 } }}>
                     <Stack spacing={2} sx={{ alignItems: { xs: "center", md: "flex-end" }, ml: "auto" }}>
                         {/* Reloj */}
-                        <Box sx={{ position: "relative", left: 10 }}>
+                        <Box sx={{ position: "relative" }}>
                             <Reloj />
                         </Box>
 

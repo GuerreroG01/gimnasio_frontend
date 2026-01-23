@@ -3,13 +3,14 @@ import { Box, Typography, Button, TextField, Divider, CircularProgress, Chip, Pa
 import DeleteIcon from '@mui/icons-material/Delete';
 
 const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProducto, fechaVenta, totalPages,
-    page, setPage, itemsPerPage, monedaTotal, setMonedaTotal, simboloMoneda, totalMostrado, mostrarFactura, isLoading, productosPaginados, existencias, handleCantidadChangeLocal
+    page, setPage, itemsPerPage, monedaTotal, setMonedaTotal, simboloMoneda, totalMostrado, mostrarFactura, isLoading, 
+    productosPaginados, existencias, handleCantidadChangeLocal, theme, alpha
   }) => {
   return (
     <Box
       sx={{
         p: 4,
-        backgroundColor: '#fdfdfd',
+        backgroundColor: theme.palette.background.paper,
         borderRadius: 3,
         boxShadow: '0px 10px 20px rgba(0,0,0,0.08)',
         display: 'flex',
@@ -46,13 +47,16 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
                 gap: 1,
                 p: 1,
                 borderRadius: 1,
-                backgroundColor: index % 2 === 0 ? '#fafafa' : '#fff',
+                backgroundColor:
+                  index % 2 === 0
+                    ? theme.palette.background.default
+                    : theme.palette.background.paper,
                 transition: 'background-color 0.2s',
-                '&:hover': { backgroundColor: '#f0f0f0' }
+                '&:hover': { backgroundColor: theme.palette.action.hover }
               }}
             >
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Typography variant="body2">{producto.descripcion}</Typography>
+                <Typography variant="body2" sx={{ color: (theme) => theme.palette.text.primary }}>{producto.descripcion}</Typography>
                 <Tooltip title={`Existencias: ${existenciasActual}`}>
                   <Chip
                     variant="dot"
@@ -60,7 +64,9 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
                       width: 12,
                       height: 12,
                       borderRadius: '50%',
-                      bgcolor: existenciasActual <= 5 ? 'warning.main' : 'success.main'
+                      bgcolor: existenciasActual <= 5 
+                        ? (theme) => alpha(theme.palette.warning.light, 0.7) 
+                        : (theme) => alpha(theme.palette.success.light, 0.7)
                     }}
                   />
                 </Tooltip>
@@ -74,14 +80,14 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
                   handleCantidadChangeLocal(producto.codigoProducto, e.target.value, existenciasActual)
                 }
                 inputProps={{ min: 1, max: existenciasActual }}
-                sx={{ width: 60 }}
+                sx={{ width: 60, color: (theme) => theme.palette.text.primary }}
               />
 
-              <Typography variant="body2" align="right">
+              <Typography variant="body2" align="right" sx={{ color: (theme) => theme.palette.text.primary }}>
                 {monedaSimbolo}{producto.precio.toFixed(2)}
               </Typography>
 
-              <Typography variant="body2" align="right" fontWeight="bold">
+              <Typography variant="body2" align="right" fontWeight="bold" sx={{ color: (theme) => theme.palette.text.primary }}>
                 {monedaSimbolo}{subtotal.toFixed(2)}
               </Typography>
 

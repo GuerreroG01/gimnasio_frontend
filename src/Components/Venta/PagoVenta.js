@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { Box, Typography, TextField, Divider, Button } from '@mui/material';
 
 const PagoVenta = ({
@@ -16,17 +16,27 @@ const PagoVenta = ({
   totalEquivalente,
   simboloTotalEquivalente,
   monedaTotalEquivalente,
-  handleGuardarVenta
+  handleGuardarVenta,
+  theme
 }) => {
+  const formatAmount = (amount) => {
+    return amount.toLocaleString(undefined, {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    });
+  };
   return (
     <Box
       sx={{
         p: 4,
-        backgroundColor: '#fdfdfd',
+        backgroundColor: theme.palette.background.paper,
         borderRadius: 3,
-        boxShadow: '0px 10px 20px rgba(0,0,0,0.08)',
+        boxShadow: (theme) =>
+          theme.palette.mode === 'dark'
+            ? '0px 10px 20px rgba(255,255,255,0.05)'
+            : '0px 10px 20px rgba(0,0,0,0.08)',
         maxWidth: 700,
-        margin: '40px auto',
+        margin: '10px auto',
       }}
     >
       <Typography variant="h5" fontWeight="bold" color="primary" align="center">
@@ -50,16 +60,16 @@ const PagoVenta = ({
                 alignItems: 'center',
                 p: 1,
                 borderRadius: 1,
-                backgroundColor: index % 2 === 0 ? '#fafafa' : '#fff',
+                backgroundColor: theme.palette.background.paper,
                 gap: 1,
               }}
             >
-              <Typography>{producto.descripcion}</Typography>
-              <Typography align="center">{cantidad}</Typography>
-              <Typography align="center">
+              <Typography sx={{ color: (theme) => theme.palette.text.primary }}>{producto.descripcion}</Typography>
+              <Typography align="center" sx={{ color: (theme) => theme.palette.text.primary }}>{cantidad}</Typography>
+              <Typography align="center" sx={{ color: (theme) => theme.palette.text.primary }}>
                 {simboloProducto}{producto.precio.toFixed(2)}
               </Typography>
-              <Typography align="right" fontWeight="bold">
+              <Typography align="right" fontWeight="bold" sx={{ color: (theme) => theme.palette.text.primary }}>
                 {simboloProducto}{subtotal.toFixed(2)}
               </Typography>
             </Box>
@@ -70,18 +80,18 @@ const PagoVenta = ({
       <Divider sx={{ my: 2 }} />
 
       {/* Total */}
-      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1 }}>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1, color: (theme) => theme.palette.text.primary }}>
         <Typography variant="h6" fontWeight="bold">
           Total a pagar:
         </Typography>
 
         <Box sx={{ textAlign: 'right' }}>
-          <Typography variant="h6" fontWeight="bold">
-            {simboloMoneda}{totalMostrado.toFixed(2)} {monedaTotal}
+          <Typography variant="h6" fontWeight="bold" sx={{ color: (theme) => theme.palette.text.primary }}>
+            {simboloMoneda}{formatAmount(totalMostrado)} {monedaTotal}
           </Typography>
 
-          <Typography variant="body2" color="text.secondary">
-            {simboloTotalEquivalente}{totalEquivalente.toFixed(2)} {monedaTotalEquivalente}
+          <Typography variant="body2" color="text.secondary" sx={{ color: (theme) => theme.palette.text.secondary }}>
+            {simboloTotalEquivalente}{formatAmount(totalEquivalente)} {monedaTotalEquivalente}
           </Typography>
         </Box>
       </Box>
@@ -91,7 +101,7 @@ const PagoVenta = ({
 
       {/* Efectivo */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2, alignItems: 'center' }}>
-        <Typography variant="h6" fontWeight="bold">
+        <Typography variant="h6" fontWeight="bold" sx={{ color: (theme) => theme.palette.text.primary }}>
           Efectivo recibido:
         </Typography>
         <TextField
@@ -104,17 +114,17 @@ const PagoVenta = ({
 
       {/* Cambio */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Typography variant="h6" fontWeight="bold">
+        <Typography variant="h6" fontWeight="bold" sx={{ color: (theme) => theme.palette.text.primary }}>
           Cambio a entregar:
         </Typography>
-        <Typography variant="h6" fontWeight="bold">
+        <Typography variant="h6" fontWeight="bold" sx={{ color: (theme) => theme.palette.text.primary }}>
           {simboloMoneda}{cambio.toFixed(2)}
         </Typography>
       </Box>
 
       {/* ✅ Equivalente del CAMBIO */}
       {cambio > 0 && (
-        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3 }}>
+        <Typography variant="body2" color="text.secondary" sx={{ mt: 1, mb: 3, color: (theme) => theme.palette.text.secondary }}>
           Equivalente del cambio en {monedaCambioEquivalente}:{' '}
           <strong>
             {simboloCambioEquivalente}{cambioEquivalente.toFixed(2)} {monedaCambioEquivalente}
