@@ -3,85 +3,66 @@ import { Grid, Card, Typography, Avatar, Chip, LinearProgress  } from '@mui/mate
 import { format } from 'date-fns';
 import Desconocido from '../../assets/Images/Desconocido.png';
 import { es } from 'date-fns/locale';
-import { differenceInMonths, differenceInDays } from 'date-fns';
 import { toZonedTime } from 'date-fns-tz';
 import alertaAudio from '../../assets/Audio/alarma.wav';
 import vigenteAudio from '../../assets/Audio/Vigente.mp3';
 import { obtenerSimboloMoneda } from '../../Utils/MonedaUtils';
 
-const InfoUsuario = ({ cliente, theme }) => {
-  const calcularDiasRestantes = useCallback((fechaVencimiento) => {
-    const fechaActual = new Date();
-    const vencimiento = new Date(fechaVencimiento);
-  
-    if (isNaN(vencimiento.getTime())) {
-      return 'Fecha inválida';
-    }
-  
-    const diferencia = vencimiento - fechaActual;
-    const diasRestantes = Math.ceil(diferencia / (1000 * 3600 * 24));
-  
+const InfoUsuario = ({ cliente, theme, diasRestantes }) => {
+  const calcularDiasRestantes = useCallback(() => {
+    if (diasRestantes === 0) return 'Vence hoy';
+
+    const absDias = Math.abs(diasRestantes);
+    const years = Math.floor(absDias / 365);
+    const months = Math.floor((absDias % 365) / 30);
+    const days = absDias % 30;
+
     if (diasRestantes < 0) {
-      const monthsPassed = Math.abs(differenceInMonths(fechaActual, vencimiento));
-      const daysPassed = Math.abs(differenceInDays(fechaActual, vencimiento) - monthsPassed * 30);
-  
-      if (monthsPassed === 0) {
-        return `Hace ${daysPassed} días expiró`;
-      }
-      return `Hace ${monthsPassed} meses y ${daysPassed} días expiró`;
+      let texto = 'Hace ';
+      if (years > 0) texto += `${years} año${years > 1 ? 's' : ''}`;
+      if (months > 0) texto += `${years > 0 ? ', ' : ''}${months} mes${months > 1 ? 'es' : ''}`;
+      if (days > 0) texto += `${years > 0 || months > 0 ? ' y ' : ''}${days} día${days > 1 ? 's' : ''}`;
+      return texto + ' expiró';
+    } else {
+      let texto = '';
+      if (years > 0) texto += `${years} año${years > 1 ? 's' : ''}`;
+      if (months > 0) texto += `${years > 0 ? ', ' : ''}${months} mes${months > 1 ? 'es' : ''}`;
+      if (days > 0) texto += `${years > 0 || months > 0 ? ' y ' : ''}${days} día${days > 1 ? 's' : ''}`;
+      return texto + ' restantes';
     }
-  
-    const monthsRemaining = Math.floor(differenceInMonths(vencimiento, fechaActual));
-    const daysRemaining = Math.abs(differenceInDays(vencimiento, fechaActual) - monthsRemaining * 30);
-  
-    if (monthsRemaining === 0) {
-      return `${daysRemaining} días restantes`;
+  }, [diasRestantes]);
+  const obtenerColorProgreso = () => {
+    if (diasRestantes === null || diasRestantes === undefined) {
+      return 'default';
     }
-    return `${monthsRemaining} meses y ${daysRemaining} días restantes`;
-  }, []);  
-  const calculoparaprogreso = (fechaVencimiento) => {
-    const fechaActual = new Date();
-    const vencimiento = new Date(fechaVencimiento);
-    const diferencia = vencimiento - fechaActual;
-    
-    if (diferencia < 0) {
-      return -1;
-    }
-    
-    const diasRestantes = Math.ceil(diferencia / (1000 * 3600 * 24));
-    
-    return diasRestantes;
-  };  
-  const obtenerColorProgreso = (fechaVencimiento) => {
-    const diasRestantes = calculoparaprogreso(fechaVencimiento);
-  
-    if (diasRestantes === -1) {
+
+    if (diasRestantes < 0) {
       return 'error';
     }
-  
-    if (diasRestantes <= 3 && diasRestantes > 0) {
+
+    if (diasRestantes <= 3) {
       return 'warning';
-    } else if (diasRestantes > 3) {
-      return 'success';
     }
-  
-    return 'error';
+
+    return 'success';
   };
   
-  const calcularProgreso = (fechaVencimiento) => {
-    const fechaActual = new Date();
-    const vencimiento = new Date(fechaVencimiento);
-  
-    const diasTotales = Math.ceil((vencimiento - fechaActual) / (1000 * 3600 * 24));
-    const diasTranscurridos = Math.ceil((fechaActual - new Date(cliente.ultimoPago.fechaPago)) / (1000 * 3600 * 24));
-  
+  const calcularProgreso = () => {
+    if (diasRestantes === null || diasRestantes === undefined || !cliente?.ultimoPago?.diasTranscurridos) {
+      return 0;
+    }
+
+    const diasTotales = diasRestantes + cliente.ultimoPago.diasTranscurridos;
+    const diasTranscurridos = cliente.ultimoPago.diasTranscurridos;
+
     if (diasTotales <= 0) {
       return 100;
     }
-  
+
     const porcentajeProgreso = Math.min((diasTranscurridos / diasTotales) * 100, 100);
     return porcentajeProgreso;
-  };    
+  };
+   
 
   const formatDate = (date) => {
     if (!date) return 'No proporcionado';
@@ -278,7 +259,7 @@ const InfoUsuario = ({ cliente, theme }) => {
                       backgroundColor: theme.palette.background.card, 
                       position: 'relative', 
                       width: '100%',
-                      minWidth: cliente.ultimoTiempoPago ? 160 : 200,
+                      minWidth: cliente.ultimoTiempoPago ? 165 : 200,
                       height: 'auto',
                       transition: 'all 0.3s ease', 
                       '&:hover': { boxShadow: 4 } 
@@ -286,7 +267,7 @@ const InfoUsuario = ({ cliente, theme }) => {
                   >
                     <Chip
                       label={cliente.ultimoTiempoPago ? estadoPago(cliente.ultimoTiempoPago.fechaVencimiento) : 'No disponible'}
-                      color={cliente.ultimoTiempoPago && estadoPago(cliente.ultimoTiempoPago.fechaVencimiento) === 'Vigente' ? 'success' : 'error'}
+                      color={cliente.ultimoTiempoPago ? obtenerColorProgreso(cliente.ultimoTiempoPago.fechaVencimiento) : 'default'}
                       size="small"
                       sx={{
                         fontWeight: 'bold',

@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import VentaService from "../../Services/VentaService";
 import { CircularProgress, Typography, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead,
   TableRow, Paper, Box, Grid, IconButton, Dialog, DialogActions, DialogContent, DialogTitle, Button, Snackbar,
-  Alert, useMediaQuery, DialogContentText, Tooltip, Pagination } from "@mui/material";
+  Alert, useMediaQuery, DialogContentText, Tooltip, Pagination, useTheme } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon, Add as AddIcon } from "@mui/icons-material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
@@ -22,7 +22,7 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
   const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
   const [selectedRow, setSelectedRow] = useState(null);
   const [page, setPage] = useState(1);
-
+  const theme = useTheme();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery("(max-width:600px)");
   const isMediumScreen = useMediaQuery("(min-width:601px) and (max-width:960px)");
@@ -95,7 +95,7 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
       <CardContent>
         <Grid container alignItems="center" spacing={2} sx={{ mb: 2 }}>
           <Grid item>
-            <CalendarMonthIcon sx={{ fontSize: 32, color: "#1565C0" }} />
+            <CalendarMonthIcon sx={{ fontSize: 32, color: theme.palette.primary.main }} />
           </Grid>
           <Grid item>
             <Typography variant="h6" fontWeight="bold">
@@ -111,7 +111,7 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
             <CircularProgress size={50} />
           </Box>
         ) : ventas.length === 0 ? (
-          <Typography align="center">📉 No hay ventas.</Typography>
+          <Typography align="center">No hay ventas.</Typography>
         ) : isLargeScreen ? (
           <Box sx={{ position: "relative" }}>
             <TableContainer component={Paper} sx={{ borderRadius: 3 }}>
@@ -119,7 +119,7 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
                 <TableHead>
                   <TableRow sx={{ bgcolor: "#1565C0" }}>
                     {["Código", "Fecha", "Vendedor", "Total", "Artículos", "Moneda"].map(h => (
-                      <TableCell key={h} align="center" sx={{ color: "white", fontWeight: "bold" }}>
+                      <TableCell key={h} align="center" sx={{ fontWeight: "bold",   bgcolor: theme.palette.mode === "dark" ? "#022e70" : theme.palette.primary.main, color: "white" }}>
                         {h}
                       </TableCell>
                     ))}
@@ -142,7 +142,11 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
                         onClick={() => setSelectedRow(venta.codigo_venta)}
                         sx={{
                           cursor: "pointer",
-                          bgcolor: selectedRow === venta.codigo_venta ? "#BBDEFB" : "white"
+                          bgcolor: selectedRow === venta.codigo_venta
+                            ? (theme.palette.mode === "light" 
+                                ? "rgba(25, 118, 210, 0.31)"
+                                : theme.palette.action.selected)
+                            : "inherit",
                         }}
                       >
                         <TableCell align="center">{venta.codigo_venta}</TableCell>
@@ -152,7 +156,7 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
                         <TableCell align="center">
                           <Tooltip title={<span style={{ whiteSpace: "pre-line" }}>{renderProductosTooltip(venta)}</span>} arrow>
                             <Box display="inline-flex" alignItems="center">
-                              <ShoppingCartIcon sx={{ mr: 1, color: "#FFA000" }} />
+                              <ShoppingCartIcon sx={{ mr: 1, color: theme.palette.warning.main }} />
                               {venta.ventaProducto?.length || 0}
                             </Box>
                           </Tooltip>
@@ -174,7 +178,7 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
                 display: "flex",
                 flexDirection: "column",
                 gap: 2,
-                bgcolor: "white",
+                bgcolor: theme.palette.background.paper,
                 boxShadow: 3,
                 borderRadius: 2,
                 p: 2,

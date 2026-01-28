@@ -11,14 +11,14 @@ const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () 
   const renderSelect = (label, value, options, onChange, disabled = false, width = '100%') => (
     <FormControl size="small" fullWidth={width === '100%'} sx={{ width }}>
       <InputLabel>{label}</InputLabel>
-      <Select
-        value={options.includes(value) ? value : ''}
-        label={label}
-        onChange={e => onChange(Number(e.target.value))}
-        disabled={disabled}
-      >
-        {options.length > 0 ? options.map(opt => <MenuItem key={opt} value={opt}>{opt}</MenuItem>) : <MenuItem disabled>No disponible</MenuItem>}
-      </Select>
+        <Select
+          value={options.includes(value) ? value : ''}
+          label={label}
+          onChange={e => onChange(Number(e.target.value))}
+          disabled={disabled}
+        >
+          {options.length > 0 ? options.map(opt => <MenuItem key={opt} value={opt}>{opt}</MenuItem>) : <MenuItem disabled>No disponible</MenuItem>}
+        </Select>
     </FormControl>
   );
 
@@ -45,13 +45,13 @@ const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () 
           <Grid item xs={12} md={5}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={4}>
-                {renderSelect('Año', selectedAnio, anios, value => { setSelectedAnio(value); setSelectedMes(null); setSelectedDia(null); })}
+                {renderSelect('Año', selectedAnio, anios, value => { setSelectedAnio(value); setSelectedMes(null); setSelectedDia(null);}, false, 90)}
               </Grid>
               <Grid item xs={12} sm={4}>
-                {renderSelect('Mes', selectedMes, meses, value => { setSelectedMes(value); setSelectedDia(null); }, !selectedAnio)}
+                {renderSelect('Mes', selectedMes, meses, value => { setSelectedMes(value); setSelectedDia(null); }, !selectedAnio, 70)}
               </Grid>
               <Grid item xs={12} sm={4}>
-                {renderSelect('Día', selectedDia, dias, setSelectedDia, !selectedMes)}
+                {renderSelect('Día', selectedDia, dias, setSelectedDia, !selectedMes, 70)}
               </Grid>
             </Grid>
           </Grid>

@@ -1,8 +1,9 @@
-import { Container, Grid, Box, Divider, Snackbar, useTheme, alpha, TextField, Typography, InputAdornment, IconButton, CircularProgress } from '@mui/material';
+import { Container, Grid, Box, Divider, useTheme, alpha, TextField, Typography, InputAdornment, IconButton, CircularProgress } from '@mui/material';
 import CancelIcon from '@mui/icons-material/Cancel';
 import ProductoCard from './ProductoCard';
 import DatosVenta from './DatosVenta';
 import PagoVenta from './PagoVenta';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, handleCantidadChange, total, setError, fechaVenta, handleGuardarVenta,
   openSnackbar, setOpenSnackbar, handleBuscarDescripcion, descripcion, productosFiltrados, onEliminarProducto, mostrarPago, handleVolver,
@@ -137,12 +138,12 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
 
       <Divider sx={{ marginBottom: 4 }} />
 
-      <Snackbar
+      <CustomSnackbar
         open={openSnackbar}
         autoHideDuration={3000}
         onClose={() => setOpenSnackbar(false)}
         message={editMode ? 'Venta Actualizada' : 'Venta Registrada'}
-        disableWindowBlurListener
+        severity="success"
       />
     </Container>
   );

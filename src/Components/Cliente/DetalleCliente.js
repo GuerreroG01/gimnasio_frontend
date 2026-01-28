@@ -8,7 +8,7 @@ const DetalleCliente = ({ imageUrl, cliente, id, navigate, telefonoMostrar, esta
   const theme = useTheme();
   return (
     <Box sx={{ padding: 1 }}>
-      <Typography variant="h4" gutterBottom>
+      <Typography variant="h4" gutterBottom sx={{ color: (theme) => theme.palette.text.primary }}>
         Detalles
       </Typography>
 

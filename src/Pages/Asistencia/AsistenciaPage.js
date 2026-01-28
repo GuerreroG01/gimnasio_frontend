@@ -1,10 +1,12 @@
 import React, { useEffect } from 'react';
 import AsistenciaService from '../../Services/AsistenciaService';
 import Asistencia from '../../Components/Asistencia/Asistencia';
+import PagoService from '../../Services/PagoService';
 
 export default function AsistenciaPage(){
     const [clientId, setClientId] = React.useState('');
     const [cliente, setCliente] = React.useState(null);
+    const [diasRestantes, setDiasRestantes] = React.useState(0);
     const [loading, setLoading] = React.useState(false);
     const [error, setError] = React.useState(null);
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
@@ -78,8 +80,9 @@ export default function AsistenciaPage(){
             }
 
             const data = await AsistenciaService.getAsistencias(clientId);
-            console.log('Información del cliente:', data);
+            const pagoData = await PagoService.getUltimoPagoVigente(clientId);
             setCliente(data);
+            setDiasRestantes(pagoData.diasRestantes);
             setShowInfo(true);
             setFade(true);
             setOpenSnackbar(true);
@@ -102,18 +105,19 @@ export default function AsistenciaPage(){
     };
     return(
         <Asistencia
-        showInfo={showInfo}
-        clientId={clientId}
-        handleInputChange={handleInputChange}
-        handleKeyDown={handleKeyDown}
-        registrarAsistencia={registrarAsistencia}
-        setRegistrarAsistencia={setRegistrarAsistencia}
-        error={error}
-        openSnackbar={openSnackbar}
-        setOpenSnackbar={setOpenSnackbar}
-        loading={loading}
-        cliente={cliente}
-        fade={fade}
+            showInfo={showInfo}
+            clientId={clientId}
+            handleInputChange={handleInputChange}
+            handleKeyDown={handleKeyDown}
+            registrarAsistencia={registrarAsistencia}
+            setRegistrarAsistencia={setRegistrarAsistencia}
+            error={error}
+            openSnackbar={openSnackbar}
+            setOpenSnackbar={setOpenSnackbar}
+            loading={loading}
+            cliente={cliente}
+            fade={fade}
+            diasRestantes={diasRestantes}
         />
     );
 }

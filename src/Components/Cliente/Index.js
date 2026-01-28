@@ -1,9 +1,10 @@
-import { Container, useTheme, Box, Typography, IconButton, Tooltip, Modal, Button, Alert, Pagination, Stack } from '@mui/material';
+import { Container, useTheme, Box, Typography, IconButton, Tooltip, Modal, Button, Pagination, Stack } from '@mui/material';
 import PersonAddAltOutlinedIcon from '@mui/icons-material/PersonAddAltOutlined';
 import FiltroClientes from './FiltroClientes';
 import TableClientes from './TableClientes';
 import './Style.css';
 import CircularProgress from '@mui/material/CircularProgress';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCliente, setApellidoCliente, showFilters, setShowFilters, letrasDisponibles, letraSeleccionada, setLetraSeleccionada, loadingFilter, setLoadingFilter, handleCreateNew,
     clienteFiltrados, loading, page, rowsPerPage, handleEdit, handleDeleteOpen, handleDeleteConfirm, handleViewDetails, mostrarPaginacion, handleChangePage, modalOpen, setModalOpen, showLetras
@@ -11,11 +12,13 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
   const theme = useTheme();
   return (
     <Container maxWidth="xl" sx={{backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
-      {alerta.mensaje && (
-        <Alert severity={alerta.tipo} onClose={() => setAlerta({ mensaje: '', tipo: '' })} sx={{ marginBottom: 2 }}>
-          {alerta.mensaje}
-        </Alert>
-      )}
+      <CustomSnackbar
+        open={!!alerta.mensaje}
+        message={alerta.mensaje}
+        severity={alerta.tipo || 'info'}
+        onClose={() => setAlerta({ mensaje: '', tipo: '' })}
+        autoHideDuration={3000}
+      />
       <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
         {/* Contenedor del título + filtros */}
         <Box display="flex" alignItems="center" gap={1}>

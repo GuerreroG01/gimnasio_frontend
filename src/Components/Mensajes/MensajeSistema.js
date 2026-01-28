@@ -71,7 +71,7 @@ const MensajeSistema = () => {
             {loading && (
                 <Box display="flex" justifyContent="center" alignItems="center" flexDirection="column" width="100%">
                     {[...Array(3)].map((_, index) => (
-                        <Card key={index} sx={{ marginBottom: 3, boxShadow: 1, width: '100%', bgcolor: '#f5f5f5' }}>
+                        <Card key={index} sx={{ marginBottom: 3, boxShadow: 1, width: '100%' }}>
                             <CardContent>
                                 <Skeleton variant="text" width="80%" height={25} sx={{ marginBottom: 1 }} />
                                 <Skeleton variant="text" width="60%" height={20} />

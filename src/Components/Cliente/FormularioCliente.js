@@ -1,8 +1,9 @@
 import {
   TextField, Checkbox, FormControlLabel, Button, Box, Typography,
-  Alert, AlertTitle, CircularProgress, Grid, Paper, useTheme
+  CircularProgress, Grid, Paper, useTheme
 } from '@mui/material';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 const FormularioCliente = ({
   id, cliente, setCliente, fecha, formatDate, fileName, imagePreview, exitocreacion,
@@ -184,31 +185,26 @@ const FormularioCliente = ({
         </Box>
       </form>
 
-      {/* MENSAJES */}
-      {exitocreacion && (
-        <Alert severity="success" sx={{ mt: 3 }}>
-          <AlertTitle>Éxito</AlertTitle>
-          {exitocreacion}
-        </Alert>
-      )}
+      <CustomSnackbar
+        open={!!exitocreacion}
+        message={exitocreacion}
+        severity="success"
+        onClose={() => exitocreacion && exitocreacion('')}
+      />
 
-      {mensaje_error && (
-        <Alert severity="warning" sx={{ mt: 3 }}>
-          <AlertTitle>Advertencia</AlertTitle>
-          {mensaje_error}
-        </Alert>
-      )}
+      <CustomSnackbar
+        open={!!mensaje_error}
+        message={mensaje_error}
+        severity="warning"
+        onClose={() => mensaje_error && setMensajeAlerta('')}
+      />
 
-      {mensajeAlerta && (
-        <Alert
-          severity="error"
-          sx={{ mt: 3 }}
-          onClose={() => setMensajeAlerta('')}
-        >
-          <AlertTitle>Error</AlertTitle>
-          {mensajeAlerta}
-        </Alert>
-      )}
+      <CustomSnackbar
+        open={!!mensajeAlerta}
+        message={mensajeAlerta}
+        severity="error"
+        onClose={() => setMensajeAlerta('')}
+      />
 
     </Paper>
   );

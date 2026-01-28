@@ -1,4 +1,4 @@
-import { Box, Typography } from "@mui/material";
+import { Box, Typography, useTheme, alpha } from "@mui/material";
 
 const EmptyState = ({ 
     title = "Nada aquí", 
@@ -6,6 +6,8 @@ const EmptyState = ({
     Icon = null, 
     minHeight = 260 
 }) => {
+    const theme = useTheme();
+    const isDark = theme.palette.mode === "darkMode";
     return (
         <Box
             sx={{
@@ -16,8 +18,11 @@ const EmptyState = ({
                 justifyContent: "center",
                 textAlign: "center",
                 borderRadius: 3,
-                background:
-                "linear-gradient(145deg, rgba(25,118,210,0.06), rgba(25,118,210,0.12))",
+                background: `linear-gradient(
+                    145deg,
+                    ${alpha(theme.palette.primary.main, isDark ? 0.12 : 0.06)},
+                    ${alpha(theme.palette.primary.main, isDark ? 0.2 : 0.12)}
+                )`,
                 position: "relative",
                 overflow: "hidden",
                 p: 2,
@@ -29,8 +34,11 @@ const EmptyState = ({
                     width: 110,
                     height: 110,
                     borderRadius: "50%",
-                    background:
-                    "linear-gradient(135deg, rgba(25,118,210,0.25), rgba(25,118,210,0.1))",
+                    background: `linear-gradient(
+                        135deg,
+                        ${alpha(theme.palette.primary.main, isDark ? 0.35 : 0.25)},
+                        ${alpha(theme.palette.primary.main, isDark ? 0.18 : 0.1)}
+                    )`,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
@@ -42,7 +50,7 @@ const EmptyState = ({
                 </Box>
             )}
 
-            <Typography variant="h6" fontWeight={600}>
+            <Typography variant="h6" fontWeight={600} gutterBottom sx={{ color: (theme) => isDark ? theme.palette.grey[100] : theme.palette.primary.main }}>
                 {title}
             </Typography>
 

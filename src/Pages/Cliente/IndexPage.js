@@ -97,18 +97,39 @@ export default function IndexPage(){
         if (clienteAEliminar) {
             try {
                 await ClienteService.deleteCliente(clienteAEliminar.codigo);
-                fetchClientePorLetra(letraSeleccionada);
+
+                const letrasResponse = await ClienteService.getClientePorPrimeraLetra();
+                setLetrasDisponibles(letrasResponse.data);
+
+                const letraActualExiste = letrasResponse.data.some(
+                    l => l.primeraLetra === letraSeleccionada
+                );
+
+                if (letraActualExiste) {
+                    fetchClientePorLetra(letraSeleccionada);
+                } else if (letrasResponse.data.length > 0) {
+                    const nuevaLetra = letrasResponse.data[0].primeraLetra;
+                    setLetraSeleccionada(nuevaLetra);
+                    fetchClientePorLetra(nuevaLetra);
+                } else {
+                    setClientes([]);
+                    setClienteFiltrados([]);
+                    setLetraSeleccionada('');
+                }
+
                 setAlerta({ mensaje: 'Cliente eliminado exitosamente', tipo: 'success' });
                 setTimeout(() => setAlerta({ mensaje: '', tipo: '' }), 2000);
+
             } catch (error) {
                 console.error('Error deleting user:', error);
                 setAlerta({ mensaje: 'Error al eliminar cliente', tipo: 'error' });
                 setTimeout(() => setAlerta({ mensaje: '', tipo: '' }), 2000);
             }
         }
+
         setModalOpen(false);
         setClienteAEliminar(null);
-      };
+    };
     
     const handleViewDetails = (id) => {
         navigate(`/clientes/${id}/details`);

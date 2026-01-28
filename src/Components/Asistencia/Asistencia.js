@@ -4,7 +4,7 @@ import CheckIcon from '@mui/icons-material/Check';
 import InfoUsuario from './InfoUsuario';
 import ChecklistIcon from '@mui/icons-material/Checklist';
 
-const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, registrarAsistencia, setRegistrarAsistencia, error, openSnackbar, setOpenSnackbar, loading, cliente, fade }) => {
+const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, registrarAsistencia, setRegistrarAsistencia, error, openSnackbar, setOpenSnackbar, loading, cliente, fade, diasRestantes }) => {
   const navigate = useNavigate();
   const theme = useTheme();
   return (
@@ -77,7 +77,7 @@ const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, reg
         <Grid container spacing={2}>
           {cliente && (
             <Grid item xs={12}>
-              <InfoUsuario cliente={cliente} theme={theme} />
+              <InfoUsuario cliente={cliente} theme={theme} diasRestantes={diasRestantes} />
             </Grid>
           )}
         </Grid>
