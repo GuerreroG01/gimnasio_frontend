@@ -36,6 +36,7 @@ const EjercicioList = ({ programaId }) => {
     const loadEjercicios = useCallback(async (pageNumber = 1) => {
         try {
             const response = await ProgramaFitService.getRutinas(pageNumber, ITEMS_PER_PAGE);
+            console.log("Respuesta del servicio de rutinas:", response);
             const { data, totalCount } = response;
 
             setEjercicios(data || []);

@@ -69,14 +69,18 @@ const Login = ({ handleLogin, handleKeyPress, username, setUsername, clave, setC
                     >
                         {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : "Ingresar"}
                     </Button>
-
                     <Button
-                        variant="text"
+                        variant="contained"
                         fullWidth
-                        sx={{ mt: 1, textTransform: 'none' }}
-                        onClick={() => navigate("/register")}
+                        sx={{
+                            borderRadius: 2,
+                            fontWeight: 'bold',
+                            textTransform: 'none',
+                        }}
+                        onClick={() => navigate("/programas")}
+                        disabled={loading}
                     >
-                        ¿No tienes usuario? Créalo
+                        Programas
                     </Button>
                 </Paper>
 

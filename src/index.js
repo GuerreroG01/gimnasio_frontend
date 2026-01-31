@@ -23,7 +23,9 @@ import Asistencia from './Pages/Asistencia/AsistenciaPage';
 import AsistenciaListado from './Pages/Asistencia/AsistenciaListaPage';
 import ConfiguracionesPage from './Pages/Configuraciones/ConfiguracionesPage';
 import MensajesPage from './Pages/Mensajes/MensajesPage';
-import Prueba from './Pages/Pago/FormPage';
+import IndexPrograma from './Pages/Programa/IndexPage';
+import DetailsPrograma from './Components/ProgramaFit/Programa/DetailsPrograma';
+import Prueba from './Pages/Programa/IndexPage';
 import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
@@ -80,6 +82,9 @@ const router = createBrowserRouter([
 
       // Mensajes
       {path: '/mensajes', element: <ProtectedRoute><MensajesPage /></ProtectedRoute> },
+      // PROGRAMAS
+      {path: '/programas', element: <ProtectedRoute optional ><IndexPrograma /></ProtectedRoute> },
+      {path: '/programas/:id/details', element: <ProtectedRoute optional ><DetailsPrograma /></ProtectedRoute> },
       {path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
 
 /*
