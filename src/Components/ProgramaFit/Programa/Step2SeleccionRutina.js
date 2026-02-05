@@ -46,30 +46,36 @@ export default function Step2SeleccionRutina({ rutinasSeleccionadas, setRutinasS
   useEffect(() => {
     if (!inputValue) {
       setOpcionesRutinas([]);
+      setLoading(false);
       return;
     }
 
     let active = true;
     setLoading(true);
 
-    const buscarRutinas = async () => {
+    const timeoutId = setTimeout(async () => {
       try {
-        const ejercicios = inputValue.split(",").map(e => e.trim()).filter(Boolean);
-        const resultados = await ProgramaFitService.getRutinasByEjercicios(ejercicios);
+        const ejercicios = inputValue
+          .split(",")
+          .map(e => e.trim())
+          .filter(Boolean);
+
+        const resultados =
+          await ProgramaFitService.getRutinasByEjercicios(ejercicios);
+
         if (active) {
           setOpcionesRutinas(resultados);
         }
       } catch (error) {
         console.error("Error buscando rutinas:", error);
       } finally {
-        setLoading(false);
+        if (active) setLoading(false);
       }
-    };
-
-    buscarRutinas();
+    }, 900);
 
     return () => {
       active = false;
+      clearTimeout(timeoutId);
     };
   }, [inputValue]);
 
@@ -96,6 +102,7 @@ export default function Step2SeleccionRutina({ rutinasSeleccionadas, setRutinasS
                 getOptionLabel={(option) => option.ejercicio}
                 filterSelectedOptions
                 loading={loading}
+                noOptionsText="No hay resultados"
                 onChange={handleRutinaChange}
                 inputValue={inputValue}
                 onInputChange={(event, newInputValue) => setInputValue(newInputValue)}
@@ -110,14 +117,16 @@ export default function Step2SeleccionRutina({ rutinasSeleccionadas, setRutinasS
                     {...params}
                     label="Rutinas"
                     variant="outlined"
-                    InputProps={{
-                      ...params.InputProps,
-                      endAdornment: (
-                        <>
-                          {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                          {params.InputProps.endAdornment}
-                        </>
-                      ),
+                    slotProps={{
+                      input: {
+                        ...params.InputProps,
+                        endAdornment: (
+                          <>
+                            {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                            {params.InputProps.endAdornment}
+                          </>
+                        ),
+                      },
                     }}
                   />
                 )}
