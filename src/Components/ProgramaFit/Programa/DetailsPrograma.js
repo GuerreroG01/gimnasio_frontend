@@ -1,27 +1,78 @@
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import { Box, Container, Typography, Chip, Stack, Divider, Accordion, AccordionSummary, AccordionDetails,
-    Grid, Card } from '@mui/material';
+    Grid, Card, Tooltip } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import CalendarMonthIcon from '@mui/icons-material/CalendarMonth';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useTheme } from '@mui/material/styles';
-
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import DeleteComponent from '../../../Shared/Components/DeleteComponent';
+import ProgramaFitService from '../../../Services/ProgramaFitService';
+import { AuthContext } from '../../../Context/AuthContext';
 export default function DetailsPrograma() {
     const location = useLocation();
     const programa = location.state?.programa;
-    console.log('Programa recibido en DetailsPrograma:', programa);
     const theme = useTheme();
-    const [expandedPanels, setExpandedPanels] = useState({});
+    const { authenticated } = useContext(AuthContext);
+    const [expandedPanels, setExpandedPanels] = React.useState({});
+    const navigate = useNavigate();
+    const [openDeleteModal, setOpenDeleteModal] = React.useState(false);
+    const [loadingDelete, setLoadingDelete] = React.useState(false);
+    const handleDeleteClick = () => setOpenDeleteModal(true);
+    const handleDeleteCancel = () => setOpenDeleteModal(false);
 
+     const handleDeleteConfirm = async () => {
+        if (!programa?.id) return;
+
+        try {
+            setLoadingDelete(true);
+            await ProgramaFitService.deletePrograma(programa.id);
+            setOpenDeleteModal(false);
+            console.log('Programa eliminado:', programa.id);
+
+            navigate('/programas');
+        } catch (error) {
+            console.error('Error al eliminar el programa:', error);
+            setOpenDeleteModal(false);
+        } finally {
+            setLoadingDelete(false);
+        }
+    };
     if (!programa) return <Container sx={{ py: 4, bgcolor: theme.palette.background.paper, maxWidth: 'none', px: 4 }}><Typography color="text.primary">No se encontró el programa.</Typography></Container>;
     const API_DEMOSTRACIONES = (window._env_ ? window._env_.REACT_APP_VIDEODEMOSTRACION_URL : process.env.REACT_APP_VIDEODEMOSTRACION_URL);
+
     return (
         <Container sx={{ py: 4, bgcolor: theme.palette.background.paper, minHeight: '100vh', maxWidth: 'none', px: 4 }}>
             <Card elevation={4} sx={{ mb: 4, p: 3, borderRadius: 3, background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`, color: 'primary.contrastText' }}>
-                <Typography variant="h4" fontWeight="bold" gutterBottom color="inherit">
-                    {programa.titulo}
-                </Typography>
+                <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
+                    <Typography variant="h4" fontWeight="bold" color="inherit">
+                        {programa.titulo}
+                    </Typography>
+                    {authenticated && (
+                        <Stack direction="row" spacing={1}>
+                            <Tooltip title="Editar">
+                                <IconButton
+                                    onClick={() => navigate(`/programas/${programa.id}/update`)}
+                                    sx={{ color: 'white' }}
+                                >
+                                <EditIcon />
+                                </IconButton>
+                            </Tooltip>
+
+                            <Tooltip title="Borrar">
+                                <IconButton
+                                    onClick={handleDeleteClick}
+                                    sx={{ color: 'white' }}
+                                >
+                                    <DeleteIcon />
+                                </IconButton>
+                            </Tooltip>
+                        </Stack>
+                    )}    
+                </Box>
 
                 <Stack direction="row" spacing={1} flexWrap="wrap">
                     <Chip label={programa.nivel} color="secondary" />
@@ -220,6 +271,20 @@ export default function DetailsPrograma() {
                     })}
                 </Grid>
             </Card>
+            <DeleteComponent
+                open={openDeleteModal}
+                onCancel={handleDeleteCancel}
+                onConfirm={handleDeleteConfirm}
+                confirmText="Eliminar"
+                cancelText="Cancelar"
+                confirmColor="error"
+                message={
+                    <>
+                        ¿Está seguro que desea borrar el programa <strong>{programa.titulo}</strong>?
+                    </>
+                }
+                loading={loadingDelete}
+            />
         </Container>
     );
 }

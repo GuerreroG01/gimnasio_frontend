@@ -25,7 +25,8 @@ import ConfiguracionesPage from './Pages/Configuraciones/ConfiguracionesPage';
 import MensajesPage from './Pages/Mensajes/MensajesPage';
 import IndexPrograma from './Pages/Programa/IndexPage';
 import DetailsPrograma from './Components/ProgramaFit/Programa/DetailsPrograma';
-import Prueba from './Pages/Programa/IndexPage';
+import ProgramasForm from './Pages/Programa/FormPage';
+//import Prueba from './Pages/Programa/IndexPage';
 import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
@@ -85,7 +86,9 @@ const router = createBrowserRouter([
       // PROGRAMAS
       {path: '/programas', element: <ProtectedRoute optional ><IndexPrograma /></ProtectedRoute> },
       {path: '/programas/:id/details', element: <ProtectedRoute optional ><DetailsPrograma /></ProtectedRoute> },
-      {path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
+      {path: '/programas/new', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
+      {path: '/programas/:id/update', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
+      {path: '/prueba', element: <ProtectedRoute><ProgramasForm /></ProtectedRoute> },
 
 /*
       // TIPOS EJERCICIOS Y PAGOS

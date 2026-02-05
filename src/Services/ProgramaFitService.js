@@ -147,7 +147,22 @@ const getTiposByNiveles = async (nivel) => {
     }
 };
 
-// ------------------- EXPORT -------------------
+
+const getRutinasByEjercicios = async (ejercicios) => {
+    try {
+        console.log('Lo que se esta recibiendo en el servicio: ', ejercicios);
+        const searchTerm = ejercicios.join(',');
+        const response = await axiosInstance.get(`${API_URL}/buscar-rutinas`, {
+            params: { searchTerm }
+        });
+        console.log('Lo que se encuentra:', response.data);
+        return response.data;
+    }
+    catch (error) {
+        console.error('Error al obtener rutinas por ejercicios', error.response?.data || error);
+        throw error;
+    }
+};
 
 const ProgramaFitService = {
     getProgramas,
@@ -160,7 +175,8 @@ const ProgramaFitService = {
     putRutina,
     deleteRutina,
     getNiveles,
-    getTiposByNiveles
+    getTiposByNiveles,
+    getRutinasByEjercicios
 };
 
 export default ProgramaFitService;

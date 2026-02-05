@@ -140,7 +140,16 @@ export default function IndexPrograma({ programas, loading, nivel, setNivel, tip
                                     </Stack>
 
 
-                                    <Typography variant="body2" color="text.secondary" mb={2}>
+                                    <Typography
+                                        variant="body2"
+                                        color="text.secondary"
+                                        mb={2}
+                                        sx={{
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                            whiteSpace: 'nowrap',
+                                        }}
+                                    >
                                         {programa.contenido || 'Programa diseñado para mejorar tu rendimiento.'}
                                     </Typography>
 
