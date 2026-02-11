@@ -15,11 +15,11 @@ const getAsistencias = async (id) => {
     throw error;
   }
 };
-
-const postAsistencias = async (asistencias) => {
+const postAsistencias = async (codigoCliente) => {
   try {
-    console.log('Registrando asistencias:', asistencias);
-    const response = await axiosInstance.post(API_URL, asistencias);
+    const response = await axiosInstance.post(API_URL, codigoCliente, {
+      headers: { 'Content-Type': 'application/json' }
+    });
     return response.data;
   } catch (error) {
     console.error('Error al registrar la asistencia', error);

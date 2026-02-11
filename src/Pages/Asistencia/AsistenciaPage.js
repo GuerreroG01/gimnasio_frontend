@@ -58,25 +58,9 @@ export default function AsistenciaPage(){
         setError(null);
 
         try {
-            const ahora = new Date();
-            const fechaLocal = ahora.toLocaleDateString('es-ES', {
-                timeZone: 'America/Managua',
-                year: 'numeric',
-                month: '2-digit',
-                day: '2-digit'
-            }).split('/').reverse().join('-');
-
-            const horaLocal = ahora.toTimeString().split(' ')[0];
-            console.log('Fecha registrada:', fechaLocal);
-
-            const nuevaAsistencia = {
-                codigoCliente: parseInt(clientId),
-                fecha: fechaLocal,
-                hora: horaLocal
-            };
             if (registrarAsistencia) {
-                await AsistenciaService.postAsistencias(nuevaAsistencia);
-                await ClienteProgresoService.incrementDiasEnNivel(nuevaAsistencia.codigoCliente);
+                await AsistenciaService.postAsistencias(clientId);
+                await ClienteProgresoService.incrementDiasEnNivel(clientId);
             } else {
                 console.log('El registro de asistencia está desactivado, solo se mostrará la información.');
             }

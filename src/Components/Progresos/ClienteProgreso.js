@@ -178,7 +178,7 @@ export default function ClienteProgreso({ theme, clienteIdInput, setClienteIdInp
                                             <ProgressCircle value={progresoValue} theme={theme} />
                                             {progreso.fechaCompletado && (
                                                 <Typography variant="caption" display="block" mt={1} color="success.main">
-                                                ✔ {new Date(progreso.fechaCompletado).toLocaleDateString()}
+                                                    {new Date(progreso.fechaCompletado).toLocaleDateString()}
                                                 </Typography>
                                             )}
                                             </Box>

@@ -6,25 +6,39 @@ import { AuthContext } from "../../Context/AuthContext";
 export default function LoginPage(){
     const [username, setUsername] = React.useState("");
     const [clave, setClave] = React.useState("");
-    const [error, setError] = React.useState(null);
     const [loading, setLoading] = React.useState(false);
-    const [openSnackbar, setOpenSnackbar] = React.useState(false);
     const { login } = React.useContext(AuthContext);
     const navigate = useNavigate();
+    const [snackbar, setSnackbar] = React.useState({
+        open: false,
+        message: "",
+        severity: "success",
+    });
+
 
     const handleLogin = async () => {
-        setError(null);
         setLoading(true);
 
         try {
-            console.log("Credenciales:", { username, clave });
             const loginData = { username, clave };
-            await login(loginData);  
-            setOpenSnackbar(true);
+            await login(loginData);
 
-            navigate("/");
+            setSnackbar({
+                open: true,
+                message: "Credenciales Correctos",
+                severity: "success",
+            });
+
+            setTimeout(() => {
+                navigate("/");
+            }, 1000);
+
         } catch (err) {
-            setError("Credenciales incorrectas o error en login.");
+            setSnackbar({
+                open: true,
+                message: "Credenciales incorrectas o error en login.",
+                severity: "error",
+            });
         } finally {
             setLoading(false);
         }
@@ -43,11 +57,11 @@ export default function LoginPage(){
             setUsername={setUsername}
             clave={clave}
             setClave={setClave}
-            error={error}
             loading={loading}
-            openSnackbar={openSnackbar}
-            setOpenSnackbar={setOpenSnackbar}
+            snackbar={snackbar}
+            setSnackbar={setSnackbar}
             navigate={navigate} 
+
         />
     );
 }
