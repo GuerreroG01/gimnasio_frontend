@@ -34,8 +34,11 @@ export default function FormPage({ pagoId, onSuccess }) {
         Monto: 0,
         DetallePago: '',
         IntervaloPago: false,
+        CodigoTipoPago:'',
+        TipoPago: null,
     });
     const [montoBase, setMontoBase]= React.useState(0);
+    const [monedaBase, setMonedaBase] = React.useState('NIO');
     const [tipoCambio, setTipoCambio] = React.useState([]); 
     const [cambioEquivalente, setCambioEquivalente] = React.useState(0);
     const navigate= useNavigate();
@@ -73,12 +76,14 @@ export default function FormPage({ pagoId, onSuccess }) {
                     Cambio: values.Cambio,
                     Monto: values.Monto,
                     DetallePago: values.DetallePago,
-                    IntervaloPago: values.IntervaloPago ? 1 : 0
+                    IntervaloPago: values.IntervaloPago ? 1 : 0,
+                    CodigoTipoPago: values.CodigoTipoPago
                 };
 
                 const pagoGuardado = pagoId
                     ? await pagosService.updatePago(pagoId, datosPago)
                     : await pagosService.createPago(datosPago);
+                    console.log('Datos del pago:', datosPago);
 
                 const codigoPago = pagoId ? values.CodigoPago : pagoGuardado.codigoPago;
 
@@ -162,11 +167,11 @@ export default function FormPage({ pagoId, onSuccess }) {
     useEffect(() => {
         if (!montoBase) return;
 
-        const montoConvertido = convertirPrecio(montoBase, 'NIO', values.Moneda, tipoCambio);
+        const montoConvertido = convertirPrecio(montoBase, monedaBase, values.Moneda, tipoCambio);
         if (values.Monto !== montoConvertido) {
             setFieldValue("Monto", montoConvertido);
         }
-    }, [values.Moneda, tipoCambio, montoBase, values.Monto, setFieldValue]);
+    }, [values.Moneda, tipoCambio, montoBase, monedaBase, values.Monto, setFieldValue]);
 
     useEffect(() => {
         const efectivo = parseFloat(values.Efectivo) || 0;
@@ -288,15 +293,31 @@ export default function FormPage({ pagoId, onSuccess }) {
         }, autocompleteDelay);
     };
     const handleTipoPagoChange = (event, value) => {
-        if (!value) return;
+        if (!value) {
+            formik.setFieldValue("TipoPago", null);
+            formik.setFieldValue("CodigoTipoPago", "");
+            return;
+        }
+        formik.setFieldValue("CodigoTipoPago", value.codigoPago);
         setMontoBase(value.monto);
-
-        const montoConvertido = convertirPrecio(value.monto, 'NIO', formik.values.Moneda, tipoCambio);
-
-        formik.setFieldValue("MesesPagados", value.unidadTiempo.toLowerCase() === "dias" ? value.duracion : value.duracion);
+        setMonedaBase(value.moneda);
+        const montoConvertido = convertirPrecio(
+            value.monto,
+            value.moneda,
+            formik.values.Moneda,
+            tipoCambio
+        );
+        formik.setFieldValue(
+            "MesesPagados",
+            value.unidadTiempo.toLowerCase() === "dias" ? value.duracion : value.duracion
+        );
         formik.setFieldValue("Monto", montoConvertido);
-        formik.setFieldValue('IntervaloPago', value.unidadTiempo.toLowerCase() === 'dias' ? false : true );
+        formik.setFieldValue(
+            "IntervaloPago",
+            value.unidadTiempo.toLowerCase() === "dias" ? false : true
+        );
     };
+
 
     return (
         <PagoForm

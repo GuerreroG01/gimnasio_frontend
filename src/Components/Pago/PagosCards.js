@@ -6,6 +6,7 @@ import {/* Edit as EditIcon,*/ Delete as DeleteIcon } from '@mui/icons-material'
 import DetailsPago from './DetailsPago';
 import pagoService from '../../Services/PagoService';
 import TiempoPagoService from '../../Services/TiempoPagoService';
+import { obtenerSimboloMoneda } from '../../Utils/MonedaUtils';
 
 const fadeInUp = keyframes`
   0% {
@@ -26,9 +27,13 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
   const [infopago, setinfopago] = useState(null);
   //const navigate = useNavigate();
   const theme = useTheme();
+  const formatearMonto = (monto, moneda) =>
+  `${obtenerSimboloMoneda(moneda)}${Number(monto).toLocaleString('es-NI', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  })}`;
 
   const handleOpenModal = (pago) => {
-    console.log("Datos del pago seleccionado:", pago);
 
     const fetchInfoPago = async () => {
       if (pago && pago.codigoPago) {
@@ -125,7 +130,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
                   </Typography>
                   <Divider sx={{ marginY: 1 }} />
                   <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
-                    <strong>Monto:</strong> ${Number(pago.monto).toLocaleString()}
+                    <strong>Monto:</strong> {formatearMonto(pago.monto, pago.moneda)}
                   </Typography>
                   <Typography variant="body2" color="text.secondary">
                     <strong>Fecha de Pago:</strong> {new Date(pago.fechaPago).toLocaleDateString()}
@@ -183,6 +188,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
           onClose={handleCloseModal}
           pago={pagoSeleccionado}
           infopago={infopago}
+          obtenerSimboloMoneda={obtenerSimboloMoneda}
         />
       )}
       <Dialog

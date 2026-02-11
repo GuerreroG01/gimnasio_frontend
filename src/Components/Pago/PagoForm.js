@@ -117,7 +117,7 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
                       <div style={{ display: "flex", flexDirection: "column" }}>
                         <span>{option.descripcion}</span>
                         <small style={{ color: "#888" }}>
-                          Monto: {option.monto} | Duración: {option.duracion} {option.unidadTiempo}
+                          Monto: {option.monto} {option.moneda} | {option.duracion} {option.unidadTiempo}
                         </small>
                       </div>
                     </li>

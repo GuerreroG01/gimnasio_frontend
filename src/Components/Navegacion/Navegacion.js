@@ -32,7 +32,8 @@ const NAV_LINKS = [
       { label: "Pago", path: "/pagos" },
       { label: "Productos", path: "/productos" },
       { label: "Ventas", path: "/venta" },
-      { label: "Programas", path: "/programas" }
+      { label: "Programas", path: "/programas" },
+      { label: "Progresos", path: "/progresos" }
   ]}
 ];
 

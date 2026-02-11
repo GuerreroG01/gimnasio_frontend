@@ -5,7 +5,7 @@ import HelpOutline from '@mui/icons-material/HelpOutline';
 export default function Step1DatosPrograma({ form, handleChange, dia}) {
     return (
         <Box sx={{ display: "flex", justifyContent: "center" }}>
-            <Grid container spacing={4} sx={{ maxWidth: 1200 }}>
+            <Grid container spacing={2} sx={{ maxWidth: 1300 }}>
                 <Grid item xs={12} md={6}>
                     <Card elevation={3}>
                         <CardContent>
@@ -23,20 +23,50 @@ export default function Step1DatosPrograma({ form, handleChange, dia}) {
                         <Grid container spacing={2}>
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                label="Nivel"
-                                fullWidth
-                                variant="outlined"
-                                value={form.nivel || ""}
-                                onChange={(e) => handleChange({ target: { name: "nivel", value: e.target.value } })}
+                                    label="Nivel"
+                                    fullWidth
+                                    variant="outlined"
+                                    value={form.nivel || ""}
+                                    onChange={(e) =>
+                                        handleChange({ target: { name: "nivel", value: e.target.value } })
+                                    }
+                                    InputProps={{
+                                        endAdornment: (
+                                            <InputAdornment position="end">
+                                                <Tooltip title="Fija el orden del nivel. Ej: Principiante = 1, Intermedio = 2, etc.">
+                                                    <TextField
+                                                        type="number"
+                                                        variant="standard"
+                                                        value={form.ordenNivel}
+                                                        onChange={(e) =>
+                                                            handleChange({
+                                                                target: {
+                                                                    name: "ordenNivel",
+                                                                    value: Number(e.target.value),
+                                                                },
+                                                            })
+                                                        }
+                                                        inputProps={{
+                                                            style: { width: 40, textAlign: "center", cursor: "pointer" },
+                                                            min: 1,
+                                                        }}
+                                                    />
+                                                </Tooltip>
+                                            </InputAdornment>
+                                        ),
+                                    }}
                                 />
                             </Grid>
+
                             <Grid item xs={12} sm={6}>
                                 <TextField
-                                label="Tipo"
-                                fullWidth
-                                variant="outlined"
-                                value={form.tipo || ""}
-                                onChange={(e) => handleChange({ target: { name: "tipo", value: e.target.value } })}
+                                    label="Tipo"
+                                    fullWidth
+                                    variant="outlined"
+                                    value={form.tipo || ""}
+                                    onChange={(e) =>
+                                        handleChange({ target: { name: "tipo", value: e.target.value } })
+                                    }
                                 />
                             </Grid>
                         </Grid>

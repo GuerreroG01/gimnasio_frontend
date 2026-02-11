@@ -1,15 +1,14 @@
 import CloseIcon from '@mui/icons-material/Close';
 import { Modal, Box, Typography, useTheme, IconButton } from '@mui/material';
 
-const DetailsPago = ({ open, onClose, pago, infopago }) => {
+const DetailsPago = ({ open, onClose, pago, infopago, obtenerSimboloMoneda }) => {
   const theme = useTheme();
   if (!infopago) return <Typography>Cargando información...</Typography>;
-
   const clienteNombre = pago.cliente ? pago.cliente.nombreCompleto : 'Cliente no encontrado';
-
   const fechaPago = new Date(pago.fechaPago);
   const mesesPagados = pago.intervaloPago ? `Meses Pagados: ${pago.mesesPagados}` : `Días Pagados: ${pago.mesesPagados}`;
-  const monto = `Monto: $${pago.monto}`;
+  //Hay que seguir el rastro para saber de que metodo obtiene el pago
+  const monto = `Monto: ${obtenerSimboloMoneda(pago.moneda)}${pago.monto}`;
   const detallePago = `Detalle: ${pago.detallePago}`;
 
   return (

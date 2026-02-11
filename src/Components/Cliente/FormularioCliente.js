@@ -1,6 +1,6 @@
 import {
   TextField, Checkbox, FormControlLabel, Button, Box, Typography,
-  CircularProgress, Grid, Paper, useTheme
+  CircularProgress, Grid, Paper, useTheme, MenuItem
 } from '@mui/material';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
@@ -9,7 +9,7 @@ const FormularioCliente = ({
   id, cliente, setCliente, fecha, formatDate, fileName, imagePreview, exitocreacion,
   mensaje_error, mensajeAlerta, setMensajeAlerta, cargando,
   handleChange, handleFileChange, handleSubmitCreate,
-  handleSubmitUpdate, handleTelefonoChange, navigate
+  handleSubmitUpdate, handleTelefonoChange, navigate, niveles, handleNivelChange
 }) => {
   const theme = useTheme();
   return (
@@ -92,61 +92,55 @@ const FormularioCliente = ({
           <Box sx={{ width: { xs: "100%", sm: "65%" } }}>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Nombres"
-                  name="nombres"
-                  value={cliente.nombres}
-                  onChange={handleChange}
-                  required
-                />
+                <TextField fullWidth label="Nombres" name="nombres" value={cliente.nombres} onChange={handleChange} required />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField fullWidth label="Apellidos" name="apellidos" value={cliente.apellidos} onChange={handleChange} required />
               </Grid>
 
               <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Apellidos"
-                  name="apellidos"
-                  value={cliente.apellidos}
-                  onChange={handleChange}
-                  required
-                />
+                <TextField fullWidth label="Teléfono" name="telefono" value={cliente.telefono} onChange={handleTelefonoChange} />
               </Grid>
+              <Grid container spacing={2}>
+                <Grid item xs={12} sm={6} md={6}>
+                  <TextField
+                    fullWidth
+                    select
+                    label="Nivel"
+                    name="nivelActual"
+                    value={cliente.nivelActual || ''}
+                    onChange={handleNivelChange}
+                    sx={{ mb: 2, width: { xs: '100%', sm: '100%', md: '210px' } }}
+                    slotProps={{
+                      select: {
+                        MenuProps: {
+                          PaperProps: {
+                            style: { width: '15%' }
+                          }
+                        }
+                      }
+                    }}
+                  >
+                    {niveles.map((nivel) => (
+                      <MenuItem key={nivel} value={nivel}>
+                        {nivel}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                </Grid>
 
-              <Grid item xs={12} sm={6}>
-                <TextField
-                  fullWidth
-                  label="Teléfono"
-                  name="telefono"
-                  value={cliente.telefono}
-                  onChange={handleTelefonoChange}
-                />
-              </Grid>
+                <Grid item xs={12} sm={6} md={4}>
+                  <TextField
+                    fullWidth
+                    label="Correo Electrónico"
+                    name="correo"
+                    value={cliente.correo}
+                    onChange={handleChange}
+                  />
+                </Grid>
 
-              <Grid size={{ xs: 6, md: 8 }}>
-                <TextField
-                  fullWidth
-                  multiline
-                  rows={4}
-                  label="Observaciones"
-                  name="observaciones"
-                  value={cliente.observaciones}
-                  onChange={handleChange}
-                  sx={{ width: "90%", maxWidth: "900px" }}
-                />
               </Grid>
-              
-              <Grid item xs={12} sm={6} sx={{ ml: { md: -2.8 } }}>
-                <TextField
-                  fullWidth
-                  label="Correo Electrónico"
-                  name="correo"
-                  value={cliente.correo}
-                  onChange={handleChange}
-                />
-              </Grid>
-            </Grid>
-            <Grid item xs={12}>
+              <Grid item xs={12}> 
                 <FormControlLabel
                   control={
                     <Checkbox
@@ -158,11 +152,30 @@ const FormularioCliente = ({
                   label="Activo"
                 />
               </Grid>
+              <Grid item xs={12} sm={6} md={8}>
+                <TextField
+                  fullWidth
+                  multiline
+                  rows={4}
+                  label="Observaciones"
+                  name="observaciones"
+                  value={cliente.observaciones}
+                  onChange={handleChange}
+                  sx={{
+                    width: {
+                      xs: '100%',
+                      sm: '100%',
+                      md: '395px'
+                    }
+                  }}
+                />
+              </Grid>
+            </Grid>
+            
           </Box>
 
         </Box>
 
-        {/* BOTONES */}
         <Box mt={3} display="flex" gap={2}>
           <Button
             type="submit"

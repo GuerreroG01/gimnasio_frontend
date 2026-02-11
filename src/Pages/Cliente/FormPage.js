@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import ClienteService from '../../Services/ClienteService';
 import FormularioCliente from "../../Components/Cliente/FormularioCliente";
+import ProgramaFitService from '../../Services/ProgramaFitService';
 import { toZonedTime } from 'date-fns-tz';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
@@ -20,7 +21,8 @@ export default function FormPage(){
         foto: null,
         fechaIngreso: fecha,
         activo: true,
-        observaciones: ''
+        observaciones: '',
+        nivelActual: '',
     });
     const [fileName, setFileName] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
@@ -28,6 +30,7 @@ export default function FormPage(){
     const [mensaje_error, setmensaje_error] = useState('');
     const [cargando, setCargando] = useState(false);
     const [mensajeAlerta, setMensajeAlerta] = useState('');
+    const [niveles, setNiveles] = useState([]);
 
     useEffect(() => {
         if (id) {
@@ -128,6 +131,7 @@ export default function FormPage(){
         formData.append('apellidos', clienteConDefaults.apellidos);
         formData.append('telefono', clienteConDefaults.telefono);
         formData.append('correo', clienteConDefaults.correo);
+        formData.append('nivelActual', clienteConDefaults.nivelActual);
         if (clienteConDefaults.foto) {
         formData.append('foto', clienteConDefaults.foto);
         }
@@ -173,13 +177,27 @@ export default function FormPage(){
         const zonedDate = toZonedTime(new Date(date), 'America/Managua');
         return format(zonedDate, 'dd MMMM yyyy', { locale: es });
     };
+    useEffect(() => {
+        const fetchNiveles = async () => {
+        try {
+            const data = await ProgramaFitService.getNiveles();
+            setNiveles(data);
+        } catch (error) {
+            console.error('No se pudieron cargar los niveles:', error);
+        }
+        };
+        fetchNiveles();
+    }, []);
+    const handleNivelChange = (e) => {
+        setCliente({ ...cliente, nivelActual: e.target.value });
+    };
     return(
         <FormularioCliente 
             id={id} cliente={cliente} setCliente={setCliente} fecha={fechaActual} formatDate={formatDate}
             fileName={fileName} imagePreview={imagePreview} exitocreacion={exitocreacion} mensaje_error={mensaje_error}
             mensajeAlerta={mensajeAlerta} setMensajeAlerta={setMensajeAlerta} cargando={cargando} handleChange={handleChange}
             handleFileChange={handleFileChange} handleSubmitCreate={handleSubmitCreate} handleSubmitUpdate={handleSubmitUpdate}
-            handleTelefonoChange={handleTelefonoChange} navigate={navigate}
+            handleTelefonoChange={handleTelefonoChange} navigate={navigate} niveles={niveles} handleNivelChange={handleNivelChange}
         />
     );
 }

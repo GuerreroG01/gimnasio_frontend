@@ -1,17 +1,7 @@
 import React, { useEffect } from "react";
 import ProgrmaFitService from '../../Services/ProgramaFitService';
 import IndexPrograma from "../../Components/ProgramaFit/Programa/IndexPrograma";
-
-
-const dia = [
-    { number: 1, name: 'Lunes' },
-    { number: 2, name: 'Martes' },
-    { number: 3, name: 'Miércoles' },
-    { number: 4, name: 'Jueves' },
-    { number: 5, name: 'Viernes' },
-    { number: 6, name: 'Sábado' },
-    { number: 7, name: 'Domingo' }
-];
+import { getNombreDia } from "../../Utils/Constants";
 
 export default function IndexPage() {
 
@@ -39,7 +29,7 @@ export default function IndexPage() {
             const programasConDia = Array.isArray(data)
                 ? data.map(programa => ({
                     ...programa,
-                    diaNombre: dia.find(d => d.number === programa.dia)?.name || '',
+                    diaNombre: getNombreDia(programa.dia),
                 }))
                 : [];
 
@@ -108,7 +98,7 @@ export default function IndexPage() {
     useEffect(() => {
         if (!nivel) return;
         fetchProgramas(nivel, tipo);
-    }, [tipo]);
+    }, [tipo, nivel]);
     return (
         <IndexPrograma
             programas={programas}

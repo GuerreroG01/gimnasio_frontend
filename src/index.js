@@ -26,7 +26,8 @@ import MensajesPage from './Pages/Mensajes/MensajesPage';
 import IndexPrograma from './Pages/Programa/IndexPage';
 import DetailsPrograma from './Components/ProgramaFit/Programa/DetailsPrograma';
 import ProgramasForm from './Pages/Programa/FormPage';
-//import Prueba from './Pages/Programa/IndexPage';
+import ProgresosCliente from './Pages/Progresos/ClienteProgresoPage';
+import Prueba from './Pages/Progresos/ClienteProgresoPage';
 import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
@@ -83,12 +84,13 @@ const router = createBrowserRouter([
 
       // Mensajes
       {path: '/mensajes', element: <ProtectedRoute><MensajesPage /></ProtectedRoute> },
-      // PROGRAMAS
+      // PROGRAMAS Y PROGRESOS
       {path: '/programas', element: <ProtectedRoute optional ><IndexPrograma /></ProtectedRoute> },
+      {path: '/progresos', element: <ProtectedRoute optional ><ProgresosCliente /></ProtectedRoute> },
       {path: '/programas/:id/details', element: <ProtectedRoute optional ><DetailsPrograma /></ProtectedRoute> },
       {path: '/programas/new', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
       {path: '/programas/:id/update', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
-      {path: '/prueba', element: <ProtectedRoute><ProgramasForm /></ProtectedRoute> },
+      {path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
 
 /*
       // TIPOS EJERCICIOS Y PAGOS

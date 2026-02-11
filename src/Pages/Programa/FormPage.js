@@ -2,11 +2,13 @@ import React, { useEffect } from "react";
 import { useParams, useNavigate } from 'react-router-dom';
 import ProgramaFitService from '../../Services/ProgramaFitService';
 import ProgramasForm from "../../Components/ProgramaFit/Programa/ProgramasForm";
+import { DIAS_SEMANA } from "../../Utils/Constants";
 
 const initialForm = {
     titulo: "",
     tipo: "",
     nivel: "",
+    ordenNivel: 0,
     duracion: 1,
     contenido: "",
     orden: 1,
@@ -23,15 +25,7 @@ export default function FormPage() {
     const [loading, setLoading] = React.useState(false);
     const isEditMode = Boolean(programaId);
     const [rutinasSeleccionadas, setRutinasSeleccionadas] = React.useState([]);
-    const dia = [
-        { number: 1, name: 'Lunes' },
-        { number: 2, name: 'Martes' },
-        { number: 3, name: 'Miércoles' },
-        { number: 4, name: 'Jueves' },
-        { number: 5, name: 'Viernes' },
-        { number: 6, name: 'Sábado' },
-        { number: 7, name: 'Domingo' }
-    ];
+    const dia = DIAS_SEMANA;
 
     useEffect(() => {
         if (!isEditMode) return;
@@ -43,6 +37,7 @@ export default function FormPage() {
                 titulo: data.titulo,
                 tipo: data.tipo,
                 nivel: data.nivel,
+                ordenNivel: data.ordenNivel,
                 duracion: data.duracion,
                 contenido: data.contenido ?? "",
                 orden: data.orden,

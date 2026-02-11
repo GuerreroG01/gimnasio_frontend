@@ -19,15 +19,7 @@ const fieldSx = {
   },
 };
 
-const TipoPagoForm = ({
-  anchorEl,
-  open,
-  data,
-  onChange,
-  onClose,
-  onSubmit,
-  loading,
-}) => {
+const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading }) => {
   return (
     <Popover
       open={open}
@@ -204,6 +196,45 @@ const TipoPagoForm = ({
                 <MenuItem value="Meses">Meses</MenuItem>
                 <MenuItem value="Anio">Año</MenuItem>
               </TextField>
+            </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={data?.Alimentacion ?? false}
+                    onChange={(e) =>
+                      onChange({ ...data, Alimentacion: e.target.checked })
+                    }
+                    color="primary"
+                    disabled={loading}
+                  />
+                }
+                label={
+                  <Typography fontWeight={500}>
+                    Incluir alimentación
+                  </Typography>
+                }
+              />
+            </Grid>
+
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={data?.Rutinas ?? false}
+                    onChange={(e) =>
+                      onChange({ ...data, Rutinas: e.target.checked })
+                    }
+                    color="primary"
+                    disabled={loading}
+                  />
+                }
+                label={
+                  <Typography fontWeight={500}>
+                    Incluir Rutinas
+                  </Typography>
+                }
+              />
             </Grid>
           </Grid>
 

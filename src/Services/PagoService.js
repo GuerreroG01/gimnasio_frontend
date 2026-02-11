@@ -62,7 +62,7 @@ const getUltimoPagoPorCliente = (usuarioId) =>
 const getVencimientosProximos = () =>
   axiosInstance.get(`${API_URL}/vencimientos-proximos`).then(r => r.data);
 
-export default {
+const PagoService = {
   getPagosByMonthAndYear,
   getAñosConPagos,
   getMesesConPagos,
@@ -79,3 +79,4 @@ export default {
   getUltimoPagoPorCliente,
   getVencimientosProximos,
 };
+export default PagoService;

@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import AsistenciaService from '../../Services/AsistenciaService';
 import Asistencia from '../../Components/Asistencia/Asistencia';
 import PagoService from '../../Services/PagoService';
+import ClienteProgresoService from '../../Services/ClienteProgresoService';
 
 export default function AsistenciaPage(){
     const [clientId, setClientId] = React.useState('');
@@ -75,6 +76,7 @@ export default function AsistenciaPage(){
             };
             if (registrarAsistencia) {
                 await AsistenciaService.postAsistencias(nuevaAsistencia);
+                await ClienteProgresoService.incrementDiasEnNivel(nuevaAsistencia.codigoCliente);
             } else {
                 console.log('El registro de asistencia está desactivado, solo se mostrará la información.');
             }

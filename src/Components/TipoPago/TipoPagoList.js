@@ -23,6 +23,8 @@ const TipoPagoList = () => {
     Monto: 0,
     Duracion: 1,
     UnidadTiempo: "Dias",
+    Alimentacion: false,
+    Rutinas: false,
     Moneda: "NIO",
     Activo: true,
   });
@@ -47,6 +49,8 @@ const TipoPagoList = () => {
       Monto: tp.monto,
       Duracion: tp.duracion,
       UnidadTiempo: tp.unidadTiempo,
+      Alimentacion: tp.alimentacion,
+      Rutinas: tp.rutinas,
       Moneda: tp.moneda,
       Activo: tp.activo ?? true,
     } : {
@@ -55,6 +59,8 @@ const TipoPagoList = () => {
       Monto: 0,
       Duracion: 1,
       UnidadTiempo: "Dias",
+      Alimentacion: false,
+      Rutinas: false,
       Moneda: "NIO",
       Activo: true,
     });
