@@ -46,9 +46,11 @@ export default function Step1DatosPrograma({ form, handleChange, dia}) {
                                                                 },
                                                             })
                                                         }
-                                                        inputProps={{
-                                                            style: { width: 40, textAlign: "center", cursor: "pointer" },
-                                                            min: 1,
+                                                        slotProps={{
+                                                            input: {
+                                                                style: { width: 40, textAlign: "center", cursor: "pointer" },
+                                                                min: 1,
+                                                            },
                                                         }}
                                                     />
                                                 </Tooltip>
@@ -65,10 +67,37 @@ export default function Step1DatosPrograma({ form, handleChange, dia}) {
                                     variant="outlined"
                                     value={form.tipo || ""}
                                     onChange={(e) =>
-                                        handleChange({ target: { name: "tipo", value: e.target.value } })
+                                    handleChange({ target: { name: "tipo", value: e.target.value } })
                                     }
+                                    slotProps={{
+                                        input: {
+                                            endAdornment: (
+                                                <InputAdornment position="end">
+                                                    <Tooltip title="Selecciona género para adecuar el plan de entrenamiento correcto">
+                                                        <TextField
+                                                            select
+                                                            variant="standard"
+                                                            value={form.generoDedicado || ""}
+                                                            onChange={(e) =>
+                                                                handleChange({ target: { name: "generoDedicado", value: e.target.value } })
+                                                            }
+                                                            slotProps={{
+                                                                htmlInput: {
+                                                                    style: { width: 80, textAlign: "center", cursor: "pointer" },
+                                                                },
+                                                            }}
+                                                        >
+                                                            <MenuItem value="">--</MenuItem>
+                                                            <MenuItem value="M">M</MenuItem>
+                                                            <MenuItem value="F">F</MenuItem>
+                                                        </TextField>
+                                                    </Tooltip>
+                                                </InputAdornment>
+                                            ),
+                                        },
+                                    }}
                                 />
-                            </Grid>
+                                </Grid>
                         </Grid>
                         </CardContent>
                     </Card>

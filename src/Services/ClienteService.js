@@ -42,7 +42,7 @@ const buscarCliente = (nombres, apellidos) => {
   });
 };
 
-export default {
+const ClienteService = {
   getClientePorLetra,
   getClienteById,
   createCliente,
@@ -51,3 +51,4 @@ export default {
   getClientePorPrimeraLetra,
   buscarCliente,
 };
+export default ClienteService;

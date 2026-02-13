@@ -23,6 +23,7 @@ export default function FormPage(){
         activo: true,
         observaciones: '',
         nivelActual: '',
+        genero: '',
     });
     const [fileName, setFileName] = useState('');
     const [imagePreview, setImagePreview] = useState(null);
@@ -89,6 +90,7 @@ export default function FormPage(){
         formData.append('FechaIngreso', clienteConDefaults.fechaIngreso);
         formData.append('Activo', clienteConDefaults.activo);
         formData.append('Observaciones', clienteConDefaults.observaciones);
+        formData.append('Genero', clienteConDefaults.genero);
         setCargando(true);
         const start = Date.now();
         try {
@@ -138,28 +140,29 @@ export default function FormPage(){
         formData.append('fechaIngreso', clienteConDefaults.fechaIngreso);
         formData.append('activo', clienteConDefaults.activo);
         formData.append('observaciones', clienteConDefaults.observaciones);
+        formData.append('genero', clienteConDefaults.genero);
 
         setCargando(true);
         const start = Date.now();
         try {
-        await ClienteService.updateCliente(clienteConDefaults.codigo, formData);
-        const end = Date.now();
-        const duration = end - start;
+            await ClienteService.updateCliente(clienteConDefaults.codigo, formData);
+            const end = Date.now();
+            const duration = end - start;
 
-        if (duration < 500) {
-            await new Promise(resolve => setTimeout(resolve, 500 - duration));
-        }
+            if (duration < 500) {
+                await new Promise(resolve => setTimeout(resolve, 500 - duration));
+            }
 
-        setexitocreacion('Cliente actualizado exitosamente');
-        setTimeout(() => {
-            setexitocreacion('');
-            navigate(`/clientes`);
-        }, 500);
+            setexitocreacion('Cliente actualizado exitosamente');
+            setTimeout(() => {
+                setexitocreacion('');
+                navigate(`/clientes`);
+            }, 500);
         } catch (error) {
-        console.error('Error actualizando cliente:', error);
-        alert(`Error: ${error.response?.data?.title || 'Error al procesar la solicitud'}`);
+            console.error('Error actualizando cliente:', error);
+            alert(`Error: ${error.response?.data?.title || 'Error al procesar la solicitud'}`);
         } finally {
-        setCargando(false);
+            setCargando(false);
         }
     };
 

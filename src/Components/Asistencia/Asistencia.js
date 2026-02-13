@@ -3,8 +3,11 @@ import { Box, CircularProgress, useTheme, Typography, TextField, Grid, Snackbar,
 import CheckIcon from '@mui/icons-material/Check';
 import InfoUsuario from './InfoUsuario';
 import ChecklistIcon from '@mui/icons-material/Checklist';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
-const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, registrarAsistencia, setRegistrarAsistencia, error, openSnackbar, setOpenSnackbar, loading, cliente, fade, diasRestantes }) => {
+const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, registrarAsistencia, 
+  setRegistrarAsistencia, error, openSnackbar, setOpenSnackbar, loading, cliente, fade, diasRestantes, 
+  snackbar, setSnackbar}) => {
   const navigate = useNavigate();
   const theme = useTheme();
   return (
@@ -82,6 +85,12 @@ const Asistencias = ({ showInfo, clientId, handleInputChange, handleKeyDown, reg
           )}
         </Grid>
       </Fade>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={() => setSnackbar({ ...snackbar, open: false })}
+      />
     </Box>
   );
 };

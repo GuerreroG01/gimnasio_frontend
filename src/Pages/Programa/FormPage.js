@@ -14,6 +14,7 @@ const initialForm = {
     orden: 1,
     dia: 1,
     activo: true,
+    generoDedicado:""
 };
 
 export default function FormPage() {
@@ -43,6 +44,7 @@ export default function FormPage() {
                 orden: data.orden,
                 dia: data.dia,
                 activo: data.activo,
+                generoDedicado: data.generoDedicado,
             });
 
             const rutinas = data.programaRutinas.map(pr => pr.rutinaFit);
@@ -97,6 +99,7 @@ export default function FormPage() {
             form.titulo?.trim() !== "" &&
             form.nivel?.trim() !== "" &&
             form.tipo?.trim() !== "" &&
+            form.generoDedicado?.trim() !== "" &&
             form.duracion > 0 &&
             form.orden > 0 &&
             form.dia > 0

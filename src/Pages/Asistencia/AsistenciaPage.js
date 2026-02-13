@@ -15,6 +15,11 @@ export default function AsistenciaPage(){
     const [fade, setFade] = React.useState(false);
     const [timeoutId, setTimeoutId] = React.useState(null);
     const [registrarAsistencia, setRegistrarAsistencia] = React.useState(true);
+    const [snackbar, setSnackbar] = React.useState({
+        open: false,
+        message: "",
+        severity: "success",
+    });
 
     useEffect(() => {
         const handleEscapeKey = (e) => {
@@ -60,6 +65,17 @@ export default function AsistenciaPage(){
         try {
             if (registrarAsistencia) {
                 await AsistenciaService.postAsistencias(clientId);
+                const progresoResponse =
+                await ClienteProgresoService.crearSiguienteProgreso(clientId);
+                if (progresoResponse?.mensaje) {
+                    setSnackbar({
+                        open: true,
+                        message: progresoResponse.mensaje,
+                        severity: progresoResponse.mensaje.includes("!Sigue asi!")
+                            ? "info"
+                            : "success",
+                    });
+                }
                 await ClienteProgresoService.incrementDiasEnNivel(clientId);
             } else {
                 console.log('El registro de asistencia está desactivado, solo se mostrará la información.');
@@ -104,6 +120,8 @@ export default function AsistenciaPage(){
             cliente={cliente}
             fade={fade}
             diasRestantes={diasRestantes}
+            snackbar={snackbar}
+            setSnackbar={setSnackbar}
         />
     );
 }

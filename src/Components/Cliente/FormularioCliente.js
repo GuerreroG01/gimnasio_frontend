@@ -1,6 +1,6 @@
 import {
   TextField, Checkbox, FormControlLabel, Button, Box, Typography,
-  CircularProgress, Grid, Paper, useTheme, MenuItem
+  CircularProgress, Grid, Paper, useTheme, MenuItem, FormControl, InputLabel, Select
 } from '@mui/material';
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
@@ -16,7 +16,7 @@ const FormularioCliente = ({
     <Paper
       elevation={4}
       sx={{
-        maxWidth: 1100,
+        maxWidth: 1200,
         margin: 'auto',
         padding: 4,
         borderRadius: 3,
@@ -90,7 +90,7 @@ const FormularioCliente = ({
 
           {/* COLUMNA DERECHA (Datos del cliente) */}
           <Box sx={{ width: { xs: "100%", sm: "65%" } }}>
-            <Grid container spacing={2}>
+            <Grid item xs={12} container spacing={2}>
               <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Nombres" name="nombres" value={cliente.nombres} onChange={handleChange} required />
               </Grid>
@@ -101,7 +101,7 @@ const FormularioCliente = ({
               <Grid item xs={12} sm={6}>
                 <TextField fullWidth label="Teléfono" name="telefono" value={cliente.telefono} onChange={handleTelefonoChange} />
               </Grid>
-              <Grid container spacing={2}>
+              <Grid item xs={12} container spacing={2}>
                 <Grid item xs={12} sm={6} md={6}>
                   <TextField
                     fullWidth
@@ -138,19 +138,20 @@ const FormularioCliente = ({
                     onChange={handleChange}
                   />
                 </Grid>
-
               </Grid>
-              <Grid item xs={12}> 
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      name="activo"
-                      checked={cliente.activo}
-                      onChange={handleChange}
-                    />
-                  }
-                  label="Activo"
-                />
+              <Grid item xs={12}>
+                <FormControl size="medium" sx={{ minWidth: 120 }}>
+                  <InputLabel>Género</InputLabel>
+                  <Select
+                    name="genero"
+                    value={cliente.genero || ''}
+                    label="Género"
+                    onChange={handleChange}
+                  >
+                    <MenuItem value="M">Masculino</MenuItem>
+                    <MenuItem value="F">Femenino</MenuItem>
+                  </Select>
+                </FormControl>
               </Grid>
               <Grid item xs={12} sm={6} md={8}>
                 <TextField
@@ -170,6 +171,16 @@ const FormularioCliente = ({
                   }}
                 />
               </Grid>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="activo"
+                    checked={cliente.activo}
+                    onChange={handleChange}
+                  />
+                }
+                label="Activo"
+              />
             </Grid>
             
           </Box>
