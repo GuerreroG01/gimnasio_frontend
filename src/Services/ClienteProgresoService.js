@@ -90,6 +90,22 @@ const crearSiguienteProgreso = async (clienteId) => {
         throw error;
     }
 };
+const getProgresoPorNiveles = async (clienteId) => {
+    if (!clienteId) throw new Error('Debe especificar el ID del cliente');
+
+    try {
+        const response = await axiosInstance.get(
+            `${API_URL}/${clienteId}/progreso-niveles`
+        );
+        return response.data;
+    } catch (error) {
+        console.error(
+            `Error al obtener progreso por niveles del cliente ${clienteId}`,
+            error.response?.data || error
+        );
+        throw error;
+    }
+};
 
 
 const ClienteProgresoService = {
@@ -98,7 +114,8 @@ const ClienteProgresoService = {
     getProgresosByPrograma,
     incrementDiasEnNivel,
     incrementDiaPrograma,
-    crearSiguienteProgreso
+    crearSiguienteProgreso,
+    getProgresoPorNiveles
 };
 
 export default ClienteProgresoService;

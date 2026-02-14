@@ -34,6 +34,15 @@ export const AuthProvider = ({ children }) => {
         checkAuth();
     }, []);
 
+    const [statusPage, setStatusPage] = React.useState(() => {
+    const saved = localStorage.getItem('statusPage');
+    return saved === 'public' || saved === 'private' ? saved : 'public';
+    });
+
+    useEffect(() => {
+    localStorage.setItem('statusPage', statusPage);
+    }, [statusPage]);
+
     const login = async (credentials) => {
         setLoading(true);
         try {
@@ -47,6 +56,7 @@ export const AuthProvider = ({ children }) => {
             setUsuario(decodedToken.sub);
             setToken(token);
             setAuthenticated(true);
+            setStatusPage('private');
             return true;
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
@@ -63,11 +73,12 @@ export const AuthProvider = ({ children }) => {
         setAuthenticated(false);
         setUsuario(null);
         setToken(null);
+        setStatusPage('public');
         localStorage.removeItem('token');
     };
 
     return (
-        <AuthContext.Provider value={{ authenticated, usuario, token, login, logout, loading }}>
+        <AuthContext.Provider value={{ authenticated, usuario, token, login, logout, loading, statusPage, setStatusPage }}>
         {children}
         </AuthContext.Provider>
     );

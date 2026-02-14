@@ -6,31 +6,33 @@ import Navegacion from '../Navegacion/Navegacion';
 import Box from '@mui/material/Box';
 
 const PrivateRoute = ({ children, optional = false }) => {
-    const { authenticated, loading } = React.useContext(AuthContext);
+    const { authenticated, loading, statusPage } = React.useContext(AuthContext);
 
     if (loading) {
         return (
             <Box
                 sx={{
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                height: '100vh',
+                    display: 'flex',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    height: '100vh',
                 }}
             >
                 <CircularProgress />
             </Box>
         );
     }
-
     if (!authenticated) {
         if (optional) {
             return <>{children}</>;
         }
+        
+        if (statusPage === 'private') {
+            return <Navigate to="/login" replace />;
+        }
 
-        return <Navigate to="/login" replace />;
+        return <>{children}</>;
     }
-
     return <Navegacion>{children}</Navegacion>;
 };
 

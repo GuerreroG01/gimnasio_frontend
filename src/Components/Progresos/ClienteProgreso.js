@@ -32,8 +32,8 @@ const ProgressCircle = ({ value, theme }) => (
     </Box>
 );
 
-export default function ClienteProgreso({ theme, clienteIdInput, setClienteIdInput, clienteId, progresos, loading, error,
-    handleFetchProgresos, getIconByTipo, getColorByTipo, calcularProgreso, agruparPorNivel, clienteInfo, snackbar, setSnackbar }) {
+export default function ClienteProgreso({ theme, clienteIdInput, setClienteIdInput, clienteId, progresos, loading, error, progresoNiveles,
+    handleFetchProgresos, getIconByTipo, getColorByTipo, calcularProgreso, agruparPorNivel, clienteInfo, snackbar, setSnackbar, authenticated }) {
 
     return (
         <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
@@ -46,74 +46,98 @@ export default function ClienteProgreso({ theme, clienteIdInput, setClienteIdInp
                 mb={4}
             >
                 <Box flex={1}>
-                {clienteInfo ? (
-                    <>
-                    <Typography
-                        variant="h4"
-                        fontWeight="bold"
+                    {clienteInfo ? (
+                        <>
+                            <Typography
+                                variant="h4"
+                                fontWeight="bold"
+                                sx={{
+                                    color: 'primary.main',
+                                    lineHeight: 1.2,
+                                    letterSpacing: 0.5
+                                }}
+                            >
+                                ¡Hola{' '}
+                                <Box component="span" sx={{ color: 'secondary.main' }}>
+                                    {clienteInfo.nombres} {clienteInfo.apellidos}
+                                </Box>
+                                !
+                            </Typography>
+
+                            <Typography variant="h6" color="text.secondary">
+                                Aquí están tus progresos
+                            </Typography>
+
+                            <Box mt={2} display="flex" gap={2} overflow="auto">
+                                {progresoNiveles?.map((nivel) => (
+                                    <Card
+                                        key={nivel.nivel}
+                                        sx={{
+                                            minWidth: 120,
+                                            p: 1,
+                                            borderRadius: 2,
+                                            boxShadow: '0px 2px 6px rgba(0,0,0,0.1)',
+                                            display: 'flex',
+                                            flexDirection: 'column',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            flexShrink: 0,
+                                        }}
+                                    >
+                                        <Typography variant="caption" color="text.secondary" sx={{ mb: 1 }}>
+                                            {nivel.nivel}
+                                        </Typography>
+                                        <ProgressCircle value={nivel.porcentajeAvance} theme={theme} />
+                                        <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, textAlign: 'center' }}>
+                                            {nivel.programasCompletados}/{nivel.totalProgramas} programas
+                                        </Typography>
+                                    </Card>
+                                ))}
+                            </Box>
+
+                        </>
+                    ) : (
+                        <Typography variant="h4" sx={{ fontWeight: 'bold', color: theme.palette.primary.main }}>
+                            Progresos
+                        </Typography>
+                    )}
+                </Box>
+                {authenticated && (
+                    <Box
                         sx={{
-                        color: 'primary.main',
-                        lineHeight: 1.2,
-                        letterSpacing: 0.5
+                            width: { xs: '100%', md: 320 },
+                            flexShrink: 0
                         }}
                     >
-                        ¡Hola{' '}
-                        <Box component="span" sx={{ color: 'secondary.main' }}>
-                        {clienteInfo.nombres} {clienteInfo.apellidos}
-                        </Box>
-                        !
-                    </Typography>
-
-                    <Typography variant="h6" color="text.secondary">
-                        Aquí están tus progresos
-                    </Typography>
-
-                    <Typography variant="subtitle2" color="text.secondary">
-                        Nivel actual: <strong>{clienteInfo.nivelActual}</strong> · Días en nivel:{' '}
-                        <strong>{clienteInfo.diasEnNivel}</strong>
-                    </Typography>
-                    </>
-                ) : (
-                    <Typography variant="h4" sx={{ fontWeight: 'bold', color: theme.palette.primary.main }}>
-                        Progresos
-                    </Typography>
+                    <TextField
+                        fullWidth
+                        label="Código del Cliente"
+                        variant="outlined"
+                        value={clienteIdInput}
+                        onChange={(e) => setClienteIdInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') handleFetchProgresos();
+                        }}
+                        slotProps={{
+                            input: {
+                            endAdornment: (
+                                <InputAdornment position="end">
+                                <Tooltip title="Buscar Progreso">
+                                    <IconButton
+                                    onClick={handleFetchProgresos}
+                                    edge="end"
+                                    color="primary"
+                                    >
+                                    <SearchIcon />
+                                    </IconButton>
+                                </Tooltip>
+                                </InputAdornment>
+                            ),
+                            },
+                        }}
+                    />
+                    </Box>
                 )}
-                </Box>
-
-                <Box
-                    sx={{
-                        width: { xs: '100%', md: 320 },
-                        flexShrink: 0
-                    }}
-                >
-                <TextField
-                    fullWidth
-                    label="Código del Cliente"
-                    variant="outlined"
-                    value={clienteIdInput}
-                    onChange={(e) => setClienteIdInput(e.target.value)}
-                    onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleFetchProgresos();
-                    }}
-                    slotProps={{
-                        input: {
-                        endAdornment: (
-                            <InputAdornment position="end">
-                            <Tooltip title="Buscar Progreso">
-                                <IconButton
-                                onClick={handleFetchProgresos}
-                                edge="end"
-                                color="primary"
-                                >
-                                <SearchIcon />
-                                </IconButton>
-                            </Tooltip>
-                            </InputAdornment>
-                        ),
-                        },
-                    }}
-                />
-                </Box>
 
             </Box>
 

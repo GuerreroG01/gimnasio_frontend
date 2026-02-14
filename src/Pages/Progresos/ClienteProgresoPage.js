@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useContext } from 'react';
 import { useTheme } from '@mui/material/styles';
 import ClienteProgresoService from '../../Services/ClienteProgresoService';
 import ClienteService from '../../Services/ClienteService';
@@ -6,6 +6,8 @@ import ClienteProgreso from '../../Components/Progresos/ClienteProgreso';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
 import DirectionsRunIcon from '@mui/icons-material/DirectionsRun';
 import SportsHandballIcon from '@mui/icons-material/SportsHandball';
+import { AuthContext } from '../../Context/AuthContext';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 export const getIconByTipo = (tipo) => {
     switch (tipo) {
@@ -41,6 +43,10 @@ export default function ClienteProgresoPage() {
         message: "",
         severity: "info",
     })
+    const [progresoNiveles, setProgresoNiveles] = React.useState([]);
+    const { authenticated } = useContext(AuthContext);
+    const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
 
     const fetchClienteInfo = async (id) => {
         try {
@@ -52,8 +58,10 @@ export default function ClienteProgresoPage() {
         }
     };
 
-    const handleFetchProgresos = async () => {
-        if (!clienteIdInput) {
+    const handleFetchProgresos = React.useCallback(async (id) => {
+        const searchId = id || clienteIdInput;
+
+        if (!searchId) {
             setSnackbar({
                 open: true,
                 message: 'Por favor ingresa un código de cliente.',
@@ -62,15 +70,25 @@ export default function ClienteProgresoPage() {
             return;
         }
 
+        setClienteIdInput(searchId);
+        navigate(`?clienteId=${searchId}`, { replace: true });
+
         setLoading(true);
         setError(null);
-        setClienteId(clienteIdInput);
+        setClienteId(searchId);
         setProgresos([]);
+        setProgresoNiveles([]);
 
         try {
-            const data = await ClienteProgresoService.getProgresosByCliente(clienteIdInput);
-            setProgresos(data);
-            await fetchClienteInfo(clienteIdInput);
+            const [progresosData, nivelesData] = await Promise.all([
+                ClienteProgresoService.getProgresosByCliente(searchId),
+                ClienteProgresoService.getProgresoPorNiveles(searchId)
+            ]);
+
+            setProgresos(progresosData);
+            setProgresoNiveles(nivelesData);
+
+            await fetchClienteInfo(searchId);
         } catch (err) {
             setSnackbar({
                 open: true,
@@ -80,7 +98,7 @@ export default function ClienteProgresoPage() {
         } finally {
             setLoading(false);
         }
-    };
+    }, [clienteIdInput, navigate]);
 
     const agruparPorNivel = (progresos) => progresos.reduce((acc, progreso) => {
         const nivel = progreso.programaFit?.nivel || 'Sin nivel';
@@ -88,6 +106,14 @@ export default function ClienteProgresoPage() {
             acc[nivel].push(progreso);
         return acc;
     }, {});
+
+    useEffect(() => {
+        const clienteIdParam = searchParams.get('clienteId');
+        console.log('Id recibido:', clienteIdParam);
+        if (clienteIdParam) {
+            handleFetchProgresos(clienteIdParam);
+        }
+    }, [handleFetchProgresos, searchParams]);
     useEffect(() => {
         if (error) {
             setSnackbar({
@@ -116,6 +142,7 @@ export default function ClienteProgresoPage() {
             progresos={progresos}
             loading={loading}
             error={error}
+            progresoNiveles={progresoNiveles}
             handleFetchProgresos={handleFetchProgresos}
             getIconByTipo={getIconByTipo}
             getColorByTipo={getColorByTipo}
@@ -124,6 +151,7 @@ export default function ClienteProgresoPage() {
             clienteInfo={clienteInfo}
             snackbar={snackbar}
             setSnackbar={setSnackbar}
+            authenticated={authenticated}
         />
     );
 }

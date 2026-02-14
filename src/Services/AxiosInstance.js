@@ -18,11 +18,12 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
+const rutasPermitidas = ['/login', '/progresos'];
 
 axiosInstance.interceptors.response.use(
   response => response,
   (error) => {
-    if (error.response?.status === 401 && window.location.pathname!=='/login') {
+    if (error.response?.status === 401 && !rutasPermitidas.includes(window.location.pathname)) {
       console.log('Sesión expirada o token inválido, cerrando sesión...');
       localStorage.removeItem('token');
       window.location.href = '/login';

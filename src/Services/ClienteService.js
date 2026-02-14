@@ -41,6 +41,13 @@ const buscarCliente = (nombres, apellidos) => {
     params: { nombres, apellidos },
   });
 };
+const actualizarNivelCliente = (clienteId) => {
+  if (!clienteId) throw new Error("Debe especificar el ID del cliente");
+
+  return axiosInstance.post(`${API_URL}/next-level`, null, {params: { clienteId }}
+  ).then(res => res.data);
+};
+
 
 const ClienteService = {
   getClientePorLetra,
@@ -50,5 +57,6 @@ const ClienteService = {
   deleteCliente,
   getClientePorPrimeraLetra,
   buscarCliente,
+  actualizarNivelCliente
 };
 export default ClienteService;

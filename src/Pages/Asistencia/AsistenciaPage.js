@@ -3,6 +3,7 @@ import AsistenciaService from '../../Services/AsistenciaService';
 import Asistencia from '../../Components/Asistencia/Asistencia';
 import PagoService from '../../Services/PagoService';
 import ClienteProgresoService from '../../Services/ClienteProgresoService';
+import ClienteService from '../../Services/ClienteService';
 
 export default function AsistenciaPage(){
     const [clientId, setClientId] = React.useState('');
@@ -63,6 +64,14 @@ export default function AsistenciaPage(){
         setError(null);
 
         try {
+            const data = await AsistenciaService.getAsistencias(clientId);
+            const pagoData = await PagoService.getUltimoPagoVigente(clientId);
+            setCliente(data);
+            setDiasRestantes(pagoData.diasRestantes);
+            setShowInfo(true);
+            setFade(true);
+            setOpenSnackbar(true);
+            
             if (registrarAsistencia) {
                 await AsistenciaService.postAsistencias(clientId);
                 const progresoResponse =
@@ -77,17 +86,10 @@ export default function AsistenciaPage(){
                     });
                 }
                 await ClienteProgresoService.incrementDiasEnNivel(clientId);
+                await ClienteService.actualizarNivelCliente(clientId);
             } else {
                 console.log('El registro de asistencia está desactivado, solo se mostrará la información.');
             }
-
-            const data = await AsistenciaService.getAsistencias(clientId);
-            const pagoData = await PagoService.getUltimoPagoVigente(clientId);
-            setCliente(data);
-            setDiasRestantes(pagoData.diasRestantes);
-            setShowInfo(true);
-            setFade(true);
-            setOpenSnackbar(true);
 
             if (timeoutId) {
             clearTimeout(timeoutId);
