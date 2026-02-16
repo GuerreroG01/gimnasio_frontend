@@ -18,12 +18,23 @@ axiosInstance.interceptors.request.use(
   },
   (error) => Promise.reject(error)
 );
-const rutasPermitidas = ['/login', '/progresos'];
+const rutasPermitidas = ['/login', '/progresos', '/programas'];
+const esRutaPermitida = (url) => {
+  return (
+    rutasPermitidas.includes(url) ||
+    (url.startsWith('/programas/') && url.endsWith('/details'))
+  );
+};
 
 axiosInstance.interceptors.response.use(
   response => response,
   (error) => {
-    if (error.response?.status === 401 && !rutasPermitidas.includes(window.location.pathname)) {
+    const currentPath = window.location.pathname;
+
+    if (
+      error.response?.status === 401 &&
+      !esRutaPermitida(currentPath)
+    ) {
       console.log('Sesión expirada o token inválido, cerrando sesión...');
       localStorage.removeItem('token');
       window.location.href = '/login';

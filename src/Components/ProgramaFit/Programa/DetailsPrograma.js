@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Box, Container, Typography, Chip, Stack, Divider, Accordion, AccordionSummary, AccordionDetails,
     Grid, Card, Tooltip } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -12,9 +12,10 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import DeleteComponent from '../../../Shared/Components/DeleteComponent';
 import ProgramaFitService from '../../../Services/ProgramaFitService';
 import { AuthContext } from '../../../Context/AuthContext';
+import { getNombreDia } from "../../../Utils/Constants";
 export default function DetailsPrograma() {
     const location = useLocation();
-    const programa = location.state?.programa;
+    const [programa, setPrograma] = React.useState(location.state?.programa || null);
     const theme = useTheme();
     const { authenticated } = useContext(AuthContext);
     const [expandedPanels, setExpandedPanels] = React.useState({});
@@ -24,7 +25,7 @@ export default function DetailsPrograma() {
     const handleDeleteClick = () => setOpenDeleteModal(true);
     const handleDeleteCancel = () => setOpenDeleteModal(false);
 
-     const handleDeleteConfirm = async () => {
+    const handleDeleteConfirm = async () => {
         if (!programa?.id) return;
 
         try {
@@ -41,6 +42,12 @@ export default function DetailsPrograma() {
             setLoadingDelete(false);
         }
     };
+    useEffect(() => {
+        if (!programa && location.pathname) {
+            const id = location.pathname.split('/')[2];
+            ProgramaFitService.getProgramaPorId(id).then(setPrograma).catch(console.error);
+        }
+    }, [programa, location.pathname]);
     if (!programa) return <Container sx={{ py: 4, bgcolor: theme.palette.background.paper, maxWidth: 'none', px: 4 }}><Typography color="text.primary">No se encontró el programa.</Typography></Container>;
     const API_DEMOSTRACIONES = (window._env_ ? window._env_.REACT_APP_VIDEODEMOSTRACION_URL : process.env.REACT_APP_VIDEODEMOSTRACION_URL);
 
@@ -79,7 +86,7 @@ export default function DetailsPrograma() {
                     <Chip label={programa.tipo} color="secondary" />
                     <Chip
                         icon={<CalendarMonthIcon />}
-                        label={`${programa.diaNombre}`}
+                        label={programa.diaNombre || getNombreDia(programa.dia)}
                         variant="outlined"
                         sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.5)', '& .MuiChip-icon': { color: 'white' } }}
                     />

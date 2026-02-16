@@ -6,6 +6,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import SearchIcon from '@mui/icons-material/Search';
 import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 import { getNombreDia } from "../../Utils/Constants";
+import { useNavigate } from 'react-router-dom';
 
 const ProgressCircle = ({ value, theme }) => (
     <Box position="relative" display="inline-flex">
@@ -34,7 +35,7 @@ const ProgressCircle = ({ value, theme }) => (
 
 export default function ClienteProgreso({ theme, clienteIdInput, setClienteIdInput, clienteId, progresos, loading, error, progresoNiveles,
     handleFetchProgresos, getIconByTipo, getColorByTipo, calcularProgreso, agruparPorNivel, clienteInfo, snackbar, setSnackbar, authenticated }) {
-
+        const navigate = useNavigate();
     return (
         <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
             <Box
@@ -168,6 +169,7 @@ export default function ClienteProgreso({ theme, clienteIdInput, setClienteIdInp
                                     return (
                                     <Card
                                         key={progreso.id}
+                                        onClick={() => navigate(`/programas/${progreso.programaFitId}/details`)}
                                         sx={{
                                         width: '100%',
                                         borderRadius: 3,
