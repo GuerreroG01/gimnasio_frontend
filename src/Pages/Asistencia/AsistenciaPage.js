@@ -74,8 +74,8 @@ export default function AsistenciaPage(){
             
             if (registrarAsistencia) {
                 await AsistenciaService.postAsistencias(clientId);
-                const progresoResponse =
-                await ClienteProgresoService.crearSiguienteProgreso(clientId);
+                setLoading(false);
+                const progresoResponse = await ClienteProgresoService.crearSiguienteProgreso(clientId);
                 if (progresoResponse?.mensaje) {
                     setSnackbar({
                         open: true,
@@ -103,8 +103,6 @@ export default function AsistenciaPage(){
         } catch (err) {
             setError('No se pudo obtener la información.');
             setOpenSnackbar(true);
-        } finally {
-            setLoading(false);
         }
     };
     return(

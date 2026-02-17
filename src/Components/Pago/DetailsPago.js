@@ -10,7 +10,7 @@ const DetailsPago = ({ open, onClose, pago, infopago, obtenerSimboloMoneda }) =>
   //Hay que seguir el rastro para saber de que metodo obtiene el pago
   const monto = `Monto: ${obtenerSimboloMoneda(pago.moneda)}${pago.monto}`;
   const detallePago = `Detalle: ${pago.detallePago}`;
-
+  const nombreTipoPago = `Tipo de Pago: ${pago.nombreTipoPagoDto ? pago.nombreTipoPagoDto?.descripcion : 'Tipo de Pago Desconocido'}`;
   return (
     <Modal
       open={open}
@@ -61,6 +61,9 @@ const DetailsPago = ({ open, onClose, pago, infopago, obtenerSimboloMoneda }) =>
         </Typography>
         <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
           {`Fecha de Pago: ${fechaPago.getDate().toString().padStart(2, '0')} ${new Intl.DateTimeFormat('es-ES', { month: 'long' }).format(fechaPago)} ${fechaPago.getFullYear()}`}
+        </Typography>
+        <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
+          {nombreTipoPago}
         </Typography>
 
         <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
