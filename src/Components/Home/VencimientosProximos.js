@@ -1,70 +1,85 @@
-import React, { useEffect, useState } from "react";
-import { Card, CardHeader, CardContent, Typography, CircularProgress, Box, List, ListItem, ListItemAvatar, Avatar, ListItemText, Button, TextField } from "@mui/material";
-import AutorenewIcon from '@mui/icons-material/Autorenew';
-import WarningIcon from '@mui/icons-material/Warning';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
+import React, { useEffect } from "react";
+import { alpha } from "@mui/material/styles";
+import { Card, CardHeader, CardContent, Typography, CircularProgress, Box, List, ListItem, ListItemAvatar,
+  Avatar, ListItemText, Button, TextField, IconButton, Slide, Zoom, useTheme, Collapse } from "@mui/material";
+import AutorenewIcon from "@mui/icons-material/Autorenew";
+import WarningIcon from "@mui/icons-material/Warning";
+import AccessTimeIcon from "@mui/icons-material/AccessTime";
+import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
+import SearchIcon from "@mui/icons-material/Search";
+import CloseIcon from "@mui/icons-material/Close";
 import PagoService from "../../Services/PagoService";
-//import PagoRapidoPopover from "./PagoRapido";
-import SearchIcon from '@mui/icons-material/Search';
-import CloseIcon from '@mui/icons-material/Close';
-import IconButton from '@mui/material/IconButton';
-import Slide from '@mui/material/Slide';
-import Zoom from '@mui/material/Zoom';
+import PagoRapido from "./PagoRapido";
 
 const VencimientosProximos = () => {
-  const [usuarios, setUsuarios] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [anchorEl, setAnchorEl] = useState(null);
-  const [usuarioSeleccionado, setUsuarioSeleccionado] = useState(null);
-  const [usuariosRenovados, setUsuariosRenovados] = useState([]);
-  const [filtroNombre, setFiltroNombre] = useState('');
-  const [mostrarFiltro, setMostrarFiltro] = useState(false);
+  const theme = useTheme();
+  const [clientes, setClientes] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [clienteSeleccionado, setClienteSeleccionado] = React.useState(null);
+  const [clientesRenovados, setClientesRenovados] = React.useState([]);
+  const [filtroNombre, setFiltroNombre] = React.useState("");
+  const [mostrarFiltro, setMostrarFiltro] = React.useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const data = await PagoService.getVencimientosProximos();
-        setUsuarios(data);
+        setClientes(data);
       } catch (error) {
         console.error("Error al obtener vencimientos:", error);
       } finally {
         setLoading(false);
       }
     };
-
     fetchData();
   }, []);
 
-  const handleOpenPopover = (event, usuario) => {
+  const handleOpenPopover = (event, cliente) => {
     setAnchorEl(event.currentTarget);
-    setUsuarioSeleccionado(usuario);
+    setClienteSeleccionado(cliente);
   };
 
   const handleClosePopover = () => {
     setAnchorEl(null);
-    setUsuarioSeleccionado(null);
+    setClienteSeleccionado(null);
   };
 
-  const handlePagoRenovado = (usuarioId) => {
-    setUsuariosRenovados((prev) => [...prev, usuarioId]);
+  const handlePagoRenovado = (clienteId) => {
+    setClientesRenovados((prev) => [...prev, clienteId]);
+
     setTimeout(() => {
-      setUsuarios((prev) => prev.filter((u) => u.codigo !== usuarioId));
-      setUsuariosRenovados((prev) => prev.filter((id) => id !== usuarioId));
-    }, 1500);
+      setClientes((prev) => prev.filter((c) => c.codigo !== clienteId));
+      setClientesRenovados((prev) => prev.filter((id) => id !== clienteId));
+    }, 600);
 
     handleClosePopover();
   };
 
-  const usuariosFiltrados = usuarios.filter(u => 
-    u.nombreCompleto.toLowerCase().includes(filtroNombre.toLowerCase())
+  const clientesFiltrados = clientes.filter((c) =>
+    c.nombreCompleto.toLowerCase().includes(filtroNombre.toLowerCase())
   );
 
   return (
-    <Card elevation={3} sx={{ width: "100%", height: '100%' }}>
+    <Card
+      elevation={0}
+      sx={{
+        width: "100%",
+        height: "100%",
+        borderRadius: 3,
+        border: `1px solid ${theme.palette.divider}`,
+        background:
+          theme.palette.mode === "dark"
+            ? "linear-gradient(145deg, #1e1e1e, #121212)"
+            : "#ffffff",
+      }}
+    >
       <CardHeader
         title={
-          <Typography variant="h6" color="primary">
+          <Typography
+            variant="h6"
+            sx={{ fontWeight: 700, letterSpacing: 0.5 }}
+          >
             Vencimientos próximos
           </Typography>
         }
@@ -75,13 +90,15 @@ const VencimientosProximos = () => {
                 <IconButton
                   onClick={() => {
                     setMostrarFiltro(false);
-                    setFiltroNombre('');
+                    setFiltroNombre("");
                   }}
+                  sx={{ bgcolor: theme.palette.action.hover }}
                 >
                   <CloseIcon />
                 </IconButton>
+
                 <TextField
-                  variant="filled"
+                  variant="outlined"
                   size="small"
                   placeholder="Buscar..."
                   value={filtroNombre}
@@ -91,109 +108,167 @@ const VencimientosProximos = () => {
               </Box>
             </Slide>
 
-            <Zoom in={!mostrarFiltro} style={{ transitionDelay: !mostrarFiltro ? '300ms' : '0ms' }}>
-              <IconButton onClick={() => setMostrarFiltro(true)}>
+            <Zoom in={!mostrarFiltro}>
+              <IconButton
+                onClick={() => setMostrarFiltro(true)}
+                sx={{
+                  bgcolor: theme.palette.action.hover,
+                  "&:hover": {
+                    bgcolor: theme.palette.action.selected,
+                  },
+                }}
+              >
                 <SearchIcon />
               </IconButton>
             </Zoom>
           </Box>
         }
       />
-      <CardContent sx={{ maxHeight: 300, overflowY: 'auto', pt: 0 }}>
+
+      <CardContent className="scroll-hide" sx={{ maxHeight: 320, overflowY: "auto", pt: 0 }}>
         {loading ? (
-          <Box display="flex" justifyContent="center" mt={2}>
-            <CircularProgress size={24} />
+          <Box display="flex" justifyContent="center" mt={3}>
+            <CircularProgress size={26} />
           </Box>
-        ) : usuariosFiltrados.length === 0 ? (
-          <Typography variant="body2" color="text.secondary" align="center">
+        ) : clientesFiltrados.length === 0 ? (
+          <Typography
+            variant="body2"
+            color="text.secondary"
+            align="center"
+            mt={2}
+          >
             No hay vencimientos próximos.
           </Typography>
         ) : (
-          <List dense>
-            {usuariosFiltrados.map((u) => {
-              const isRenovado = usuariosRenovados.includes(u.codigo);
-              const daysUntilExpiry = u.diasRestantes;
+          <List disablePadding>
+            {clientesFiltrados.map((c) => {
+              const isRenovado = clientesRenovados.includes(c.codigo);
+              const days = c.diasRestantes;
 
-              let bgColor, textColor, icon, textVencimiento;
-
+              let color;
+              let icon;
+              let textVencimiento;
+              let backgroundColor;
               if (isRenovado) {
-                bgColor = '#C8E6C9';
-                textColor = '#2E7D32';
-                icon = <CheckCircleOutlineIcon />;
-                textVencimiento = `Pago Renovado de ${u.nombreCompleto}`;
-              } else if (daysUntilExpiry < 0) {
-                bgColor = '#ffcdd2';
-                textColor = '#B71C1C';
-                icon = <WarningIcon />;
-                textVencimiento = `Venció el ${u.fechaVencimiento}`;
-              } else if (daysUntilExpiry === 0) {
-                bgColor = '#ffcdd2';
-                textColor = '#F57F17';
-                icon = <WarningIcon />;
-                textVencimiento = 'Vence hoy';
-              } else if (daysUntilExpiry < 5) {
-                bgColor = '#FFF9C4';
-                textColor = '#F57F17';
-                icon = <AccessTimeIcon />;
-                textVencimiento = `Vence en ${daysUntilExpiry} día${daysUntilExpiry !== 1 ? 's' : ''} - ${u.fechaVencimiento}`;
+                color = theme.palette.success.main;
+                backgroundColor = alpha(theme.palette.success.main, 0.15);
+                icon = <CheckCircleOutlineIcon fontSize="small" />;
+                textVencimiento = "Pago renovado correctamente";
+
+              } else if (days < 0) {
+                color = theme.palette.error.main;
+                backgroundColor = alpha(theme.palette.error.main, 0.15);
+                icon = <WarningIcon fontSize="small" />;
+                textVencimiento = `Venció el ${c.fechaVencimiento}`;
+
+              } else if (days === 0) {
+                color = theme.palette.warning.main;
+                backgroundColor = alpha(theme.palette.warning.main, 0.15);
+                icon = <WarningIcon fontSize="small" />;
+                textVencimiento = "Vence hoy";
+
+              } else if (days <= 3) {
+                color = theme.palette.warning.main;
+                backgroundColor = alpha(theme.palette.warning.main, 0.1);
+                icon = <AccessTimeIcon fontSize="small" />;
+                textVencimiento = `Vence en ${days} día${days !== 1 ? "s" : ""} - ${c.fechaVencimiento}`;
+
+              } else if (days <= 7) {
+                color = theme.palette.info.main;
+                backgroundColor = alpha(theme.palette.info.main, 0.1);
+                icon = <AccessTimeIcon fontSize="small" />;
+                textVencimiento = `Vence en ${days} días - ${c.fechaVencimiento}`;
+
               } else {
-                bgColor = '#e0e0e0';
-                textColor = '#616161';
-                icon = <AccessTimeIcon />;
-                textVencimiento = `Vence en ${daysUntilExpiry} día${daysUntilExpiry !== 1 ? 's' : ''} - ${u.fechaVencimiento}`;
+                color = theme.palette.success.main;
+                backgroundColor = alpha(theme.palette.success.main, 0.1);
+                icon = <AccessTimeIcon fontSize="small" />;
+                textVencimiento = `Vence en ${days} días - ${c.fechaVencimiento}`;
               }
 
               return (
-                <ListItem
-                  key={u.codigo}
-                  sx={{
-                    backgroundColor: bgColor,
-                    borderRadius: 1,
-                    mb: 1,
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    color: textColor,
-                    boxShadow: 1,
-                    '&:hover': { boxShadow: 3 }
-                  }}
-                >
-                  <Box display="flex" alignItems="center">
-                    <ListItemAvatar>
-                      <Avatar sx={{ bgcolor: textColor }}>
-                        {icon}
-                      </Avatar>
-                    </ListItemAvatar>
-                    <ListItemText
-                      primary={u.nombreCompleto}
-                      secondary={
-                        <Typography variant="body2" color={textColor}>
-                          {textVencimiento}
-                        </Typography>
-                      }
-                    />
-                  </Box>
-                  {!isRenovado && (
-                    <Button
-                      variant="outlined"
-                      size="small"
-                      startIcon={<AutorenewIcon />}
-                      onClick={(e) => handleOpenPopover(e, u)}
+                <Collapse key={c.codigo} in={!isRenovado} timeout={400}>
+                  <ListItem
+                    sx={{
+                      borderRadius: 2,
+                      mb: 1.5,
+                      px: 2,
+                      py: 1.5,
+                      backgroundColor: backgroundColor,
+                      borderLeft: `5px solid ${color}`,
+                      transition: "all 0.25s ease",
+                      boxShadow: "0 2px 8px rgba(0,0,0,0.05)",
+                      "&:hover": {
+                        transform: "translateY(-2px)",
+                        boxShadow: "0 6px 18px rgba(0,0,0,0.12)",
+                      },
+                    }}
+                  >
+                    <Box
+                      display="flex"
+                      alignItems="center"
+                      justifyContent="space-between"
+                      width="100%"
                     >
-                      Renovar
-                    </Button>
-                  )}
-                </ListItem>
+                      <Box display="flex" alignItems="center">
+                        <ListItemAvatar>
+                          <Avatar
+                            sx={{
+                              bgcolor: `${color}20`,
+                              color: color,
+                              width: 36,
+                              height: 36,
+                            }}
+                          >
+                            {icon}
+                          </Avatar>
+                        </ListItemAvatar>
+
+                        <ListItemText
+                          primary={
+                            <Typography fontWeight={600}>
+                              {c.nombreCompleto}
+                            </Typography>
+                          }
+                          secondary={
+                            <Typography
+                              variant="body2"
+                              sx={{ opacity: 0.75, mt: 0.5 }}
+                            >
+                              {textVencimiento}
+                            </Typography>
+                          }
+                        />
+                      </Box>
+
+                      <Button
+                        variant="contained"
+                        size="small"
+                        startIcon={<AutorenewIcon />}
+                        onClick={(e) => handleOpenPopover(e, c)}
+                        sx={{
+                          borderRadius: 2,
+                          textTransform: "none",
+                          fontWeight: 600,
+                          boxShadow: "none",
+                        }}
+                      >
+                        Renovar
+                      </Button>
+                    </Box>
+                  </ListItem>
+                </Collapse>
               );
             })}
           </List>
         )}
-        {/*<PagoRapidoPopover
+
+        <PagoRapido
           anchorEl={anchorEl}
-          usuario={usuarioSeleccionado}
+          cliente={clienteSeleccionado}
           onClose={handleClosePopover}
           onPagoRenovado={handlePagoRenovado}
-        />*/}
+        />
       </CardContent>
     </Card>
   );

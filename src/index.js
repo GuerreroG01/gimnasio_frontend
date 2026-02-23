@@ -27,7 +27,8 @@ import IndexPrograma from './Pages/Programa/IndexPage';
 import DetailsPrograma from './Components/ProgramaFit/Programa/DetailsPrograma';
 import ProgramasForm from './Pages/Programa/FormPage';
 import ProgresosCliente from './Pages/Progresos/ClienteProgresoPage';
-import Prueba from './Pages/Progresos/ClienteProgresoPage';
+//import Prueba from './Pages/Home/ClienteProgresoPage';
+import Prueba from './Components/Home/DashboardResumen';
 import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';

@@ -153,7 +153,8 @@ const TipoCambioList = () => {
                         </Typography>
                         </Box>
                     }
-                    secondary={`Tasa: ${tc.tasa}, Fecha: ${new Date(tc.fecha).toLocaleDateString()}`}
+                    secondary={`Tasa: ${tc.tasa}`}
+                    sx={{ pr: 6 }}
                 />
                 <Box
                     className="action-icons"

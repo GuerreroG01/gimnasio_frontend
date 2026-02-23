@@ -1,194 +1,177 @@
-/*import React, { useState, useEffect } from 'react';
-import { Popover, Box, Typography, Button, CircularProgress, MenuItem, Select, FormControl, InputLabel } from '@mui/material';
+import React, { useEffect, useRef, useCallback } from 'react';
+import { Popover, Box, Typography, Button, CircularProgress, TextField, Autocomplete, MenuItem, Grid,
+  Paper, Chip } from '@mui/material';
 import pagoService from '../../Services/PagoService';
-import FechasUsuarioService from '../../Services/FechasUsuarioService';
-import TipoPagoService from '../../Services/Tipo_PagosService';
-import CheckCircleOutlineIcon from '@mui/icons-material/CheckCircleOutline';
-import { toZonedTime } from 'date-fns-tz';
-import { format } from 'date-fns';
-import { es } from 'date-fns/locale';
+import TiposPagoService from '../../Services/Tipo_PagosService';
+import TipoCambioService from '../../Services/TipoCambioService';
 
-const PagoRapido = ({ anchorEl, usuario, onClose, onPagoRenovado }) => {
-  const [loadingPago, setLoadingPago] = useState(false);
-  const [pagoExitoso, setPagoExitoso] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [rangoPagoUnidad, setRangoPagoUnidad] = useState('dias');
-  const [cantidadPago, setCantidadPago] = useState(1);
-  const [montoCalculado, setMontoCalculado] = useState(0);
-  const [tipoDiaSeleccionado, setTipoDiaSeleccionado] = useState(null);
-  const [tiposEjercicio, setTiposEjercicio] = useState([]);
-  const [fechaVencimientoPreview, setFechaVencimientoPreview] = useState(null);
+import {
+  convertirPrecio,
+  obtenerMonedaEquivalente,
+  obtenerSimboloMoneda
+} from '../../Utils/MonedaUtils';
 
-  const ahora = new Date();
-  const fechaPagoActual = new Date(
-    ahora.toLocaleDateString('es-ES', {
-      timeZone: 'America/Managua',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit'
-    }).split('/').reverse().join('-') + 'T00:00:00-06:00'
-  );
+import dayjs from 'dayjs';
+
+const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
+
+  const hoy = dayjs();
+  const fechaPago = hoy.format('DD/MM/YYYY');
+
+  const [loadingPago, setLoadingPago] = React.useState(false);
+  const [loadingTiposPago, setLoadingTiposPago] = React.useState(false);
+
+  const [tiposPago, setTiposPago] = React.useState([]);
+  const [tipoPagoSeleccionado, setTipoPagoSeleccionado] = React.useState(null);
+
+  const [moneda, setMoneda] = React.useState('NIO');
+  const [montoBase, setMontoBase] = React.useState(0);
+  const [monedaBase, setMonedaBase] = React.useState('NIO');
+
+  const [monto, setMonto] = React.useState(0);
+  const [efectivo, setEfectivo] = React.useState(0);
+  const [cambio, setCambio] = React.useState(0);
+  const [cambioEquivalente, setCambioEquivalente] = React.useState(0);
+
+  const [mesesPagados, setMesesPagados] = React.useState(1);
+  const [intervaloPago, setIntervaloPago] = React.useState(1);
+  const [nuevaFechaVencimiento, setNuevaFechaVencimiento] = React.useState(null);
+
+  const [tipoCambio, setTipoCambio] = React.useState([]);
+
+  const searchTimeout = useRef(null);
+  const autocompleteDelay = 800;
+
   useEffect(() => {
-    const fetchTipos = async () => {
-      const data = await TipoPagoService.getTipoEjercicios();
-      if (data) {
-        setTiposEjercicio(data.filter(e => e.activo));
-      }
-    };
-    fetchTipos();
+    TipoCambioService.getTipoCambios()
+      .then(setTipoCambio)
+      .catch(console.error);
   }, []);
 
   useEffect(() => {
-    if (rangoPagoUnidad === 'meses') {
-      const tipoMes = tiposEjercicio.find(t => t.descripcion.toLowerCase() === 'mes');
-      if (tipoMes && cantidadPago > 0) {
-        setMontoCalculado(cantidadPago * tipoMes.costo);
-      }
-    } else if (rangoPagoUnidad === 'dias' && tipoDiaSeleccionado) {
-      setMontoCalculado(tipoDiaSeleccionado.costo);
-    }
-  }, [rangoPagoUnidad, cantidadPago, tipoDiaSeleccionado, tiposEjercicio]);
+    if (!montoBase) return;
+    const convertido = convertirPrecio( montoBase, monedaBase, moneda, tipoCambio );
+    setMonto(convertido);
+  }, [moneda, montoBase, monedaBase, tipoCambio]);
 
   useEffect(() => {
-    let base = new Date();
-    let nuevaFecha = new Date(base);
-    if (rangoPagoUnidad === 'dias' && tipoDiaSeleccionado) {
-      const dias = tipoDiaSeleccionado.descripcion.includes('15') ? 15 : 7;
-      nuevaFecha.setDate(nuevaFecha.getDate() + dias);
+    const nuevoCambio = Math.max(0, (efectivo || 0) - monto);
+    setCambio(nuevoCambio);
+
+    const monedaDestino = obtenerMonedaEquivalente(moneda);
+    const cambioEq = convertirPrecio(nuevoCambio, moneda, monedaDestino, tipoCambio);
+    setCambioEquivalente(cambioEq);
+
+  }, [efectivo, monto, moneda, tipoCambio]);
+
+  useEffect(() => {
+    if (!tipoPagoSeleccionado) return;
+
+    let baseFecha = hoy;
+
+    if (cliente?.diasRestantes > 0 && cliente?.fechaVencimiento) {
+      baseFecha = dayjs(cliente.fechaVencimiento);
     }
-    if (rangoPagoUnidad === 'meses') {
-      nuevaFecha.setMonth(nuevaFecha.getMonth() + cantidadPago);
+
+    let nuevaFecha = baseFecha;
+
+    if (intervaloPago === 1) {
+      nuevaFecha = nuevaFecha.add(mesesPagados, 'month');
+    } else {
+      nuevaFecha = nuevaFecha.add(mesesPagados, 'day');
     }
-    nuevaFecha.setHours(0, 0, 0, 0);
-    setFechaVencimientoPreview(nuevaFecha);
-  }, [rangoPagoUnidad, cantidadPago, tipoDiaSeleccionado]);
 
-    const handlePagoRapido = async () => {
-        setLoadingPago(true);
-        setErrorMessage('');
+    setNuevaFechaVencimiento(nuevaFecha.format('DD/MM/YYYY'));
 
-        const ahora = new Date();
-        const fechaPagoActual = new Date(
-          ahora.toLocaleDateString('es-ES', {
-            timeZone: 'America/Managua',
-            year: 'numeric',
-            month: '2-digit',
-            day: '2-digit'
-          }).split('/').reverse().join('-') + 'T00:00:00-06:00'
-        );
-        const usuarioId = usuario.codigo;
-        console.log('Fecha de pago actual', fechaPagoActual);
-        const fechaPago = new Date(fechaPagoActual);
-        console.log('Fechapago:', fechaPago);
-        let rangoPago = parseInt(cantidadPago, 10);
+  }, [tipoPagoSeleccionado, mesesPagados, intervaloPago, cliente]);
 
-        if (rangoPagoUnidad === 'dias' && tipoDiaSeleccionado) {
-        const descripcion = tipoDiaSeleccionado.descripcion.toLowerCase();
-        if (descripcion.includes('15')) {
-            rangoPago = 15;
-        } else if (descripcion.includes('7') || descripcion.includes('semana')) {
-            rangoPago = 7;
-        } else {
-            rangoPago = 1;
-        }
-        }
+  const handleBuscarTipoPagoDebounced = (inputValue) => {
+    if (!inputValue) return;
 
+    setLoadingTiposPago(true);
 
-        const intervaloPago = rangoPagoUnidad === 'dias' ? 0 : 1;
+    TiposPagoService.searchTipoPagoByName(inputValue)
+      .then(res => setTiposPago(res.data))
+      .finally(() => setLoadingTiposPago(false));
+  };
 
-        if (rangoPagoUnidad === 'dias' && !tipoDiaSeleccionado) {
-        setErrorMessage('Debes seleccionar un tipo de pago por días.');
-        setLoadingPago(false);
-        return;
-        }
+  const handleTipoPagoInputChange = (event, value, reason) => {
+    if (reason !== 'input') return;
 
-        try {
-        let diasRestantes = 0;
-        let fechaVencimientoUltimoPago = new Date(fechaPago);
+    if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
-        try {
-            const ultimoPago = await pagoService.getUltimoPagoVigente(usuarioId, false);
-            if (ultimoPago?.fechaVencimiento) {
-            fechaVencimientoUltimoPago = new Date(ultimoPago.fechaVencimiento);
-            diasRestantes = ultimoPago.diasRestantes;
-            }
-            console.log('Datos del ultimo pago vigente', ultimoPago);
-        } catch {}
+    searchTimeout.current = setTimeout(() => {
+      handleBuscarTipoPagoDebounced(value);
+    }, autocompleteDelay);
+  };
 
-        let fechaVencimiento = new Date(fechaVencimientoUltimoPago);
+  const handleTipoPagoChange = useCallback((event, value) => {
+    if (!value) return;
 
-        if (diasRestantes > 0) {
-            if (rangoPagoUnidad === 'dias') {
-            fechaVencimiento.setDate(fechaVencimiento.getDate() + rangoPago - 1);
-            } else {
-            fechaVencimiento.setMonth(fechaVencimiento.getMonth() + rangoPago);
-            fechaVencimiento.setDate(fechaVencimiento.getDate() - 1);
-            }
-        } else {
-            fechaVencimiento = new Date(fechaPago);
-            if (rangoPagoUnidad === 'dias') {
-            fechaVencimiento.setDate(fechaVencimiento.getDate() + rangoPago);
-            } else {
-            fechaVencimiento.setMonth(fechaVencimiento.getMonth() + rangoPago);
-            }
-        }
+    setTipoPagoSeleccionado(value);
 
-        fechaVencimiento.setHours(0, 0, 0, 0);
-        fechaVencimiento.setDate(fechaVencimiento.getDate() + 1);
+    setMontoBase(value.monto);
+    setMonedaBase(value.moneda);
+    setMesesPagados(value.duracion);
+    setIntervaloPago(
+      value.unidadTiempo.toLowerCase() !== 'dias' ? 1 : 0
+    );
 
-        if (isNaN(fechaVencimiento)) {
-            setErrorMessage('Fecha de vencimiento no válida');
-            setLoadingPago(false);
-            return;
-        }
+  }, []);
 
-        const fechasData = {
-            UsuarioId: usuarioId,
-            FechaPago: fechaPagoActual,
-            FechaPagoA: fechaPagoActual,
-            FechaVencimiento: fechaVencimiento.toISOString().split('T')[0],
-        };
+  const getEstadoColor = () => {
+    if (!cliente?.diasRestantes) return 'error';
+    if (cliente.diasRestantes <= 3) return 'warning';
+    return 'success';
+  };
 
-        const datosPago = {
-            CodigoUsuario: usuarioId,
-            FechaPago: fechaPagoActual,
-            MesesPagados: cantidadPago,
-            intervaloPago,
-            monto: montoCalculado,
-            DetallePago: '',
-        };
+  const handlePagoRapido = async () => {
 
-        await FechasUsuarioService.createFecha(fechasData);
-        await pagoService.createPago(datosPago);
-        console.log('Datos de fechas usuario', fechasData);
-        console.log('Datos del pago', datosPago);
+    if (!tipoPagoSeleccionado) return;
+    setLoadingPago(true);
 
-        setPagoExitoso(true);
-        setTimeout(() => {
-            if (onPagoRenovado) {
-                onPagoRenovado(usuario.codigo);
-            } else {
-                onClose();
-            }
-        }, 1500);
-        } catch {
-        setErrorMessage('Error al procesar el pago');
-        } finally {
-        setLoadingPago(false);
-        }
-    };
+    try {
 
+      await pagoService.createPago({
+        CodigoCliente: cliente.codigo,
+        MesesPagados: mesesPagados,
+        FechaPago: new Date(),
+        Moneda: moneda,
+        Efectivo: efectivo,
+        Cambio: cambio,
+        Monto: monto,
+        DetallePago: 'Pago rápido',
+        IntervaloPago: intervaloPago,
+        CodigoTipoPago: tipoPagoSeleccionado.codigoPago
+      });
+
+      onPagoRenovado?.(cliente.codigo);
+      onClose();
+
+    } catch (err) {
+      console.error(err);
+      alert('Error al procesar el pago');
+    } finally {
+      setLoadingPago(false);
+    }
+  };
+  const resetForm = () => {
+    setTipoPagoSeleccionado(null);
+    setMoneda('NIO');
+    setMontoBase(0);
+    setMonto(0);
+    setEfectivo(0);
+    setCambio(0);
+    setCambioEquivalente(0);
+    setMesesPagados(1);
+    setIntervaloPago(1);
+    setNuevaFechaVencimiento(null);
+  };
   const handleClose = () => {
-    setPagoExitoso(false);
-    setErrorMessage('');
-    onClose();
+    resetForm();
+    onClose?.();
   };
 
-  const formatDate = (date) => {
-    if (!date) return 'No proporcionado';
-    const zonedDate = toZonedTime(new Date(date), 'America/Managua');
-    return format(zonedDate, 'dd MMMM yyyy', { locale: es });
-  };
   return (
     <Popover
       open={Boolean(anchorEl)}
@@ -196,110 +179,184 @@ const PagoRapido = ({ anchorEl, usuario, onClose, onPagoRenovado }) => {
       onClose={handleClose}
       anchorOrigin={{ vertical: 'center', horizontal: 'left' }}
       transformOrigin={{ vertical: 'center', horizontal: 'right' }}
+      slotProps={{
+        paper: {
+          className: 'scroll-hide',
+          sx: {
+            maxHeight: '90vh',
+            overflowY: 'auto',
+            borderRadius: 3
+          }
+        }
+      }}
     >
-      <Box sx={{ p: 3, width: 350, bgcolor: 'background.paper', borderRadius: 2 }}>
-        {pagoExitoso ? (
-          <Box display="flex" flexDirection="column" alignItems="center" justifyContent="center" textAlign="center" sx={{ color: 'success.main', py: 2 }}>
-            <CheckCircleOutlineIcon sx={{ fontSize: 48 }} />
-            <Typography variant="h6" sx={{ mt: 1 }}>
-                Pago realizado con éxito
-            </Typography>
-            </Box>        
-        ) : (
-          <>
-            <Typography variant="h6" gutterBottom align="center">
-              Renovar a {usuario?.nombreCompleto}
-            </Typography>
+      <Box
+        sx={{
+          width: '100%',
+          maxWidth: 650,
+          bgcolor: 'background.paper',
+        }}
+      >
+        <Box
+          sx={(theme) => ({
+            p: 2.5,
+            background:
+              theme.palette.mode === 'dark'
+                ? 'linear-gradient(135deg, #1e293b, #0f172a)'
+                : 'linear-gradient(135deg, #1976d2, #1565c0)',
+            color: 'white',
+          })}
+        >
+          <Typography variant="h6" fontWeight="bold">
+            Pago rápido
+          </Typography>
+          <Typography variant="body2" sx={{ opacity: 0.85 }}>
+            {cliente?.nombreCompleto}
+          </Typography>
+        </Box>
 
-            <Typography variant="body2" color="textSecondary" gutterBottom align="center">
-              Fecha de pago: <strong>{formatDate(fechaPagoActual)}</strong>
-            </Typography>
-
-            {fechaVencimientoPreview && (
-              <Typography variant="body2" color="textSecondary" align="center" sx={{ mt: 1 }}>
-                Fecha de vencimiento: <strong>{formatDate(fechaVencimientoPreview)}</strong>
-              </Typography>
-            )}
-
-            <FormControl variant="filled" fullWidth margin="normal" size="small">
-              <InputLabel>Tipo</InputLabel>
-              <Select
-                value={rangoPagoUnidad}
-                onChange={(e) => {
-                  setRangoPagoUnidad(e.target.value);
-                  setCantidadPago(1);
-                  setTipoDiaSeleccionado(null);
+        <Box sx={{ p: 3 }}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} md={6}>
+              <Paper
+                elevation={0}
+                sx={{
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: 'action.hover',
                 }}
-                fullWidth
               >
-                <MenuItem value="meses">Meses</MenuItem>
-                <MenuItem value="dias">Días</MenuItem>
-              </Select>
-            </FormControl>
+                <Typography variant="subtitle2" gutterBottom>
+                  Información actual
+                </Typography>
 
-            {rangoPagoUnidad === 'meses' ? (
-              <FormControl variant="filled" fullWidth margin="normal" size="small">
-                <InputLabel>Meses a pagar</InputLabel>
-                <Select
-                  value={cantidadPago}
-                  onChange={(e) => setCantidadPago(Number(e.target.value))}
-                >
-                  {[...Array(12).keys()].map((num) => (
-                    <MenuItem key={num + 1} value={num + 1}>
-                      {num + 1}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            ) : (
-              <FormControl variant="filled" fullWidth margin="normal" size="small">
-                <InputLabel>Tipo de pago por días</InputLabel>
-                <Select
-                  value={tipoDiaSeleccionado?.codigo || ''}
-                  onChange={(e) => {
-                    const selected = tiposEjercicio.find(t => t.codigo === e.target.value);
-                    setTipoDiaSeleccionado(selected);
+                <Typography variant="caption" color="text.secondary">
+                  Fecha de Pago
+                </Typography>
+                <Typography fontWeight="bold" mb={1}>
+                  {fechaPago}
+                </Typography>
+
+                <Typography variant="caption" color="text.secondary">
+                  Vence actualmente
+                </Typography>
+                <Typography fontWeight="bold">
+                  {cliente?.fechaVencimiento
+                    ? dayjs(cliente.fechaVencimiento).format('DD/MM/YYYY')
+                    : '--'}
+                </Typography>
+
+                <Box mt={1.5}>
+                  <Chip
+                    label={
+                      cliente?.diasRestantes > 0
+                        ? `${cliente.diasRestantes} días restantes`
+                        : 'Vencido'
+                    }
+                    color={getEstadoColor()}
+                    size="small"
+                  />
+                </Box>
+              </Paper>
+
+              {nuevaFechaVencimiento && (
+                <Paper
+                  elevation={0}
+                  sx={{
+                    mt: 2,
+                    p: 2,
+                    borderRadius: 2,
+                    bgcolor: 'primary.main',
+                    color: 'primary.contrastText',
                   }}
                 >
-                  {tiposEjercicio
-                    .filter(t =>
-                      t.descripcion.toLowerCase().includes('dia') ||
-                      t.descripcion.toLowerCase().includes('semana')
-                    )
-                    .map((tipo) => (
-                      <MenuItem key={tipo.codigo} value={tipo.codigo}>
-                        {tipo.descripcion}
-                      </MenuItem>
-                    ))}
-                </Select>
-              </FormControl>
-            )}
+                  <Typography variant="caption">Nuevo vencimiento</Typography>
+                  <Typography variant="h6" fontWeight="bold">
+                    {nuevaFechaVencimiento}
+                  </Typography>
+                </Paper>
+              )}
+            </Grid>
 
-            <Typography variant="body2" color="textPrimary" align="center" sx={{ mt: 2 }}>
-              Monto calculado: <strong>${montoCalculado.toFixed(2)}</strong>
-            </Typography>
+            <Grid item xs={12} md={6}>
+              <Autocomplete
+                options={tiposPago}
+                loading={loadingTiposPago}
+                getOptionLabel={(option) => option?.descripcion || ''}
+                onChange={handleTipoPagoChange}
+                onInputChange={handleTipoPagoInputChange}
+                renderInput={(params) => <TextField {...params} label="Tipo de Pago" fullWidth />}
+              />
 
-            {errorMessage && (
-              <Typography color="error" variant="body2" sx={{ mt: 1, textAlign: 'center' }}>
-                {errorMessage}
-              </Typography>
-            )}
-
-            <Box display="flex" justifyContent="center" mt={3}>
-              <Button
-                variant="contained"
-                color="success"
-                onClick={handlePagoRapido}
-                disabled={loadingPago}
+              <TextField
+                select
                 fullWidth
+                label="Moneda"
+                value={moneda}
+                onChange={(e) => setMoneda(e.target.value)}
+                sx={{ mt: 2 }}
               >
-                {loadingPago ? <CircularProgress size={20} /> : 'Confirmar Pago'}
-              </Button>
-            </Box>
-          </>
-        )}
+                <MenuItem value="NIO">NIO</MenuItem>
+                <MenuItem value="USD">USD</MenuItem>
+              </TextField>
+
+              <Paper
+                elevation={0}
+                sx={{
+                  mt: 2,
+                  p: 2,
+                  borderRadius: 2,
+                  bgcolor: 'action.hover',
+                }}
+              >
+                <Typography variant="h6" fontWeight="bold">
+                  {obtenerSimboloMoneda(moneda)} {monto.toFixed(2)}
+                </Typography>
+
+                <TextField
+                  fullWidth
+                  label="Efectivo"
+                  type="number"
+                  value={efectivo}
+                  onChange={(e) => setEfectivo(Number(e.target.value))}
+                  sx={{ mt: 2 }}
+                />
+
+                <Box mt={2}>
+                  <Typography variant="body2">Cambio:</Typography>
+                  <Typography fontWeight="bold">
+                    {obtenerSimboloMoneda(moneda)} {cambio.toFixed(2)}
+                  </Typography>
+
+                  {cambioEquivalente > 0 && (
+                    <Typography variant="caption" color="text.secondary">
+                      Equivalente: {obtenerSimboloMoneda(obtenerMonedaEquivalente(moneda))}{' '}
+                      {cambioEquivalente.toFixed(2)}
+                    </Typography>
+                  )}
+                </Box>
+              </Paper>
+            </Grid>
+          </Grid>
+
+          <Button
+            fullWidth
+            variant="contained"
+            color="success"
+            size="large"
+            sx={{
+              mt: 3,
+              py: 1.2,
+              fontWeight: 'bold',
+            }}
+            onClick={handlePagoRapido}
+            disabled={loadingPago}
+          >
+            {loadingPago ? <CircularProgress size={22} /> : 'Confirmar Pago'}
+          </Button>
+        </Box>
       </Box>
     </Popover>
   );
 };
-export default PagoRapido;*/
+export default PagoRapido;

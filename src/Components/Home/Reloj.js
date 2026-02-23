@@ -38,7 +38,7 @@ const Reloj = () => {
           padding: "20px",
           borderRadius: "12px",
           textAlign: "center",
-          minWidth: "320px",
+          minWidth: { xs: "90%", md: "auto" },
           boxShadow: sombraFondo,
           transition: "all 0.3s ease-in-out",
         }}
