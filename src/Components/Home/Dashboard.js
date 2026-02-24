@@ -16,7 +16,7 @@ import PagosAnualTable from "./PagosAnualTable";
 import GananciasMensualesChart from "./GananciasMensualesChart";
 import VencimientosProximos from "./VencimientosProximos";
 
-const Dashboard = () => {
+const Dashboard = ({ pagosData = [] }) => {
     const theme = useTheme();
     const [openRutinas, setOpenRutinas] = React.useState(false);
     const [openTipoPago, setOpenTipoPago] = React.useState(false);
@@ -45,7 +45,6 @@ const Dashboard = () => {
                 py: 3
             }}
         >
-            {/* Header */}
             <Stack direction="row" alignItems="center" spacing={1} mb={3}>
                 <HomeIcon color="primary" fontSize="large" />
                 <Typography variant="h4" fontWeight="bold" color="primary">
@@ -53,7 +52,6 @@ const Dashboard = () => {
                 </Typography>
             </Stack>
 
-            {/* Resumen */}
             <Box mb={4}>
                 <DashboardResumen sx={{ width: "100%" }} />
             </Box>
@@ -89,7 +87,7 @@ const Dashboard = () => {
                                 }}
                             >
                                 <Box flex={1}>
-                                    <GananciasTable />
+                                    <GananciasTable pagosData={pagosData} />
                                 </Box>
 
                                 <Paper
@@ -132,7 +130,7 @@ const Dashboard = () => {
                                 },
                                 }}
                             >
-                                <GananciasMensualesChart />
+                                <GananciasMensualesChart pagosData={pagosData} />
                             </Paper>
                         </Box>
                         <Box
@@ -201,7 +199,7 @@ const Dashboard = () => {
                             <Grid item xs={12}>
                                 <Grid container spacing={2}>
                                     <Grid item xs={12} md={4}>
-                                        <PagosAnualTable />
+                                        <PagosAnualTable pagosData={pagosData} />
                                     </Grid>
                                 </Grid>
                             </Grid>

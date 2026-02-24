@@ -10,7 +10,7 @@ import { AuthProvider } from './Context/AuthContext';
 import { ExistenciasProvider } from './Context/ExistenciaContext';
 import ErrorPage from './Pages/ErrorPage';
 import LoginPage from './Pages/Login/LoginPage';
-import Dashboard from './Components/Home/Dashboard';
+import Dashboard from './Pages/Home/DashboardPage';
 import FormularioCliente from './Pages/Cliente/FormPage';
 import IndexClientes from './Pages/Cliente/IndexPage';
 import DetailsPage from './Pages/Cliente/DetailsPage';
