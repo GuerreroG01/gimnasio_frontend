@@ -1,23 +1,7 @@
 import React, { useEffect, useState } from "react";
 import PagoService from "../../Services/PagoService";
-import {
-  CircularProgress,
-  Box,
-  Container,
-  Typography,
-  Snackbar,
-  Alert,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  TablePagination,
-  useTheme,
-} from "@mui/material";
-import ShowChartIcon from '@mui/icons-material/ShowChart';
+import { CircularProgress, Box, Snackbar, Alert, Table, TableBody, TableCell, TableContainer,
+  TableHead, TableRow, Paper, TablePagination, useTheme } from "@mui/material";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -35,7 +19,7 @@ const PagosAnualTable = () => {
     const fetchData = async () => {
       try {
         const response = await PagoService.getAñosConPagos();
-        const sortedData = response.sort((a, b) => a.año - b.año);
+        const sortedData = response.sort((a, b) => b.año - a.año);
 
         // Agregar tendencias
         const datosConTendencia = sortedData.map((item, index, array) => {

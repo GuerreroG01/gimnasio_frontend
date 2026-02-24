@@ -8,6 +8,7 @@ import TiposPagoService from '../../Services/Tipo_PagosService';
 import TipoCambioService from '../../Services/TipoCambioService';
 import { convertirPrecio, obtenerMonedaEquivalente } from '../../Utils/MonedaUtils';
 import { useNavigate, useLocation } from 'react-router-dom';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 export default function FormPage({ pagoId, onSuccess }) {
     const location = useLocation();
@@ -40,6 +41,23 @@ export default function FormPage({ pagoId, onSuccess }) {
     const [tipoCambio, setTipoCambio] = React.useState([]); 
     const [cambioEquivalente, setCambioEquivalente] = React.useState(0);
     const navigate= useNavigate();
+    const [snackbar, setSnackbar] = React.useState({
+        open: false,
+        message: '',
+        severity: 'warning'
+    });
+
+    const showSnackbar = (message, severity = 'warning') => {
+        setSnackbar({
+            open: true,
+            message,
+            severity
+        });
+    };
+
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
+    };
 
     const validationSchema = Yup.object({
         CodigoCliente: Yup.number().required('Cliente requerido'),
@@ -146,6 +164,13 @@ export default function FormPage({ pagoId, onSuccess }) {
         }
     }, [values.Efectivo, values.Monto, values.Moneda, values.Cambio, tipoCambio, cambioEquivalente, setFieldValue]);
 
+    const limpiarTipoPago = useCallback(() => {
+        setFieldValue("TipoPago", null);
+        setFieldValue("CodigoTipoPago", "");
+        setMontoBase(0);
+        setMonedaBase("NIO");
+    }, [setFieldValue]);
+
     const handleTipoPagoInputChange = (event, value, reason) => {
         if (reason !== 'input') return;
         if (tipoPagoSearchTimeout.current) clearTimeout(tipoPagoSearchTimeout.current);
@@ -183,22 +208,44 @@ export default function FormPage({ pagoId, onSuccess }) {
 
     const cargarUltimoPago = useCallback(async (codigoCliente) => {
         try {
-            const existePago = await pagosService.checkFechaClienteExist(codigoCliente);
-            if (!existePago) return;
-
             const ultimoPago = await pagosService.getUltimoPagoPorCliente(codigoCliente);
-            console.log('Datos del ultimo pago:', ultimoPago);
-            if (!ultimoPago) return;
-            const tipo = ultimoPago.tipoPago;
-            setTiposPago([tipo]);
-            handleTipoPagoChange(null, tipo);
-            setFieldValue("CodigoTipoPago", tipo.codigoPago);
-            setFieldValue("TipoPago", tipo);
+
+            if (!ultimoPago?.codigoTipoPago) return;
+
+            const response = await TiposPagoService.getTipoPagoById(
+                ultimoPago.codigoTipoPago
+            );
+
+            const tipoValido = response.data;
+
+            if (!tipoValido) {
+                limpiarTipoPago();
+                showSnackbar(
+                    "El tipo de pago del último registro fue eliminado.",
+                    "warning"
+                );
+                return;
+            }
+
+            setTiposPago([tipoValido]);
+            handleTipoPagoChange(null, tipoValido);
 
         } catch (err) {
-            console.error('Error cargando último pago:', err);
+
+            if (err.response?.status === 404) {
+                limpiarTipoPago();
+                showSnackbar("Nuevo cliente", "success");
+                return;
+            }
+
+            console.error('Error real cargando último pago:', err);
+            showSnackbar(
+                "Ocurrió un error al consultar el último pago.",
+                "error"
+            );
         }
-    }, [setFieldValue, handleTipoPagoChange]);
+
+    }, [handleTipoPagoChange, limpiarTipoPago]);
     
     useEffect(() => {
         if (clienteId) {
@@ -254,20 +301,28 @@ export default function FormPage({ pagoId, onSuccess }) {
     };
 
     return (
-        <PagoForm
-            formik={formik}
-            loading={loading}
-            pagoId={pagoId}
-            monedas={monedas}
-            clientes={clientes}
-            loadingClientes={loadingClientes}
-            handleInputChange={handleInputChange}
-            tiposPago={tiposPago}
-            loadingTiposPago={loadingTiposPago}
-            handleTipoPagoInputChange={handleTipoPagoInputChange}
-            handleTipoPagoChange={handleTipoPagoChange}
-            cambioEquivalente={cambioEquivalente}
-            cargarUltimoPago={cargarUltimoPago}
-        />
+        <>
+            <PagoForm
+                formik={formik}
+                loading={loading}
+                pagoId={pagoId}
+                monedas={monedas}
+                clientes={clientes}
+                loadingClientes={loadingClientes}
+                handleInputChange={handleInputChange}
+                tiposPago={tiposPago}
+                loadingTiposPago={loadingTiposPago}
+                handleTipoPagoInputChange={handleTipoPagoInputChange}
+                handleTipoPagoChange={handleTipoPagoChange}
+                cambioEquivalente={cambioEquivalente}
+                cargarUltimoPago={cargarUltimoPago}
+            />
+            <CustomSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={handleCloseSnackbar}
+            />
+        </>
     );
 }

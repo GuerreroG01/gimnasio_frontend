@@ -19,12 +19,12 @@ const GananciasTable = () => {
         const fetchData = async () => {
             try {
                 const response = await PagoService.getAñosConPagos();
-                const sortedData = response.sort((a, b) => a.año - b.año);
+                const sortedData = response.sort((a, b) => b.año - a.año);
 
                 const datosConTendencia = sortedData.map((item, index, array) => {
-                    const prev = array[index - 1] || null;
+                    const prev = array[index + 1] || null;
 
-                    const trendNIO = prev
+                    const trend = prev
                         ? item.totalGananciasNIO > prev.totalGananciasNIO
                             ? { Icon: TrendingUpIcon, color: "#43A047" }
                             : item.totalGananciasNIO < prev.totalGananciasNIO
@@ -32,15 +32,7 @@ const GananciasTable = () => {
                                 : { Icon: TrendingFlatIcon, color: "#757575" }
                         : { Icon: TrendingFlatIcon, color: "#757575" };
 
-                    const trendUSD = prev
-                        ? item.totalGananciasUSD > prev.totalGananciasUSD
-                            ? { Icon: TrendingUpIcon, color: "#1E88E5" }
-                            : item.totalGananciasUSD < prev.totalGananciasUSD
-                                ? { Icon: TrendingDownIcon, color: "#E53935" }
-                                : { Icon: TrendingFlatIcon, color: "#757575" }
-                        : { Icon: TrendingFlatIcon, color: "#757575" };
-
-                    return { ...item, trendNIO, trendUSD };
+                    return { ...item, trend };
                 });
 
                 setData(datosConTendencia);
@@ -67,7 +59,6 @@ const GananciasTable = () => {
     return (
         <Box sx={{ width: "fit-content", ml: "auto" }}>
 
-            {/* Tabla */}
             <TableContainer
                 component={Paper}
                 sx={{
@@ -83,7 +74,6 @@ const GananciasTable = () => {
                         <TableRow>
                             <TableCell sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Año</TableCell>
                             <TableCell align="right" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Ganancias NIO</TableCell>
-                            <TableCell align="center" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Tendencia NIO</TableCell>
                             <TableCell align="right" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Ganancias USD</TableCell>
                             <TableCell align="center" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Tendencia USD</TableCell>
                         </TableRow>
@@ -99,17 +89,18 @@ const GananciasTable = () => {
                                 }}
                             >
                                 <TableCell>{item.año}</TableCell>
-                                <TableCell align="right" sx={{ color: item.trendNIO.color }}>
+                                <TableCell align="right">
                                     {item.totalGananciasNIO.toLocaleString()}
                                 </TableCell>
-                                <TableCell align="center">
-                                    <item.trendNIO.Icon sx={{ color: item.trendNIO.color }} />
+
+                                <TableCell align="right">
+                                    {item.totalGananciasUSD.toLocaleString(undefined, { 
+                                        minimumFractionDigits: 2, 
+                                        maximumFractionDigits: 2 
+                                    })}
                                 </TableCell>
-                                <TableCell align="right" sx={{ color: item.trendUSD.color }}>
-                                    {item.totalGananciasUSD.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                                </TableCell>
                                 <TableCell align="center">
-                                    <item.trendUSD.Icon sx={{ color: item.trendUSD.color }} />
+                                    <item.trend.Icon sx={{ color: item.trend.color }} />
                                 </TableCell>
                             </TableRow>
                         ))}

@@ -76,7 +76,7 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
       console.log(`Eliminando el pago con código: ${pagoAEliminar.codigoPago}`);
   
       try {
-        const fechaClienteExiste = await pagoService.checkFechaClienteExist(pagoAEliminar.codigoPago);
+        const fechaClienteExiste = await pagoService.checkTiempoPagoExist(pagoAEliminar.codigoPago);
   
         if (fechaClienteExiste) {
           await pagoService.deleteFecha({

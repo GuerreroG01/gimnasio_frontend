@@ -1,21 +1,6 @@
-import { useState, useEffect } from "react";
-import {
-  List,
-  ListItem,
-  ListItemText,
-  IconButton,
-  Box,
-  Pagination,
-  Button,
-  Typography,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  Divider,
-  useTheme,
-  useMediaQuery,
-} from "@mui/material";
+import React,{ useEffect } from "react";
+import { List, ListItem, ListItemText, IconButton, Box, Pagination, Button, Typography, Dialog, DialogTitle,
+  DialogContent, DialogActions, Divider, useTheme, useMediaQuery} from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -25,6 +10,7 @@ import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
 import tipo_PagosService from "../../Services/Tipo_PagosService";
 import TipoPagoForm from "./TipoPagoForm";
 import EmptyState from "../../Shared/Components/EmptyState";
+import CustomSnackbar from "../../Shared/Components/CustomSnackbar";
 
 const ITEMS_PER_PAGE = 4;
 
@@ -33,10 +19,10 @@ const TipoPagoListDialog = ({ open, onClose }) => {
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isDark = theme.palette.mode === "dark";
 
-  const [tipoPagos, setTipoPagos] = useState([]);
-  const [page, setPage] = useState(1);
+  const [tipoPagos, setTipoPagos] = React.useState([]);
+  const [page, setPage] = React.useState(1);
 
-  const [editPago, setEditPago] = useState({
+  const [editPago, setEditPago] = React.useState({
     CodigoPago: null,
     Descripcion: "",
     Monto: 0,
@@ -48,10 +34,27 @@ const TipoPagoListDialog = ({ open, onClose }) => {
     Activo: true,
   });
 
-  const [loading, setLoading] = useState(false);
-  const [openConfirm, setOpenConfirm] = useState(false);
-  const [selectedPago, setSelectedPago] = useState(null);
-  const [openForm, setOpenForm] = useState(false);
+  const [loading, setLoading] = React.useState(false);
+  const [openConfirm, setOpenConfirm] = React.useState(false);
+  const [selectedPago, setSelectedPago] = React.useState(null);
+  const [openForm, setOpenForm] = React.useState(false);
+  const [snackbar, setSnackbar] = React.useState({
+    open: false,
+    message: '',
+    severity: 'warning'
+  });
+
+  const showSnackbar = (message, severity = 'warning') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({ ...prev, open: false }));
+  };
 
   useEffect(() => {
     if (open) loadTipoPagos();
@@ -130,14 +133,23 @@ const TipoPagoListDialog = ({ open, onClose }) => {
   };
   const handleDelete = async () => {
     if (!selectedPago) return;
+
     try {
       await tipo_PagosService.deleteTipoPago(selectedPago.codigoPago);
+
       setTipoPagos((prev) =>
         prev.filter((tp) => tp.codigoPago !== selectedPago.codigoPago)
       );
+
       handleCloseConfirm();
+
+      showSnackbar('Tipo de pago eliminado correctamente', 'success');
+
     } catch (error) {
-      alert("Error eliminando tipo de pago");
+      const backendMessage =
+        error.response?.data?.mensaje || 'Error eliminando tipo de pago';
+
+      showSnackbar(backendMessage, 'error');
     }
   };
 
@@ -288,6 +300,13 @@ const TipoPagoListDialog = ({ open, onClose }) => {
             Eliminar
           </Button>
         </DialogActions>
+        <CustomSnackbar
+          open={snackbar.open}
+          message={snackbar.message}
+          severity={snackbar.severity}
+          onClose={handleCloseSnackbar}
+          autoHideDuration={4000}
+        />
       </Dialog>
 
       {/* Formulario */}

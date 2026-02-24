@@ -153,7 +153,7 @@ const TipoCambioList = () => {
                         </Typography>
                         </Box>
                     }
-                    secondary={`Tasa: ${tc.tasa}`}
+                    secondary={`Tasa: ${tc.tasa}, Fecha: ${new Date(tc.fecha).toLocaleDateString()}`}
                     sx={{ pr: 6 }}
                 />
                 <Box

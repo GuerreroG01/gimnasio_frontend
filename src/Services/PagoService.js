@@ -51,7 +51,7 @@ const getTiempoPagoCliente = (codigoPago) => //Cambiado
       throw error;
     });
 
-const checkFechaClienteExist = (codigoPago) => //Cambiado
+const checkTiempoPagoExist = (codigoPago) => //Cambiado
   axiosInstance
     .get(`${API_URL}/CheckPagoExist/${codigoPago}`)
     .then(r => r.data.exists);
@@ -75,7 +75,7 @@ const PagoService = {
   deleteFecha,
   getUltimoPagoVigente,
   getTiempoPagoCliente,
-  checkFechaClienteExist,
+  checkTiempoPagoExist,
   getUltimoPagoPorCliente,
   getVencimientosProximos,
 };
