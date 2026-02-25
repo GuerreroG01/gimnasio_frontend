@@ -37,7 +37,7 @@ export default function ClienteProgreso({ theme, clienteIdInput, setClienteIdInp
     handleFetchProgresos, getIconByTipo, getColorByTipo, calcularProgreso, agruparPorNivel, clienteInfo, snackbar, setSnackbar, authenticated }) {
         const navigate = useNavigate();
     return (
-        <Container maxWidth="lg" sx={{ mt: 2, mb: 2 }}>
+        <Container maxWidth={false} sx={{ mt: 2, mb: 2 }}>
             <Box
                 display="flex"
                 flexDirection={{ xs: 'column', md: 'row' }}

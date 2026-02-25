@@ -11,7 +11,7 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
 }) => {
   const theme = useTheme();
   return (
-    <Container maxWidth="xl" sx={{backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
+    <Container maxWidth={false} sx={{backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
       <CustomSnackbar
         open={!!alerta.mensaje}
         message={alerta.mensaje}

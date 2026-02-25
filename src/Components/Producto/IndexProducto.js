@@ -43,7 +43,7 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
   };
 
   return (
-    <Container sx={{ mt: 4 }}>
+    <Container maxWidth={false} sx={{ mt: 4 }}>
       <Box
         sx={{
           display: 'flex',

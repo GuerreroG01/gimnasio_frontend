@@ -15,7 +15,7 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
     const navigate = useNavigate();
     const theme = useTheme();
     return (
-        <Box sx={{ width: '90%', margin: 'auto' }}>
+        <Box sx={{ width: '100%', margin: 'auto' }}>
             <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                     Pagos Registrados

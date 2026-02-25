@@ -29,7 +29,7 @@ const Logo = styled('img')({
 const NAV_LINKS = [
   { label: "Clientes", path: "/clientes" },
   { label: "Operaciones", children: [
-      { label: "Pago", path: "/pagos" },
+      { label: "Pagos", path: "/pagos" },
       { label: "Productos", path: "/productos" },
       { label: "Ventas", path: "/venta" },
       { label: "Programas", path: "/programas" },
@@ -45,6 +45,7 @@ const Navegacion = ({ children }) => {
   const [menuAnchor, setMenuAnchor] = React.useState(null);
   const { darkMode, toggleDarkMode } = React.useContext(ThemeContext);
   const theme = useTheme();
+  const [openDrawer, setOpenDrawer] = React.useState(false);
 
   const handleLogout = () => {
     setOpenDialog(false);
@@ -247,7 +248,7 @@ const Navegacion = ({ children }) => {
               </Box>
             </Tooltip>
 
-            <NavegacionMovil openDrawer={false} toggleDrawer={() => {}} isActive={isActive} />
+            <NavegacionMovil openDrawer={openDrawer} toggleDrawer={() => setOpenDrawer(!openDrawer)} isActive={isActive} />
 
             <Tooltip title="Cerrar Sesión">
               <IconButton

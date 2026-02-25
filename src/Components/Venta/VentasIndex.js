@@ -31,7 +31,7 @@ const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () 
   const filteredDias = limitDias.filter(d => !minLimitDate || !limitAnio || !limitMes || new Date(limitAnio, limitMes - 1, d) > minLimitDate);
 
   return (
-    <Box sx={{ padding: 1, maxWidth: 900, margin: 'auto', textAlign: 'center' }}>
+    <Box sx={{ padding: 1, maxWidth:'85%', margin: 'auto', textAlign: 'center' }}>
       <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
         Ventas
       </Typography>

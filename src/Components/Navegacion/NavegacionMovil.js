@@ -4,15 +4,16 @@ import { Link, useNavigate } from 'react-router-dom';
 import LogoutIcon from '@mui/icons-material/Logout';
 
 import MenuOpenIcon from '@mui/icons-material/MenuOpen';
-const authToken = localStorage.getItem("authToken");
+const authToken = localStorage.getItem("token");
 
 const NAV_LINKS = [
   { label: "Login", path: "/Login", public: true },
-  { label: "Usuarios", path: "/usuario", public: false },
-  { label: "Pagos y Ejercicios", path: "/IndexTipoEjer_y_Pago", public: false },
-  { label: "Productos", path: "/productos", public: false },
+  { label: "Clientes", path: "/clientes", public: false },
   { label: "Pagos", path: "/pagos", public: false },
-  { label: "Mensajes", path: "/mensajes", public: false },
+  { label: "Productos", path: "/productos", public: false },
+  { label: "Ventas", path: "/venta", public: false },
+  { label: "Programas", path: "/programas", public: false },
+  { label: "Progresos", path: "/progresos", public: false },
 ];
 
 const NavegacionMovil = ({ openDrawer, toggleDrawer, isActive }) => {
@@ -21,7 +22,7 @@ const NavegacionMovil = ({ openDrawer, toggleDrawer, isActive }) => {
     toggleDrawer();
   };
   const handleLogout = () => {
-    localStorage.removeItem("authToken");
+    localStorage.removeItem("token");
     toggleDrawer();
     navigate("/Login");
     window.location.reload();
