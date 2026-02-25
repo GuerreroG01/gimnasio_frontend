@@ -1,13 +1,14 @@
 import React, { useEffect } from 'react';
 import { 
     Container, Typography, Card, FormControl, InputLabel, Select, MenuItem, 
-    Button, Box, Paper, Divider, Stack, CircularProgress, Alert, Grid, useTheme
+    Button, Box, Paper, Divider, Stack, CircularProgress, Alert, useTheme, CardContent
 } from '@mui/material';
 import FolderOpenIcon from '@mui/icons-material/FolderOpen';
 import Tooltip from '@mui/material/Tooltip';
 import BackupIcon from '@mui/icons-material/Backup';
 import SaveIcon from '@mui/icons-material/Save';
 import BackupService from '../../../Services/BackupService';
+import CustomSnackbar from '../../../Shared/Components/CustomSnackbar';
 
 const calcularProximoRespaldo = (frecuencia, fechaAnterior) => {
     let fechaBase = fechaAnterior ? new Date(fechaAnterior) : new Date();
@@ -51,6 +52,11 @@ const ConfigBackup = () => {
     const [proximoRespaldo, setProximoRespaldo] = React.useState('');
     const [cambiosPendientes, setCambiosPendientes] = React.useState(false);
     const theme = useTheme();
+    const [snackbar, setSnackbar] = React.useState({
+        open: false,
+        message: '',
+        severity: 'success',
+    });
 
     useEffect(() => {
         const fetchBackupConfig = async () => {
@@ -75,21 +81,34 @@ const ConfigBackup = () => {
         fetchBackupConfig();
     }, []);
 
-    const handleUpdate = async () => {
+    const handleUpdate = async (nuevaFrecuencia) => {
         if (!backup) return;
-        const nuevoRespaldo = calcularProximoRespaldo(frecuencia, backup.fechaRespaldoAnterior);
+        const nuevoRespaldo = calcularProximoRespaldo(nuevaFrecuencia, backup.fechaRespaldoAnterior);
         setProximoRespaldo(nuevoRespaldo);
 
         try {
             const updatedBackup = {
                 ...backup,
-                FrecuenciaRespaldo: frecuencia,
+                FrecuenciaRespaldo: nuevaFrecuencia,
                 ProximoRespaldo: nuevoRespaldo
             };
+
             await BackupService.updateBackupConfig(updatedBackup);
             setBackup(updatedBackup);
+
+            setSnackbar({
+                open: true,
+                message: 'La configuración de respaldo se actualizó correctamente.',
+                severity: 'success'
+            });
         } catch (err) {
-            setError('Error al actualizar la configuración de respaldo.');
+            console.error(err);
+
+            setSnackbar({
+                open: true,
+                message: 'Ocurrió un error al actualizar la configuración de respaldo.',
+                severity: 'error'
+            });
         }
     };
 
@@ -166,101 +185,114 @@ const ConfigBackup = () => {
     };
 
     return (
-        <Container maxWidth={false} sx={{ mt: 4 }}>
-            <Paper elevation={4} sx={{ p: 4, borderRadius: 3, backgroundColor: theme.palette.background.paper }}>
-                <Typography variant="h4" textAlign="center" gutterBottom sx={{ fontWeight: 'bold', color: 'primary.main' }}>
+        <Box sx={{ width: '100%', mt: 4 }}>
+            <Paper
+                elevation={4}
+                sx={{
+                    p: 2,
+                    borderRadius: 3,
+                    backgroundColor: theme.palette.background.paper
+                }}
+                >
+                <Typography
+                    variant="h4"
+                    textAlign="center"
+                    gutterBottom
+                    sx={{ fontWeight: 'bold', color: 'primary.main' }}
+                >
                     <BackupIcon sx={{ fontSize: 40, verticalAlign: 'middle', mr: 1 }} />
                     Configuración de Respaldo
                 </Typography>
 
                 <Divider sx={{ mb: 3 }} />
 
-                <Grid container spacing={3}>
-                    <Grid item xs={12} md={4}>
-                        <Card elevation={3} sx={{ p: 3, borderRadius: 2 }}>
-                            <Typography variant="h6" gutterBottom textAlign="center" sx={{ color: 'secondary.main' }}>
-                                Frecuencia del Respaldo
-                            </Typography>
-                            <FormControl variant="filled" fullWidth>
-                                <InputLabel>Seleccionar</InputLabel>
-                                <Select
-                                    value={frecuencia}
-                                    onChange={(e) => {
-                                        const nuevaFrecuencia = e.target.value;
-                                        setFrecuencia(nuevaFrecuencia);
-                                        setCambiosPendientes(nuevaFrecuencia !== backup.FrecuenciaRespaldo);
-                                        const nuevoRespaldo = calcularProximoRespaldo(nuevaFrecuencia, backup.FechaRespaldoAnterior);
-                                        setProximoRespaldo(nuevoRespaldo);
-                                    }}
-                                >
-                                    <MenuItem value="dia">Diario</MenuItem>
-                                    <MenuItem value="semana">Semanal</MenuItem>
-                                    <MenuItem value="quincena">Quincenal</MenuItem>
-                                    <MenuItem value="mes">Mensual</MenuItem>
-                                    <MenuItem value="año">Anual</MenuItem>
-                                </Select>
-                            </FormControl>
+                <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', width: '100%' }}>
+                    <Stack sx={{ width: '25%' }} spacing={2}>
+                        <Card sx={{ width: '100%', borderRadius: 2 }}>
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom textAlign="center" sx={{ color: 'secondary.main' }}>
+                                    Frecuencia del Respaldo
+                                </Typography>
+                                <FormControl variant="filled" fullWidth>
+                                    <InputLabel>Seleccionar</InputLabel>
+                                    <Select
+                                        value={frecuencia}
+                                        onChange={(e) => {
+                                            const nuevaFrecuencia = e.target.value;
+                                            setFrecuencia(nuevaFrecuencia);
+                                            handleUpdate(nuevaFrecuencia);
+                                        }}
+                                    >
+                                        <MenuItem value="dia">Diario</MenuItem>
+                                        <MenuItem value="semana">Semanal</MenuItem>
+                                        <MenuItem value="quincena">Quincenal</MenuItem>
+                                        <MenuItem value="mes">Mensual</MenuItem>
+                                        <MenuItem value="año">Anual</MenuItem>
+                                    </Select>
+                                </FormControl>
+                            </CardContent>
                         </Card>
-                    </Grid>
+                    </Stack>
 
-                    <Grid item xs={12} md={8} lg={6}>
-                        <Card elevation={3} sx={{ p: 3, borderRadius: 2, width: '90%', }}>
-                            <Typography variant="h6" gutterBottom textAlign="center" sx={{ color: 'secondary.main' }}>
-                                Información de Respaldo
-                            </Typography>
+                    <Stack sx={{ width: '70%' }} spacing={2}>
+                        <Card sx={{ width: '100%', borderRadius: 2 }}>
+                            <CardContent>
+                                <Typography variant="h6" gutterBottom textAlign="center" sx={{ color: 'secondary.main' }}>
+                                    Información de Respaldo
+                                </Typography>
 
-                            <Stack spacing={2}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Último Respaldo:</Typography>
-                                    <Typography variant="body1">{formatearFecha(backup.fechaRespaldoAnterior)}</Typography>
-                                </Box>
-
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Próximo Respaldo:</Typography>
-                                    <Typography variant="body1" color="primary">{formatearFecha(proximoRespaldo)}</Typography>
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                        Estado Último Respaldo:
-                                    </Typography>
-
-                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                        <Tooltip title={backup.estadoUltimoRespaldo} arrow>
-                                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                                                <Box
-                                                    sx={{
-                                                        width: 12,
-                                                        height: 12,
-                                                        borderRadius: '50%',
-                                                        bgcolor: getEstadoColor(backup.estadoUltimoRespaldo),
-                                                        cursor: 'pointer'
-                                                    }}
-                                                />
-                                            </Box>
-                                        </Tooltip>
+                                <Stack spacing={2}>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Último Respaldo:</Typography>
+                                        <Typography variant="body1">{formatearFecha(backup.fechaRespaldoAnterior)}</Typography>
                                     </Box>
-                                </Box>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
-                                    <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
-                                        Ruta del Respaldo:
-                                    </Typography>
 
-                                    {backup.rutaRespaldo ? (
-                                        <Tooltip title={backup.rutaRespaldo} arrow>
-                                            <FolderOpenIcon
-                                                color="primary"
-                                                sx={{ cursor: 'pointer' }}
-                                            />
-                                        </Tooltip>
-                                    ) : (
-                                        <Typography variant="body1">No disponible</Typography>
-                                    )}
-                                </Box>
-                            </Stack>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>Próximo Respaldo:</Typography>
+                                        <Typography variant="body1" color="primary">{formatearFecha(proximoRespaldo)}</Typography>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                            Estado Último Respaldo:
+                                        </Typography>
+
+                                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                            <Tooltip title={backup.estadoUltimoRespaldo} arrow>
+                                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                                    <Box
+                                                        sx={{
+                                                            width: 12,
+                                                            height: 12,
+                                                            borderRadius: '50%',
+                                                            bgcolor: getEstadoColor(backup.estadoUltimoRespaldo),
+                                                            cursor: 'pointer'
+                                                        }}
+                                                    />
+                                                </Box>
+                                            </Tooltip>
+                                        </Box>
+                                    </Box>
+                                    <Box sx={{ display: 'flex', justifyContent: 'space-between', p: 1 }}>
+                                        <Typography variant="body1" sx={{ fontWeight: 'bold' }}>
+                                            Ruta del Respaldo:
+                                        </Typography>
+
+                                        {backup.rutaRespaldo ? (
+                                            <Tooltip title={backup.rutaRespaldo} arrow>
+                                                <FolderOpenIcon
+                                                    color="primary"
+                                                    sx={{ cursor: 'pointer' }}
+                                                />
+                                            </Tooltip>
+                                        ) : (
+                                            <Typography variant="body1">No disponible</Typography>
+                                        )}
+                                    </Box>
+                                </Stack>
+                            </CardContent>
                         </Card>
-                    </Grid>
-                </Grid>
-
+                    </Stack>
+                </Box>
                 {cambiosPendientes && (
                     <Box textAlign="center" sx={{ mt: 4 }}>
                         <Button 
@@ -279,7 +311,13 @@ const ConfigBackup = () => {
                     </Box>
                 )}
             </Paper>
-        </Container>
+            <CustomSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={() => setSnackbar({ ...snackbar, open: false })}
+            />
+        </Box>
     );
 };
 export default ConfigBackup;

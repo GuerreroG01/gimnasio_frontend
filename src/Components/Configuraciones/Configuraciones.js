@@ -1,12 +1,12 @@
 import React from 'react';
-import { Container, Typography, Paper, Box, Divider } from '@mui/material';
+import { Typography, Paper, Box, Divider } from '@mui/material';
 import ConfigBackup from './Backup/ConfigBackup';
 import ConfigInactividad from './Inactivos/ConfigInactividad';
 
 const Configuraciones = () => {
     return (
-        <Container maxWidth="xl" sx={{ mt: 4 }}>
-            <Paper elevation={3} sx={{ p: 4, borderRadius: 3 }}>
+        <Box sx={{ width: '100%', mt: 4 }}>
+            <Paper elevation={3} sx={{ p: 2, borderRadius: 3 }}>
                 <Typography 
                     variant="h4" 
                     component="h1" 
@@ -28,7 +28,7 @@ const Configuraciones = () => {
                     <ConfigInactividad />
                 </Box>
             </Paper>
-        </Container>
+        </Box>
     );
 };
 export default Configuraciones;

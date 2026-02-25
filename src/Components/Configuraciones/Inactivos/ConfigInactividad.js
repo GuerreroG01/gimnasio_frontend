@@ -87,7 +87,7 @@ const ConfigInactividad = () => {
   }
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
+    <Box sx={{ width: '100%', mt: 4 }}>
       <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
         <Typography
           variant="h5"
@@ -184,7 +184,7 @@ const ConfigInactividad = () => {
           </Alert>
         )}
       </Paper>
-    </Container>
+    </Box>
   );
 };
 export default ConfigInactividad;

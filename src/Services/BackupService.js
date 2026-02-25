@@ -53,6 +53,7 @@ const createBackupConfig = async (backup) => {
 };
 
 const updateBackupConfig = async (backup) => {
+    console.log('Lo que se esta recibiendo:',backup)
     try {
         await axiosInstance.put(`${API_URL}/${backup.id}`, backup, { 
             headers: { 'Content-Type': 'application/json' } 
