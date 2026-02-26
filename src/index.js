@@ -10,6 +10,7 @@ import { AuthProvider } from './Context/AuthContext';
 import { ExistenciasProvider } from './Context/ExistenciaContext';
 import ErrorPage from './Pages/ErrorPage';
 import LoginPage from './Pages/Login/LoginPage';
+import RegisterPage from './Pages/User/FormPage';
 import Dashboard from './Pages/Home/DashboardPage';
 import FormularioCliente from './Pages/Cliente/FormPage';
 import IndexClientes from './Pages/Cliente/IndexPage';
@@ -27,8 +28,8 @@ import IndexPrograma from './Pages/Programa/IndexPage';
 import DetailsPrograma from './Components/ProgramaFit/Programa/DetailsPrograma';
 import ProgramasForm from './Pages/Programa/FormPage';
 import ProgresosCliente from './Pages/Progresos/ClienteProgresoPage';
-//import Prueba from './Pages/Home/ClienteProgresoPage';
-import Prueba from './Components/Home/DashboardResumen';
+import Prueba from './Pages/User/FormPage';
+//import Prueba from './Components/Home/DashboardResumen';
 import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
@@ -92,6 +93,10 @@ const router = createBrowserRouter([
       {path: '/programas/new', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
       {path: '/programas/:id/update', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
       {path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
+
+      //Usuario
+      {path: '/user/register', element: <ProtectedRoute><RegisterPage /></ProtectedRoute> },
+      {path: '/user/:id/update', element: <ProtectedRoute><RegisterPage /></ProtectedRoute> },
 
 /*
       // TIPOS EJERCICIOS Y PAGOS

@@ -195,12 +195,12 @@ const ConfigBackup = () => {
                 }}
                 >
                 <Typography
-                    variant="h4"
+                    variant="h5"
                     textAlign="center"
                     gutterBottom
-                    sx={{ fontWeight: 'bold', color: 'primary.main' }}
+                    sx={{ fontWeight: 'bold', color: 'primary.main', display: 'flex', alignItems: 'center', gap: 1 }}
                 >
-                    <BackupIcon sx={{ fontSize: 40, verticalAlign: 'middle', mr: 1 }} />
+                    <BackupIcon />
                     Configuración de Respaldo
                 </Typography>
 
