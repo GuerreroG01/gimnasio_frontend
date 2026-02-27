@@ -36,6 +36,7 @@ const RutinasForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loadin
             transformOrigin={{ vertical: "top", horizontal: "center" }}
             slotProps={{
                 paper: {
+                    className: "scroll-hide",
                 sx: {
                     borderRadius: 3,
                     boxShadow: "0px 12px 32px rgba(0,0,0,0.15)",

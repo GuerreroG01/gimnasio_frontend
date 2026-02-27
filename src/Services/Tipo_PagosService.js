@@ -65,6 +65,16 @@ const obtenerTipoPagoPorPago = async (duracionPago, intervaloPago, monto) => {
     throw error;
   }
 };
+const getTipoPagoByDescripcion = async (descripcion) => {
+  try {    const response = await axiosInstance.get(`${API_URL}/buscarPorDescripcion`, {
+      params: { descripcion },
+    });
+    return response.data;
+  } catch (error) {
+    console.error(`Error al obtener el tipo de pago con descripción ${descripcion}:`, error);
+    throw error;
+  }
+}
 
 const tipo_PagosService = {
   getTipoPagos,
@@ -73,7 +83,8 @@ const tipo_PagosService = {
   updateTipoPago,
   deleteTipoPago,
   searchTipoPagoByName,
-  obtenerTipoPagoPorPago
+  obtenerTipoPagoPorPago,
+  getTipoPagoByDescripcion
 };
 
 export default tipo_PagosService;

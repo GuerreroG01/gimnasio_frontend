@@ -84,7 +84,6 @@ const getCategorias = async () => {
   }
 };
 const getProductoByDescripcion = async (descripcion) => {
-  console.log("Buscando productos con descripción:", descripcion);
   try {
     const response = await axiosInstance.get(
       `${API_URL}/buscar`,

@@ -5,11 +5,11 @@ import {
 import React from "react";
 import HomeIcon from '@mui/icons-material/Home';
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
-import PaymentsOutlinedIcon from "@mui/icons-material/PaymentsOutlined";
+import PaymentIcon from '@mui/icons-material/Payment';
 import DashboardResumen from "./DashboardResumen";
-import TipoPagoList from "../TipoPago/TipoPagoList";
+import TipoPagoDialog from "../TipoPago/TipoPagoDialog";
 import TipoCambioList from "../TipoCambio/TipoCambioList";
-import RutinasList from "../ProgramaFit/RutinasFit/RutinasList";
+import RutinasDialog from "../ProgramaFit/RutinasFit/RutinasDialog";
 import Reloj from "./Reloj";
 import GananciasTable from "./GananciasTable";
 import PagosAnualTable from "./PagosAnualTable";
@@ -20,17 +20,19 @@ const Dashboard = ({ pagosData = [] }) => {
     const theme = useTheme();
     const [openRutinas, setOpenRutinas] = React.useState(false);
     const [openTipoPago, setOpenTipoPago] = React.useState(false);
+    const [searchOpenTipoPago, setSearchOpenTipoPago] = React.useState(false);
+    const [searchRutinasOpen, setSearchRutinasOpen] = React.useState(false);
     
     const actions = [
         {
             title: "Tipos de Pago",
-            description: "Gestiona planes de membresía y pagos",
-            icon: <PaymentsOutlinedIcon sx={{ fontSize: 40, color: "#1976d2" }} />,
+            description: "Gestiona planes de membresía o tipos de pagos",
+            icon: <PaymentIcon sx={{ fontSize: 40, color: "#1976d2" }} />,
             onClick: () => setOpenTipoPago(true),
         },
         {
             title: "Rutinas",
-            description: "Administra ejercicios y rutinas de entrenamiento",
+            description: "Administra ejercicios y rutinas para entrenamiento",
             icon: <FitnessCenterIcon sx={{ fontSize: 40, color: "#d32f2f" }} />,
             onClick: () => setOpenRutinas(true),
         }
@@ -243,8 +245,14 @@ const Dashboard = ({ pagosData = [] }) => {
                 </Grid>
                 <VencimientosProximos />
             </Grid>
-            <TipoPagoList open={openTipoPago} onClose={() => setOpenTipoPago(false)} />
-            <RutinasList open={openRutinas} onClose={() => setOpenRutinas(false)} />
+            <TipoPagoDialog open={openTipoPago} onClose={() => { setOpenTipoPago(false); setSearchOpenTipoPago(false);}}
+                searchOpen={searchOpenTipoPago}
+                setSearchOpen={setSearchOpenTipoPago} 
+            />
+            <RutinasDialog open={openRutinas} onClose={() => { setOpenRutinas(false); setSearchRutinasOpen(false); }}
+                searchOpen={searchRutinasOpen}
+                setSearchOpen={setSearchRutinasOpen}
+            />
         </Container>
     );
 };

@@ -1,31 +1,32 @@
-import { useState, useEffect, useCallback } from "react";
+import React,{ useEffect, useCallback } from "react";
 import { List, ListItem, ListItemText, IconButton, Box, Pagination, Button, Typography, Dialog, DialogTitle,
-    DialogContent, DialogActions, useTheme, useMediaQuery, Divider } from "@mui/material";
+    DialogContent, DialogActions, useTheme, useMediaQuery, Divider, TextField } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 import CloseIcon from "@mui/icons-material/Close";
 import FitnessCenterIcon from "@mui/icons-material/FitnessCenter";
 import FitnessCenterOutlinedIcon from "@mui/icons-material/FitnessCenterOutlined";
-
+import SearchIcon from "@mui/icons-material/Search";
 import RutinasForm from "./RutinasForm";
 import EmptyState from "../../../Shared/Components/EmptyState";
 import ProgramaFitService from "../../../Services/ProgramaFitService";
+import Slide from "@mui/material/Slide";
 
 const ITEMS_PER_PAGE = 5;
 
-const EjercicioList = ({ open, onClose }) => {
+const RutinasDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
     const theme = useTheme();
     const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
 
     const isDark = theme.palette.mode === "dark";
 
-    const [ejercicios, setEjercicios] = useState([]);
-    const [page, setPage] = useState(1);
-    const [totalPages, setTotalPages] = useState(1);
+    const [ejercicios, setEjercicios] = React.useState([]);
+    const [page, setPage] = React.useState(1);
+    const [totalPages, setTotalPages] = React.useState(1);
 
-    const [anchorEl, setAnchorEl] = useState(null);
-    const [rutina, setRutina] = useState({
+    const [anchorEl, setAnchorEl] = React.useState(null);
+    const [rutina, setRutina] = React.useState({
         id: null,
         ejercicio: "",
         series: 1,
@@ -34,11 +35,12 @@ const EjercicioList = ({ open, onClose }) => {
         demostracion: "",
     });
 
-    const [loading, setLoading] = useState(false);
-    const [openConfirm, setOpenConfirm] = useState(false);
-    const [selectedEjercicio, setSelectedEjercicio] = useState(null);
-    const [videoFile, setVideoFile] = useState(null);
-    const [removeVideo, setRemoveVideo] = useState(false);
+    const [loading, setLoading] = React.useState(false);
+    const [openConfirm, setOpenConfirm] = React.useState(false);
+    const [selectedEjercicio, setSelectedEjercicio] = React.useState(null);
+    const [videoFile, setVideoFile] = React.useState(null);
+    const [removeVideo, setRemoveVideo] = React.useState(false);
+    const [searchEjercicio, setSearchEjercicio] = React.useState("");
 
     const loadEjercicios = useCallback(
         async (pageNumber = 1) => {
@@ -142,6 +144,26 @@ const EjercicioList = ({ open, onClose }) => {
         if (s > 0) partes.push(`${s}s`);
         return partes.join(" ") || "0s";
     };
+    const handleCloseSearch = () => {
+        setSearchEjercicio("");
+        setSearchOpen(false);
+        loadEjercicios(1);
+    }
+    const handleSearch = async () => {
+        if (!searchEjercicio.trim()) {
+            handleCloseSearch();
+            return;
+        }
+        try {
+            const response = await ProgramaFitService.getByEjercicio(searchEjercicio.trim());
+            setEjercicios(response || []);
+            setTotalPages(1);
+            setPage(1);
+        } catch (error) {
+            console.error("Error al buscar ejercicios:", error);
+            setPage(1);
+        }
+    };
 
     return (
         <>
@@ -152,13 +174,16 @@ const EjercicioList = ({ open, onClose }) => {
                 fullWidth
                 maxWidth="md"
                 scroll="paper"
-                PaperProps={{
+                slotProps={{
+                    paper: {
                     sx: {
                         borderRadius: fullScreen ? 0 : 4,
                         height: fullScreen ? "100%" : "85vh",
                         display: "flex",
                         flexDirection: "column",
                         backgroundColor: theme.palette.background.paper,
+                        overflow: "hidden",
+                    },
                     },
                 }}
             >
@@ -176,14 +201,56 @@ const EjercicioList = ({ open, onClose }) => {
                         Administrar Rutinas
                     </Box>
                     <Box display="flex" alignItems="center" gap={1}>
+                        <Slide
+                            direction="left"
+                            in={searchOpen}
+                            mountOnEnter
+                            unmountOnExit
+                            timeout={200}
+                            >
+                            <Box>
+                                <TextField
+                                size="small"
+                                autoFocus
+                                placeholder="Buscar"
+                                value={searchEjercicio}
+                                onChange={(e) => setSearchEjercicio(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === "Enter") handleSearch();
+                                }}
+                                slotProps={{
+                                    input: {
+                                    endAdornment: (
+                                        <Box display="flex" alignItems="center">
+                                        <IconButton size="small" onClick={handleSearch}>
+                                            <SearchIcon fontSize="small" />
+                                        </IconButton>
+                                        <IconButton size="small" onClick={handleCloseSearch}>
+                                            <CloseIcon fontSize="small" />
+                                        </IconButton>
+                                        </Box>
+                                    ),
+                                    },
+                                }}
+                                sx={{ width: 280 }}
+                                />
+                            </Box>
+                        </Slide>
+
+                        {!searchOpen && (
                         <IconButton
                             color="primary"
-                            onClick={(e) => handleOpenForm(e, null)}
+                            onClick={() => setSearchOpen(true)}
                         >
-                            <AddIcon />
+                            <SearchIcon />
+                        </IconButton>
+                        )}
+
+                        <IconButton color="primary" onClick={() => handleOpenForm(null)}>
+                        <AddIcon />
                         </IconButton>
                         <IconButton onClick={onClose}>
-                            <CloseIcon />
+                        <CloseIcon />
                         </IconButton>
                     </Box>
                 </DialogTitle>
@@ -335,4 +402,4 @@ const EjercicioList = ({ open, onClose }) => {
     );
 };
 
-export default EjercicioList;
+export default RutinasDialog;

@@ -11,7 +11,7 @@ import ConsolidadoService from "../../Services/ConsolidadoService";
 const indicadores = [
   { key: 'usuariosActivos', label: 'Usuarios activos', icon: <PeopleIcon />, valueKey: 'clientes', diffKey: 'clientesDiffPercent', refText: 'respecto al mes anterior', isPercent: true, isDecimal: false, color: '#1976d2' },
   { key: 'ingresosDiaUSD', label: 'Ingresos del día (USD)', icon: <AttachMoneyIcon />, valuePath: ['ingresos', 'totalUSD'], diffPath: ['ingresosDiff', 'totalUSD'], prefix: '$', refText: 'respecto a ayer', isDecimal: true, color: '#2e7d32' },
-  { key: 'ingresosDiaNIO', label: 'Ingresos del día (C$)', icon: <AttachMoneyIcon />, valuePath: ['ingresos', 'totalNIO'], diffPath: ['ingresosDiff', 'totalNIO'], prefix: 'C$', refText: 'respecto a ayer', isDecimal: true, color: '#fbc02d' },
+  { key: 'ingresosDiaNIO', label: 'Ingresos del día (NIO)', icon: <AttachMoneyIcon />, valuePath: ['ingresos', 'totalNIO'], diffPath: ['ingresosDiff', 'totalNIO'], prefix: 'C$', refText: 'respecto a ayer', isDecimal: true, color: '#fbc02d' },
   { key: 'ventasProductos', label: 'Ventas de productos', icon: <ShoppingCartIcon />, valueKey: 'ventas', diffKey: 'ventasDiff', refText: 'respecto a ayer', isDecimal: false, color: '#0288d1' },
   { key: 'asistenciasHoy', label: 'Asistencias hoy', icon: <EventIcon />, valueKey: 'asistencias', diffKey: 'asistenciasDiff', refText: 'respecto a ayer', isDecimal: false, color: '#9c27b0' }
 ];

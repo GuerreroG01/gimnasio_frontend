@@ -123,7 +123,7 @@ const TipoCambioList = () => {
         <List
             dense
             className="scroll-hide"
-            sx={{ minHeight: { xs: 0, md: 130 }, maxHeight: { xs: "auto", md: 130 }, overflow: "auto" }}
+            sx={{ minHeight: { xs: 0, md: 150 }, maxHeight: { xs: "auto", md: 150 }, overflow: "auto" }}
         >
             {paginatedItems.map((tc) => (
             <ListItem

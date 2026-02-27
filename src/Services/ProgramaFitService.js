@@ -123,6 +123,15 @@ const deleteRutina = async (id) => {
     }
 };
 
+const getByEjercicio = async (ejercicio) => {
+    try {
+        const response = await axiosInstance.get(`${API_URL}/rutinas/buscarEjercicio`, { params: { ejercicio } });
+        return response.data;
+    } catch (error) {
+        console.error(`Error al obtener rutinas por ejercicio ${ejercicio}`, error.response?.data || error);
+        throw error;
+    }
+}
 
 const getNiveles = async () => {
     try {
@@ -174,6 +183,7 @@ const ProgramaFitService = {
     postRutina,
     putRutina,
     deleteRutina,
+    getByEjercicio,
     getNiveles,
     getTiposByNiveles,
     getRutinasByEjercicios
