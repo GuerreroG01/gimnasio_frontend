@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Grid, Paper, Typography, Box, Chip, useTheme } from '@mui/material';
+import React, { useEffect } from 'react';
+import { Grid, Paper, Typography, Box, Chip, useTheme, Skeleton } from '@mui/material';
 import ArrowUpwardIcon from '@mui/icons-material/ArrowUpward';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 import PeopleIcon from '@mui/icons-material/People';
@@ -18,8 +18,8 @@ const indicadores = [
 
 export default function DashboardResumen() {
   const theme = useTheme();
-  const [datos, setDatos] = useState(null);
-  const [loading, setLoading] = useState(true);
+  const [datos, setDatos] = React.useState(null);
+  const [loading, setLoading] = React.useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -35,7 +35,40 @@ export default function DashboardResumen() {
     fetchData();
   }, []);
 
-  if (loading || !datos) return <div>Cargando...</div>;
+  if (loading || !datos) {
+    return (
+      <Grid
+        container
+        spacing={3}
+        sx={{
+          px: 2,
+          display: 'grid',
+          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))'
+        }}
+      >
+        {indicadores.map((item) => (
+          <Grid item xs={12} sm={6} md={4} lg={3}>
+            <Paper
+              elevation={4}
+              sx={{
+                p: { xs: 1.5, sm: 2, md: 3 },
+                borderRadius: 2,
+                width: '80%',
+                minHeight: 90
+              }}
+            >
+              <Skeleton
+                variant="rounded"
+                animation="wave"
+                width="100%"
+                height="100%"
+              />
+            </Paper>
+          </Grid>
+        ))}
+      </Grid>
+    );
+  }
 
   return (
     <Grid container spacing={2} justifyContent="center" alignItems="center">
