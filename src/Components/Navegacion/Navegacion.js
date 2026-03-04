@@ -62,9 +62,8 @@ const Navegacion = ({ children }) => {
   
   return (
     <>
-      {/* --- Barra de navegación --- */}
       <Box sx={{
-        display: 'flex',
+        display: { xs: 'none', md: 'flex' },
         flexDirection: { xs: 'column', md: 'row' },
         justifyContent: 'space-between',
         alignItems: 'center',
@@ -248,8 +247,6 @@ const Navegacion = ({ children }) => {
               </Box>
             </Tooltip>
 
-            <NavegacionMovil openDrawer={openDrawer} toggleDrawer={() => setOpenDrawer(!openDrawer)} isActive={isActive} />
-
             <Tooltip title="Cerrar Sesión">
               <IconButton
                 color="error"
@@ -274,7 +271,7 @@ const Navegacion = ({ children }) => {
           </DialogActions>
         </Dialog>
       </Box>
-
+      <NavegacionMovil openDrawer={openDrawer} toggleDrawer={() => setOpenDrawer(!openDrawer)} isActive={isActive} />
       <Box sx={{ padding: 2 }}>
         {children || <Outlet />}
       </Box>

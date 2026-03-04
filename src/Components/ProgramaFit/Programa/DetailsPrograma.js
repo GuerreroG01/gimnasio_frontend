@@ -52,7 +52,7 @@ export default function DetailsPrograma() {
     const API_DEMOSTRACIONES = (window._env_ ? window._env_.REACT_APP_VIDEODEMOSTRACION_URL : process.env.REACT_APP_VIDEODEMOSTRACION_URL);
 
     return (
-        <Container sx={{ py: 4, bgcolor: theme.palette.background.paper, minHeight: '100vh', maxWidth: 'none', px: 4 }}>
+        <Container sx={{ py: 2, bgcolor: theme.palette.background.paper, minHeight: '100vh', maxWidth: 'none', px: 2 }}>
             <Card elevation={4} sx={{ mb: 4, p: 3, borderRadius: 3, background: `linear-gradient(135deg, ${theme.palette.primary.main} 0%, ${theme.palette.primary.dark} 100%)`, color: 'primary.contrastText' }}>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
                     <Typography variant="h4" fontWeight="bold" color="inherit">
@@ -117,166 +117,153 @@ export default function DetailsPrograma() {
                         const isRutinaString = typeof rutinaDemostracion === "string";
                         const isRutinaGif = isRutinaString && rutinaDemostracion.toLowerCase().endsWith(".gif");
                         const panelId = `${programa.id}-${rutina.id}-${index}`;
+
                         return (
-                            <Grid item xs={12} sm={6} key={panelId}>
-                                <Accordion
-                                    key={panelId}
-                                    expanded={!!expandedPanels[panelId]}
-                                    onChange={(event, isExpanded) =>
-                                    setExpandedPanels(prev => ({
-                                        ...prev,
-                                        [panelId]: isExpanded,
-                                    }))
-                                    }
-                                    disableGutters
-                                    sx={{
-                                    width: 400,
-                                    borderRadius: 2,
-                                    '&:before': { display: 'none' },
-                                    boxShadow: theme.shadows[1],
-                                    }}
-                                >
-                                    <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ borderRadius: 2 }}>
-                                    <Typography fontWeight="medium" color="text.primary">
-                                        {rutina.ejercicio}
-                                    </Typography>
-                                    </AccordionSummary>
+                        <Grid item xs={12} sm={6} key={panelId}>
+                            <Accordion
+                            expanded={!!expandedPanels[panelId]}
+                            onChange={(event, isExpanded) =>
+                                setExpandedPanels(prev => ({
+                                ...prev,
+                                [panelId]: isExpanded,
+                                }))
+                            }
+                            disableGutters
+                            sx={{
+                                width: { xs: '100%', sm: 400 }, // ancho responsive
+                                borderRadius: 2,
+                                '&:before': { display: 'none' },
+                                boxShadow: theme.shadows[1],
+                            }}
+                            >
+                            <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ borderRadius: 2 }}>
+                                <Typography fontWeight="medium" color="text.primary">
+                                {rutina.ejercicio}
+                                </Typography>
+                            </AccordionSummary>
 
-                                    <AccordionDetails sx={{ borderRadius: 2 }}>
-                                    {rutina.demostracion ? (
-                                        <Grid container spacing={2}>
-                                        <Grid item xs={12} md={4}>
-                                            <Stack spacing={1}>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">
-                                                Series
-                                                </Typography>
-                                                <Typography color="text.primary">
-                                                {rutina.series}
-                                                </Typography>
-                                            </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">
-                                                Repeticiones
-                                                </Typography>
-                                                <Typography color="text.primary">
-                                                {rutina.repeticiones}
-                                                </Typography>
-                                            </Box>
-                                            <Box>
-                                                <Typography variant="caption" color="text.secondary">
-                                                Descanso
-                                                </Typography>
-                                                <Typography color="text.primary">
-                                                {rutina.descanso}
-                                                </Typography>
-                                            </Box>
-                                            </Stack>
-                                        </Grid>
-
-                                        <Grid item xs={12} md={8}>
-                                            <Box>
-                                            <Typography variant="caption" color="text.secondary">
-                                                Demostración
-                                            </Typography>
-
-                                            <Box
-                                                sx={{
-                                                width: '100%',
-                                                height: 180,
-                                                borderRadius: 2,
-                                                overflow: 'hidden',
-                                                boxShadow: theme.shadows[2],
-                                                backgroundColor: '#000',
-                                                display: 'flex',
-                                                alignItems: 'center',
-                                                justifyContent: 'center',
-                                                mt: 1,
-                                                }}
-                                            >
-                                                {isRutinaGif ? (
-                                                <Box
-                                                    component="img"
-                                                    src={rutinaDemostracion}
-                                                    alt="Demostración"
-                                                    sx={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'contain',
-                                                    }}
-                                                />
-                                                ) : (
-                                                <Box
-                                                    component="video"
-                                                    src={rutinaDemostracion}
-                                                    autoPlay
-                                                    muted
-                                                    loop
-                                                    playsInline
-                                                    sx={{
-                                                    width: '100%',
-                                                    height: '100%',
-                                                    objectFit: 'contain',
-                                                    }}
-                                                />
-                                                )}
-                                            </Box>
-                                            </Box>
-                                        </Grid>
-                                        </Grid>
-                                    ) : (
-                                        <Grid container spacing={2}>
-                                        <Grid item xs={6} sm={4}>
-                                            <Typography variant="caption" color="text.secondary">
-                                            Series
-                                            </Typography>
-                                            <Typography color="text.primary">
-                                            {rutina.series}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm={4}>
-                                            <Typography variant="caption" color="text.secondary">
-                                            Repeticiones
-                                            </Typography>
-                                            <Typography color="text.primary">
-                                            {rutina.repeticiones}
-                                            </Typography>
-                                        </Grid>
-                                        <Grid item xs={6} sm={4}>
-                                            <Typography variant="caption" color="text.secondary">
-                                            Descanso
-                                            </Typography>
-                                            <Typography color="text.primary">
-                                            {rutina.descanso}
-                                            </Typography>
-                                        </Grid>
-                                        </Grid>
-                                    )}
-
-                                    {rutina.programaRutinas?.length > 0 && (
-                                        <>
-                                        <Divider sx={{ my: 2 }} />
+                            <AccordionDetails sx={{ borderRadius: 2 }}>
+                                {rutina.demostracion ? (
+                                <Grid container spacing={2}>
+                                    <Grid item xs={12} md={4}>
+                                    <Stack spacing={1}>
+                                        <Box>
                                         <Typography variant="caption" color="text.secondary">
-                                            Este ejercicio también pertenece a:
+                                            Series
+                                        </Typography>
+                                        <Typography color="text.primary">{rutina.series}</Typography>
+                                        </Box>
+                                        <Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Repeticiones
+                                        </Typography>
+                                        <Typography color="text.primary">{rutina.repeticiones}</Typography>
+                                        </Box>
+                                        <Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                            Descanso
+                                        </Typography>
+                                        <Typography color="text.primary">{rutina.descanso}</Typography>
+                                        </Box>
+                                    </Stack>
+                                    </Grid>
+
+                                    <Grid item xs={12} md={8}>
+                                    <Box>
+                                        <Typography variant="caption" color="text.secondary">
+                                        Demostración
                                         </Typography>
 
-                                        <Stack spacing={0.5} mt={1}>
-                                            {rutina.programaRutinas
-                                            .filter(r => r.programaFit)
-                                            .map((r, i) => (
-                                                <Typography key={i} variant="body2" color="text.primary">
-                                                • {r.programaFit.titulo} (Día {r.programaFit.dia})
-                                                </Typography>
-                                            ))}
-                                        </Stack>
-                                        </>
-                                    )}
-                                    </AccordionDetails>
-                                </Accordion>
-                            </Grid>
+                                        <Box
+                                        sx={{
+                                            width: '100%',
+                                            height: { xs: 150, sm: 180 }, // altura adaptable
+                                            borderRadius: 2,
+                                            overflow: 'hidden',
+                                            boxShadow: theme.shadows[2],
+                                            backgroundColor: '#000',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            mt: 1,
+                                        }}
+                                        >
+                                        {isRutinaGif ? (
+                                            <Box
+                                            component="img"
+                                            src={rutinaDemostracion}
+                                            alt="Demostración"
+                                            sx={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'contain',
+                                            }}
+                                            />
+                                        ) : (
+                                            <Box
+                                            component="video"
+                                            src={rutinaDemostracion}
+                                            autoPlay
+                                            muted
+                                            loop
+                                            playsInline
+                                            sx={{
+                                                width: '100%',
+                                                height: '100%',
+                                                objectFit: 'contain',
+                                            }}
+                                            />
+                                        )}
+                                        </Box>
+                                    </Box>
+                                    </Grid>
+                                </Grid>
+                                ) : (
+                                <Grid container spacing={2}>
+                                    <Grid item xs={6} sm={4}>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Series
+                                    </Typography>
+                                    <Typography color="text.primary">{rutina.series}</Typography>
+                                    </Grid>
+                                    <Grid item xs={6} sm={4}>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Repeticiones
+                                    </Typography>
+                                    <Typography color="text.primary">{rutina.repeticiones}</Typography>
+                                    </Grid>
+                                    <Grid item xs={6} sm={4}>
+                                    <Typography variant="caption" color="text.secondary">
+                                        Descanso
+                                    </Typography>
+                                    <Typography color="text.primary">{rutina.descanso}</Typography>
+                                    </Grid>
+                                </Grid>
+                                )}
+
+                                {rutina.programaRutinas?.length > 0 && authenticated && (
+                                <>
+                                    <Divider sx={{ my: 2 }} />
+                                    <Typography variant="caption" color="text.secondary">
+                                    Este ejercicio también pertenece a:
+                                    </Typography>
+                                    <Stack spacing={0.5} mt={1}>
+                                    {rutina.programaRutinas
+                                        .filter(r => r.programaFit)
+                                        .map((r, i) => (
+                                        <Typography key={i} variant="body2" color="text.primary">
+                                            • {r.programaFit.titulo} (Día {r.programaFit.dia})
+                                        </Typography>
+                                        ))}
+                                    </Stack>
+                                </>
+                                )}
+                            </AccordionDetails>
+                            </Accordion>
+                        </Grid>
                         );
                     })}
-                </Grid>
+                    </Grid>
             </Card>
             <DeleteComponent
                 open={openDeleteModal}

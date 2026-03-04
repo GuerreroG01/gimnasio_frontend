@@ -16,10 +16,24 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
     const theme = useTheme();
     return (
         <Box sx={{ width: '100%', margin: 'auto' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'flex-start', mb: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
                 <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
                     Pagos Registrados
                 </Typography>
+                <IconButton
+                    color="primary"
+                    onClick={() => navigate('/pagos/form')}
+                    sx={{
+                        fontSize: 30,
+                        backgroundColor: theme.palette.primary.main,
+                        color: theme.palette.primary.contrastText,
+                        '&:hover': { backgroundColor: theme.palette.primary.dark },
+                        padding: 1,
+                        display: { xs: 'flex', sm: 'none' }
+                    }}
+                >
+                    <AddCircleIcon />
+                </IconButton>
             </Box>
 
             <Grid container spacing={2}>
@@ -133,6 +147,7 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
                             color: theme.palette.primary.contrastText,
                             '&:hover': { backgroundColor: theme.palette.primary.dark },
                             padding: 1,
+                            display: { xs: 'none', sm: 'flex' },
                             alignSelf: { xs: 'flex-end', sm: 'center' }
                         }}
                     >
@@ -179,5 +194,4 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
         </Box>
     );
 };
-
 export default PagosIndex;

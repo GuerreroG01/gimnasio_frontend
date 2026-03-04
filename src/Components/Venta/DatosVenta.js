@@ -1,4 +1,3 @@
-import React, { useEffect } from 'react';
 import { Box, Typography, Button, TextField, Divider, CircularProgress, Chip, Pagination, Stack, Tooltip, IconButton, Select, MenuItem } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 
@@ -9,14 +8,14 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
   return (
     <Box
       sx={{
-        p: 4,
+        p: { xs: 2, sm: 4 },
         backgroundColor: theme.palette.background.paper,
         borderRadius: 3,
         boxShadow: '0px 10px 20px rgba(0,0,0,0.08)',
         display: 'flex',
         flexDirection: 'column',
         gap: 3,
-        maxWidth: 600,
+        maxWidth: { xs: '95%', sm: 600 },
         margin: '40px auto'
       }}
     >
@@ -31,7 +30,7 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
 
       <Divider />
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1, minHeight: 120 }}>
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'column' }, gap: 1, minHeight: 120 }}>
         {productosPaginados.map(({ producto, cantidad }, index) => {
           const existenciasActual = existencias?.[producto.codigoProducto] ?? producto.existencias ?? 0;
           const subtotal = producto.precio * cantidad;
@@ -42,7 +41,10 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
               key={producto.codigoProducto}
               sx={{
                 display: 'grid',
-                gridTemplateColumns: '2fr 1fr 1fr 1fr 0.5fr',
+                gridTemplateColumns: {
+                  xs: '1fr',
+                  sm: '2fr 1fr 1fr 1fr 0.5fr',
+                },
                 alignItems: 'center',
                 gap: 1,
                 p: 1,
@@ -124,7 +126,7 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
       <Divider />
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: 'flex-end' }}>
           <Typography variant="h6" fontWeight="bold" color="primary">
             Total
           </Typography>

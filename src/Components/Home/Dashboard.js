@@ -116,20 +116,24 @@ const Dashboard = ({ pagosData = [] }) => {
                             <Paper
                                 elevation={4}
                                 sx={{
-                                p: 3,
-                                borderRadius: 3,
-                                width: "100%",
-                                maxWidth: {
-                                    xs: 400,
-                                    md: 800,
-                                },
-                                mx: "auto",
-                                overflow: "auto",
-                                transition: "all 0.3s ease",
-                                "&:hover": {
-                                    transform: "translateY(-2px)",
-                                    boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
-                                },
+                                    p: 3,
+                                    borderRadius: 3,
+                                    width: {
+                                        xs: "90%",
+                                        sm: "80%",
+                                        md: "100%",
+                                    },
+                                    maxWidth: {
+                                        xs: 400,
+                                        md: 800,
+                                    },
+                                    mx: "auto",
+                                    overflow: "auto",
+                                    transition: "all 0.3s ease",
+                                    "&:hover": {
+                                        transform: "translateY(-2px)",
+                                        boxShadow: "0 6px 16px rgba(0,0,0,0.15)",
+                                    },
                                 }}
                             >
                                 <GananciasMensualesChart pagosData={pagosData} />
@@ -142,9 +146,16 @@ const Dashboard = ({ pagosData = [] }) => {
                             alignItems={{ xs: "center", md: "flex-end" }}
                             gap={2}
                         >
-                            <Box mb={2}>
+                            <Box mb={2}
+                                sx={{
+                                    display: {
+                                    xs: "none",
+                                    sm: "block",
+                                    },
+                                }}
+                                >
                                 <Reloj />
-                            </Box>
+                                </Box>
                             
                             <Paper
                                 elevation={4}

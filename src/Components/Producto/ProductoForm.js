@@ -55,7 +55,7 @@ const ProductoForm = ({
         },
       }}
     >
-      <Paper sx={{ p: 4, width: 460, position: 'relative' }}>
+      <Paper sx={{ p: 4, width: { xs: '90vw', sm: 460 }, maxWidth: '100%', position: 'relative' }}>
         {currentProducto.codigoProducto !== 0 && (
           <IconButton
             onClick={() => handleDelete(currentProducto.codigoProducto)}

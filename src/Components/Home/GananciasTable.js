@@ -16,22 +16,22 @@ const GananciasTable = ({ pagosData }) => {
 
     const dataConTendencia = useMemo(() => {
         if (!pagosData || pagosData.length === 0) {
-        setOpenSnackbar(true);
-        return [];
+            setOpenSnackbar(true);
+            return [];
         }
 
         const sortedData = [...pagosData].sort((a, b) => b.año - a.año);
 
         return sortedData.map((item, index, array) => {
-        const prev = array[index + 1] || null;
-        const trend = prev
-            ? item.totalGananciasNIO > prev.totalGananciasNIO
-            ? { Icon: TrendingUpIcon, color: "#43A047" }
-            : item.totalGananciasNIO < prev.totalGananciasNIO
-                ? { Icon: TrendingDownIcon, color: "#E53935" }
-                : { Icon: TrendingFlatIcon, color: "#757575" }
-            : { Icon: TrendingFlatIcon, color: "#757575" };
-        return { ...item, trend };
+            const prev = array[index + 1] || null;
+            const trend = prev
+                ? item.totalGananciasNIO > prev.totalGananciasNIO
+                    ? { Icon: TrendingUpIcon, color: "#43A047" }
+                    : item.totalGananciasNIO < prev.totalGananciasNIO
+                        ? { Icon: TrendingDownIcon, color: "#E53935" }
+                        : { Icon: TrendingFlatIcon, color: "#757575" }
+                : { Icon: TrendingFlatIcon, color: "#757575" };
+            return { ...item, trend };
         });
     }, [pagosData]);
 
@@ -39,82 +39,91 @@ const GananciasTable = ({ pagosData }) => {
 
     if (!dataConTendencia.length) {
         return (
-        <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 300 }}>
-            <CircularProgress />
-        </Box>
+            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 300 }}>
+                <CircularProgress />
+            </Box>
         );
     }
 
     return (
-        <Box sx={{ width: "fit-content", ml: "auto" }}>
+        <Box sx={{ width: "100%", overflowX: "auto" }}>
             <TableContainer
                 component={Paper}
                 sx={{
-                maxWidth: 800,
-                backgroundColor: isDarkMode ? theme.palette.background.default : "#fff",
-                boxShadow: 3,
-                borderRadius: 2,
-                width: "fit-content"
+                    maxWidth: 800,
+                    backgroundColor: isDarkMode ? theme.palette.background.default : "#fff",
+                    boxShadow: 3,
+                    borderRadius: 2,
+                    width: "fit-content",
+                    mx: "auto",
+                    // Ajustes responsivos
+                    [theme.breakpoints.down("sm")]: {
+                        maxWidth: "100%",
+                        width: "100%",
+                        "& .MuiTableCell-root": {
+                            padding: "6px 8px",
+                            fontSize: "0.8rem"
+                        },
+                    },
                 }}
             >
                 <Table>
-                <TableHead sx={{ backgroundColor: isDarkMode ? "#333" : "#f5f5f5" }}>
-                    <TableRow>
-                    <TableCell sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Año</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Ganancias NIO</TableCell>
-                    <TableCell align="right" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Ganancias USD</TableCell>
-                    <TableCell align="center" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Tendencia USD</TableCell>
-                    </TableRow>
-                </TableHead>
-
-                <TableBody>
-                    {dataConTendencia
-                    .slice(page * rowsPerPageDefault, page * rowsPerPageDefault + rowsPerPageDefault)
-                    .map((item) => (
-                        <TableRow
-                        key={item.año}
-                        sx={{
-                            "&:hover": {
-                            backgroundColor: isDarkMode ? "#444" : "#f0f0f0",
-                            },
-                        }}
-                        >
-                        <TableCell>{item.año}</TableCell>
-                        <TableCell align="right">{item.totalGananciasNIO.toLocaleString()}</TableCell>
-                        <TableCell align="right">
-                            {item.totalGananciasUSD.toLocaleString(undefined, {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                            })}
-                        </TableCell>
-                        <TableCell align="center">
-                            <item.trend.Icon sx={{ color: item.trend.color }} />
-                        </TableCell>
+                    <TableHead sx={{ backgroundColor: isDarkMode ? "#333" : "#f5f5f5" }}>
+                        <TableRow>
+                            <TableCell sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Año</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Ganancias NIO</TableCell>
+                            <TableCell align="right" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Ganancias USD</TableCell>
+                            <TableCell align="center" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000" }}>Tendencia USD</TableCell>
                         </TableRow>
-                    ))}
-                </TableBody>
+                    </TableHead>
+
+                    <TableBody>
+                        {dataConTendencia
+                            .slice(page * rowsPerPageDefault, page * rowsPerPageDefault + rowsPerPageDefault)
+                            .map((item) => (
+                                <TableRow
+                                    key={item.año}
+                                    sx={{
+                                        "&:hover": {
+                                            backgroundColor: isDarkMode ? "#444" : "#f0f0f0",
+                                        },
+                                    }}
+                                >
+                                    <TableCell>{item.año}</TableCell>
+                                    <TableCell align="right">{item.totalGananciasNIO.toLocaleString()}</TableCell>
+                                    <TableCell align="right">
+                                        {item.totalGananciasUSD.toLocaleString(undefined, {
+                                            minimumFractionDigits: 2,
+                                            maximumFractionDigits: 2,
+                                        })}
+                                    </TableCell>
+                                    <TableCell align="center">
+                                        <item.trend.Icon sx={{ color: item.trend.color }} />
+                                    </TableCell>
+                                </TableRow>
+                            ))}
+                    </TableBody>
                 </Table>
 
                 {dataConTendencia.length > rowsPerPageDefault && (
-                <TablePagination
-                    component="div"
-                    count={dataConTendencia.length}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    rowsPerPage={rowsPerPageDefault}
-                    rowsPerPageOptions={[]}
-                    sx={{ "& .MuiTablePagination-toolbar": { justifyContent: "center" } }}
-                />
+                    <TablePagination
+                        component="div"
+                        count={dataConTendencia.length}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        rowsPerPage={rowsPerPageDefault}
+                        rowsPerPageOptions={[]}
+                        sx={{ "& .MuiTablePagination-toolbar": { justifyContent: "center" } }}
+                    />
                 )}
             </TableContainer>
 
             <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
                 <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: "100%" }}>
-                No se encontraron datos de pagos.
+                    No se encontraron datos de pagos.
                 </Alert>
             </Snackbar>
         </Box>
     );
 };
-
 export default GananciasTable;

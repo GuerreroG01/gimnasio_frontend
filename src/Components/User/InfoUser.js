@@ -1,8 +1,7 @@
-import React, { useEffect, useContext } from 'react';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../Context/AuthContext';
-import UserService from '../../Services/UserService';
-import { Paper, Typography, CircularProgress, Box, Stack, Chip, Avatar, Divider, Button } from '@mui/material';
+import { Paper, Typography, Box, Stack, Chip, Avatar, Divider, Button } from '@mui/material';
 import { AccountCircle, Email, Phone, CalendarToday } from '@mui/icons-material';
 import AccountBoxIcon from '@mui/icons-material/AccountBox';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
@@ -10,56 +9,33 @@ import EditIcon from "@mui/icons-material/Edit";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 const InfoUser = () => {
-    const { userId } = useContext(AuthContext);
-    const [user, setUser] = React.useState(null);
-    const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState(null);
+    const { usuario, userId, rol } = useContext(AuthContext);
+    const navigate = useNavigate();
 
     const rolMap = {
         "Admin": "Administrador",
+        "Administrador": "Administrador",
+        "Empleado": "Empleado",
+        "Cliente": "Cliente"
     };
 
-    const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!userId) {
-            setLoading(false);
-            setError('Usuario no identificado');
-            return;
-        }
-
-        const fetchUser = async () => {
-            try {
-                setLoading(true);
-                const response = await UserService.getUserById(userId);
-                setUser(response.data);
-                setError(null);
-            } catch (err) {
-                console.error('Error al obtener usuario:', err);
-                setError('No se pudo cargar la información del usuario');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        fetchUser();
-    }, [userId]);
-
-    if (loading) {
+    if (!usuario || !userId) {
         return (
             <Box display="flex" justifyContent="center" mt={6}>
-                <CircularProgress />
+                <Typography color="error">Usuario no identificado</Typography>
             </Box>
         );
     }
 
-    if (error) {
-        return (
-            <Paper elevation={3} sx={{ p: 4, mt: 6 }}>
-                <Typography color="error" align="center">{error}</Typography>
-            </Paper>
-        );
-    }
+    const user = {
+        id: userId,
+        usuario,
+        rol,
+        email: `${usuario.toLowerCase()}@mail.com`,
+        telefono: "No disponible",
+        fechaIngreso: new Date(),
+        activo: true
+    };
 
     const handleEditarUsuario = (id) => {
         navigate(`/user/${id}/update`);
@@ -86,7 +62,7 @@ const InfoUser = () => {
                 flexDirection={{ xs: 'column', md: 'row' }} 
                 alignItems={{ xs: 'stretch', md: 'flex-start' }} 
                 gap={3}
-                justifyContent={user.rol !== "Admin" ? "center" : "flex-start"} // centrado si no es Admin
+                justifyContent={rol !== "Admin" ? "center" : "flex-start"}
             >
                 {/* Paper principal */}
                 <Paper 

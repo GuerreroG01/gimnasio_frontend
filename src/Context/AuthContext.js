@@ -10,6 +10,7 @@ export const AuthProvider = ({ children }) => {
     const [userId, setUserId] = React.useState(null);
     const [token, setToken] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
+    const [rol, setRol] = React.useState(null);
 
     useEffect(() => {
         const checkAuth = () => {
@@ -21,6 +22,8 @@ export const AuthProvider = ({ children }) => {
                     setUserId(decodedToken.id);
                     setToken(token);
                     setAuthenticated(true);
+                    setRol(decodedToken.role);
+                    console.log('El rol del usuario es :', decodedToken.role);
                 } catch (error) {
                     console.error('Token inválido o expirado', error);
                     setAuthenticated(false);
@@ -88,7 +91,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ authenticated, usuario, userId, token, login, logout, loading, statusPage, setStatusPage }}>
+        <AuthContext.Provider value={{ authenticated, usuario, userId, token, login, logout, loading, statusPage, setStatusPage, rol }}>
             {children}
         </AuthContext.Provider>
     );
