@@ -13,15 +13,15 @@ import EmptyState from "../../Shared/Components/EmptyState";
 import CustomSnackbar from "../../Shared/Components/CustomSnackbar";
 import Slide from "@mui/material/Slide";
 
-const ITEMS_PER_PAGE = 4;
-
 const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down("sm"));
   const isDark = theme.palette.mode === "dark";
-
+  const [isFiltering, setIsFiltering] = React.useState(false);
   const [tipoPagos, setTipoPagos] = React.useState([]);
+  const pageSize = 4;
   const [page, setPage] = React.useState(1);
+  const [totalPages, setTotalPages] = React.useState(1);
 
   const [editPago, setEditPago] = React.useState({
     CodigoPago: null,
@@ -58,16 +58,19 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
     setSnackbar(prev => ({ ...prev, open: false }));
   };
 
+  const loadTipoPagos = React.useCallback(async () => {
+    try {
+      const response = await tipo_PagosService.getTipoPagos(page, pageSize);
+      setTipoPagos(response.items);
+      setTotalPages(response.totalPages);
+    } catch (error) {
+      console.error("Error al cargar tipos de pago:", error);
+    }
+  }, [page, pageSize]);
+
   useEffect(() => {
     if (open) loadTipoPagos();
-  }, [open]);
-
-  const loadTipoPagos = () => {
-    tipo_PagosService
-      .getTipoPagos()
-      .then(setTipoPagos)
-      .catch(console.error);
-  };
+  }, [open, page, pageSize, loadTipoPagos]);
 
   const handleOpenForm = (tp = null) => {
     setEditPago(
@@ -155,17 +158,23 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
     }
   };
 
-  const paginatedItems = tipoPagos.slice(
-    (page - 1) * ITEMS_PER_PAGE,
-    page * ITEMS_PER_PAGE
-  );
   const handleCloseSearch = () => {
     setSearchDescripcion("");
     setSearchOpen(false);
+    setIsFiltering(false);
     loadTipoPagos();
   };
+
+  const handleCloseDialog = () => {
+      if (searchDescripcion) {
+          handleCloseSearch();
+      }
+      onClose();
+  };
+
   const handleSearch = async () => {
     if (!searchDescripcion.trim()) {
+      setIsFiltering(false);
       loadTipoPagos();
       return;
     }
@@ -174,6 +183,7 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
       const data = await tipo_PagosService.getTipoPagoByDescripcion(searchDescripcion);
       setTipoPagos(data);
       setPage(1);
+      setIsFiltering(true);
     } catch (error) {
       showSnackbar("Error al buscar tipos de pago", "error");
     }
@@ -183,7 +193,7 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
     <>
       <Dialog
         open={open}
-        onClose={onClose}
+        onClose={handleCloseDialog}
         fullScreen={fullScreen}
         fullWidth
         maxWidth="md"
@@ -264,7 +274,7 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
             <IconButton color="primary" onClick={() => handleOpenForm(null)}>
               <AddIcon />
             </IconButton>
-            <IconButton onClick={onClose}>
+            <IconButton onClick={handleCloseDialog}>
               <CloseIcon />
             </IconButton>
           </Box>
@@ -294,7 +304,7 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
               />
             ) : (
               <List dense disablePadding>
-                {paginatedItems.map((tp) => (
+                {tipoPagos.map((tp) => (
                   <ListItem
                     key={tp.codigoPago}
                     sx={{
@@ -342,12 +352,12 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
             )}
           </Box>
 
-          {tipoPagos.length > ITEMS_PER_PAGE && (
+          {!isFiltering && tipoPagos.length > 0 && (
             <Box display="flex" justifyContent="center" mt={2}>
               <Pagination
-                count={Math.ceil(tipoPagos.length / ITEMS_PER_PAGE)}
+                count={totalPages}
                 page={page}
-                onChange={(e, value) => setPage(value)}
+                onChange={(_, value) => setPage(value)}
                 size="small"
               />
             </Box>

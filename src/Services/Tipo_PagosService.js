@@ -2,9 +2,18 @@ import axiosInstance from './AxiosInstance';
 
 const API_URL = '/Tipo_Pagos';
 
-const getTipoPagos = async () => {
+const getTipoPagos = async (pageNumber = 1, pageSize) => {
+  if (!pageSize) {
+    throw new Error('Debe especificarse pageSize desde el componente');
+  }
+
   try {
-    const response = await axiosInstance.get(API_URL);
+    const response = await axiosInstance.get(API_URL, {
+      params: {
+        pageNumber,
+        pageSize
+      }
+    });
     return response.data;
   } catch (error) {
     console.error('Error al obtener los tipos de pagos:', error);

@@ -83,6 +83,12 @@ const RutinasDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
         setVideoFile(null);
         setRemoveVideo(false);
     };
+    const handleCloseDialog = () => {
+        if (searchEjercicio) {
+            handleCloseSearch();
+        }
+        onClose();
+    };
 
     const handleCloseForm = () => setAnchorEl(null);
     const handleChangeForm = (updatedData) => setRutina(updatedData);
@@ -169,7 +175,7 @@ const RutinasDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
         <>
             <Dialog
                 open={open}
-                onClose={onClose}
+                onClose={handleCloseDialog}
                 fullScreen={fullScreen}
                 fullWidth
                 maxWidth="md"
@@ -249,7 +255,7 @@ const RutinasDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
                         <IconButton color="primary" onClick={() => handleOpenForm(null)}>
                         <AddIcon />
                         </IconButton>
-                        <IconButton onClick={onClose}>
+                        <IconButton onClick={handleCloseDialog}>
                         <CloseIcon />
                         </IconButton>
                     </Box>
