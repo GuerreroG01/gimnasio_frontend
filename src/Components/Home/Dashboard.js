@@ -44,7 +44,7 @@ const Dashboard = ({ pagosData = [] }) => {
             sx={{
                 bgcolor: theme.palette.background.paper,
                 minHeight: "100vh",
-                py: 3
+                py: 1
             }}
         >
             <Stack direction="row" alignItems="center" spacing={1} mb={3}>

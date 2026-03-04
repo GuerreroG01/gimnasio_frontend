@@ -198,6 +198,48 @@ const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loadi
               </TextField>
             </Grid>
             <Grid item xs={12}>
+              <TextField
+                fullWidth
+                size="small"
+                label="Detalle"
+                placeholder="Beneficios del pago"
+                value={data?.Detalle || ""}
+                onChange={(e) =>
+                  onChange({ ...data, Detalle: e.target.value })
+                }
+                disabled={loading}
+                sx={fieldSx}
+                slotProps={{
+                  input: {
+                    startAdornment: (
+                      <InputAdornment position="start">
+                        <DescriptionIcon fontSize="small" />
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                select
+                fullWidth
+                size="small"
+                label="Categoría"
+                value={data?.Categoria ?? 1}
+                onChange={(e) =>
+                  onChange({ ...data, Categoria: Number(e.target.value) })
+                }
+                required
+                disabled={loading}
+                sx={fieldSx}
+              >
+                <MenuItem value={1}>Ordinario</MenuItem>
+                <MenuItem value={2}>Promoción</MenuItem>
+                <MenuItem value={3}>Salva Cliente</MenuItem>
+              </TextField>
+            </Grid>
+            <Grid item xs={12}>
               <FormControlLabel
                 control={
                   <Switch

@@ -32,6 +32,8 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
     Alimentacion: false,
     Rutinas: false,
     Moneda: "NIO",
+    Detalle: "",
+    Categoria: 1,
     Activo: true,
   });
 
@@ -84,6 +86,8 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
             Alimentacion: tp.alimentacion,
             Rutinas: tp.rutinas,
             Moneda: tp.moneda,
+            Detalle: tp.detalle,
+            Categoria: tp.categoria,
             Activo: tp.activo ?? true,
           }
         : {
@@ -95,6 +99,8 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
             Alimentacion: false,
             Rutinas: false,
             Moneda: "NIO",
+            Detalle: "",
+            Categoria: 1,
             Activo: true,
           }
     );
@@ -141,19 +147,19 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
 
     try {
       await tipo_PagosService.deleteTipoPago(selectedPago.codigoPago);
-
-      setTipoPagos((prev) =>
-        prev.filter((tp) => tp.codigoPago !== selectedPago.codigoPago)
-      );
-
       handleCloseConfirm();
-
       showSnackbar('Tipo de pago eliminado correctamente', 'success');
 
-    } catch (error) {
-      const backendMessage =
-        error.response?.data?.mensaje || 'Error eliminando tipo de pago';
+      const response = await tipo_PagosService.getTipoPagos(page, pageSize);
 
+      if (response.items.length === 0 && page > 1) {
+        setPage(prev => prev - 1);
+      } else {
+        setTipoPagos(response.items);
+        setTotalPages(response.totalPages);
+      }
+    } catch (error) {
+      const backendMessage = error.response?.data?.mensaje || 'Error eliminando tipo de pago';
       showSnackbar(backendMessage, 'error');
     }
   };
@@ -378,14 +384,14 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
             Eliminar
           </Button>
         </DialogActions>
-        <CustomSnackbar
-          open={snackbar.open}
-          message={snackbar.message}
-          severity={snackbar.severity}
-          onClose={handleCloseSnackbar}
-          autoHideDuration={4000}
-        />
       </Dialog>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleCloseSnackbar}
+        autoHideDuration={4000}
+      />
 
       <TipoPagoForm
         open={openForm}
