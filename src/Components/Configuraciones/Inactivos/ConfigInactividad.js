@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import {
   Box, Container, Typography, Paper, TextField,
-  Checkbox, CircularProgress, Alert, Stack, Divider,
-  MenuItem, useTheme
+  Checkbox, CircularProgress, Stack, Divider,
+  MenuItem, useTheme, IconButton, Popover
 } from '@mui/material';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ConfigSistemService from '../../../Services/ConfigSistemService';
+import CustomSnackbar from '../../../Shared/Components/CustomSnackbar';
 
 const ConfigInactividad = () => {
   const [config, setConfig] = React.useState([]);
@@ -13,6 +15,8 @@ const ConfigInactividad = () => {
   const [mensaje, setMensaje] = React.useState(null);
   const [cambiosPendientes, setCambiosPendientes] = React.useState(false);
   const theme = useTheme();
+  const [descripcionPopover, setDescripcionPopover] = React.useState('');
+  const [anchorEl, setAnchorEl] = React.useState(null);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -20,16 +24,15 @@ const ConfigInactividad = () => {
         const data = await ConfigSistemService.getConfig();
         if (Array.isArray(data) && data.length > 0) {
           const configFiltrada = data.filter(c =>
-            c.id === 1 || c.id === 2
+            c.id === 1 || c.id === 2 || c.id === 3
           );
           setConfig(configFiltrada);
         } else {
-          // Si data es null o vacío
           setConfig([]);
-          setMensaje({ tipo: 'info', texto: 'No hay configuración disponible.' });
+          setMensaje({ severity: 'info', message: 'No hay configuración disponible.' });
         }
       } catch (error) {
-        setMensaje({ tipo: 'error', texto: 'Error al obtener configuración.' });
+        setMensaje({ severity: 'error', message: 'Error al obtener configuración.' });
       } finally {
         setLoading(false);
       }
@@ -44,22 +47,22 @@ const ConfigInactividad = () => {
           for (const conf of config) {
             await ConfigSistemService.updateConfig(conf);
           }
-          setMensaje({ tipo: 'success', texto: 'Configuración actualizada correctamente.' });
+          setMensaje({ severity: 'success', message: 'Configuración actualizada correctamente.' });
           setCambiosPendientes(false);
         } catch (error) {
-          setMensaje({ tipo: 'error', texto: 'Error al actualizar la configuración.' });
+          console.error('Error al actualizar configuración:', error);
+
+          const backendMessage = error?.response?.data;
+          if (backendMessage) {
+            setMensaje({ severity: 'error', message: backendMessage });
+          } else {
+            setMensaje({ severity: 'error', message: 'Error al actualizar la configuración.' });
+          }
         }
       };
       guardarConfig();
     }
   }, [config, cambiosPendientes, loading]);
-
-  useEffect(() => {
-    if (mensaje) {
-      const timeout = setTimeout(() => setMensaje(null), 3000);
-      return () => clearTimeout(timeout);
-    }
-  }, [mensaje]);
 
   const handleValorChange = (e, id) => {
     const valor = e.target.value === '' ? '' : parseInt(e.target.value, 10);
@@ -74,6 +77,20 @@ const ConfigInactividad = () => {
   };
 
   const opcionesMeses = [1, 3, 6, 9, 12];
+
+  const handleInfoClick = (event, descripcion) => {
+    setAnchorEl(event.currentTarget);
+    setDescripcionPopover(descripcion);
+  };
+
+  const handlePopoverClose = () => {
+    setAnchorEl(null);
+    setDescripcionPopover('');
+  };
+
+  const handleSnackbarClose = () => setMensaje(null);
+
+  const openPopover = Boolean(anchorEl);
 
   if (loading) {
     return (
@@ -101,7 +118,9 @@ const ConfigInactividad = () => {
         <Divider sx={{ mb: 3 }} />
 
         {config.length === 0 ? (
-          <Alert severity="info">No hay configuraciones disponibles para mostrar.</Alert>
+          <Typography variant="body2" color="text.secondary">
+            No hay configuraciones disponibles para mostrar.
+          </Typography>
         ) : (
           <Stack spacing={3}>
             {config.map(conf => {
@@ -114,54 +133,57 @@ const ConfigInactividad = () => {
                     flexDirection: { xs: 'column', md: 'row' },
                     alignItems: { md: 'center' },
                     justifyContent: 'space-between',
-                    border: (theme) =>
-                      `1px solid ${
-                      theme.palette.mode === 'dark' ? theme.palette.divider : '#e0e0e0'
-                    }`,
+                    border: `1px solid ${theme.palette.mode === 'dark' ? theme.palette.divider : '#e0e0e0'}`,
                     borderRadius: 2,
                     p: 2,
-                    backgroundColor: (theme) =>
-                      estaInactivo
-                        ? theme.palette.action.disabledBackground
-                        : theme.palette.background.paper,
+                    backgroundColor: estaInactivo
+                      ? theme.palette.action.disabledBackground
+                      : theme.palette.background.paper,
                     opacity: estaInactivo ? 0.6 : 1,
                     transition: 'background-color 0.3s, opacity 0.3s',
                   }}
                 >
                   <Box sx={{ flex: 1, pr: { md: 2 } }}>
-                    <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 600, display: 'flex', alignItems: 'center', gap: 1 }}>
                       {conf.nombre}
+                      {conf.descripcion && (
+                        <IconButton
+                          size="small"
+                          onClick={(e) => handleInfoClick(e, conf.descripcion)}
+                          sx={{ p: 0.5 }}
+                        >
+                          <InfoOutlinedIcon fontSize="small" color="action" />
+                        </IconButton>
+                      )}
                     </Typography>
                     <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                       Estado: <strong>{conf.estado ? 'Activo' : 'Inactivo'}</strong>
                     </Typography>
 
-                    {conf.id === 1 && (
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
-                        <TextField
-                          select
-                          label="Meses"
-                          size="small"
-                          value={conf.valor !== undefined ? conf.valor : ''}
-                          onChange={(e) => handleValorChange(e, conf.id)}
-                          variant="filled"
-                          disabled={estaInactivo}
-                          sx={{
-                            width: '100px',
-                            '& .MuiFilledInput-root': {
-                              borderRadius: 2,
-                              backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#f5f5f5',
-                            },
-                          }}
-                        >
-                          {opcionesMeses.map(opcion => (
-                            <MenuItem key={opcion} value={opcion}>
-                              {opcion}
-                            </MenuItem>
-                          ))}
-                        </TextField>
-                      </Box>
-                    )}
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mt: 1 }}>
+                      <TextField
+                        select
+                        label="Meses"
+                        size="small"
+                        value={conf.valor !== undefined ? conf.valor : ''}
+                        onChange={(e) => handleValorChange(e, conf.id)}
+                        variant="filled"
+                        disabled={estaInactivo}
+                        sx={{
+                          width: '100px',
+                          '& .MuiFilledInput-root': {
+                            borderRadius: 2,
+                            backgroundColor: theme.palette.mode === 'dark' ? '#424242' : '#f5f5f5',
+                          },
+                        }}
+                      >
+                        {opcionesMeses.map(opcion => (
+                          <MenuItem key={opcion} value={opcion}>
+                            {opcion}
+                          </MenuItem>
+                        ))}
+                      </TextField>
+                    </Box>
                   </Box>
 
                   <Stack direction="row" alignItems="center" spacing={1} sx={{ mt: { xs: 2, md: 0 } }}>
@@ -177,13 +199,29 @@ const ConfigInactividad = () => {
             })}
           </Stack>
         )}
-
-        {mensaje && (
-          <Alert severity={mensaje.tipo} sx={{ mt: 3 }}>
-            {mensaje.texto}
-          </Alert>
-        )}
       </Paper>
+
+      <Popover
+        open={openPopover}
+        anchorEl={anchorEl}
+        onClose={handlePopoverClose}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+      >
+        <Box sx={{ p: 2, maxWidth: 300 }}>
+          <Typography variant="body2">{descripcionPopover}</Typography>
+        </Box>
+      </Popover>
+
+      {mensaje && (
+        <CustomSnackbar
+          open={Boolean(mensaje)}
+          message={mensaje.message}
+          severity={mensaje.severity}
+          onClose={handleSnackbarClose}
+          autoHideDuration={3000}
+        />
+      )}
     </Box>
   );
 };
