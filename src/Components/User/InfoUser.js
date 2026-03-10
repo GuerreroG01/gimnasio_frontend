@@ -62,12 +62,16 @@ const InfoUser = () => {
                 flexDirection={{ xs: 'column', md: 'row' }} 
                 alignItems={{ xs: 'stretch', md: 'flex-start' }} 
                 gap={3}
-                justifyContent={rol !== "Admin" ? "center" : "flex-start"}
+                justifyContent="flex-start"
             >
-                {/* Paper principal */}
                 <Paper 
                     elevation={3} 
-                    sx={{ p: 3, borderRadius: 2, flex: { md: '0 0 300px' }, width: '100%' }}
+                    sx={{ 
+                        p: 3, 
+                        borderRadius: 2, 
+                        flex: user.rol === "Admin" ? '0 0 300px' : '1 1 100%', 
+                        width: user.rol === "Admin" ? 'auto' : '100%' 
+                    }}
                 >
                     <Box display="flex" alignItems="center" mb={3}>
                         <Avatar sx={{ width: 56, height: 56, mr: 2 }}>
@@ -108,7 +112,6 @@ const InfoUser = () => {
                     </Box>
                 </Paper>
 
-                {/* Paper secundario (solo Admin) */}
                 {user.rol === "Admin" && (
                     <Paper
                         elevation={6}
@@ -121,8 +124,8 @@ const InfoUser = () => {
                             "&:hover": {
                                 transform: "translateY(-3px)",
                                 boxShadow: theme.shadows[10]
-                            }
-                        })}
+                            }}
+                        )}
                     >
                         <Stack spacing={3}>
                             <Box>
@@ -175,5 +178,4 @@ const InfoUser = () => {
         </Paper>
     );
 };
-
 export default InfoUser;

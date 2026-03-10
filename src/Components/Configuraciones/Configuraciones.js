@@ -3,6 +3,7 @@ import { Typography, Paper, Box, Divider } from '@mui/material';
 import ConfigBackup from './Backup/ConfigBackup';
 import ConfigInactividad from './Inactivos/ConfigInactividad';
 import InfoUser from '../User/InfoUser';
+import License from './License/License';
 
 const Configuraciones = () => {
     return (
@@ -21,6 +22,10 @@ const Configuraciones = () => {
                 </Typography>
 
                 <Divider sx={{ mb: 4 }} />
+
+                <Box sx={{ mb: 4 }}>
+                    <License />
+                </Box>
 
                 <Box sx={{ mb: 5 }}>
                     <ConfigBackup />

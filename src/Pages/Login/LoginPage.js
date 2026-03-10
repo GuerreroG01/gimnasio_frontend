@@ -30,7 +30,7 @@ export default function LoginPage(){
             });
 
             setTimeout(() => {
-                navigate("/");
+                window.location.href = "/";
             }, 1000);
 
         } catch (err) {
