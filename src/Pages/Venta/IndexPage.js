@@ -21,6 +21,25 @@ export default function IndexPage() {
   const [availableLimitMonths, setAvailableLimitMonths] = useState([]);
   const [availableDays, setAvailableDays] = useState([]);
   const [availableLimitDays, setAvailableLimitDays] = useState([]);
+  const [snackbar, setSnackbar] = useState({
+    open: false,
+    message: '',
+    severity: 'success'
+  });
+
+  const showSnackbar = (message, severity = 'success') => {
+    setSnackbar({
+      open: true,
+      message,
+      severity
+    });
+  };
+  const handleCloseSnackbar = () => {
+    setSnackbar(prev => ({
+      ...prev,
+      open: false
+    }));
+  };
 
   useEffect(() => {
     const fetchYears = async () => {
@@ -31,6 +50,10 @@ export default function IndexPage() {
         if (years.length) setYear(years.at(-1));
       } catch (err) {
         console.error("Error al obtener años", err);
+        const backendMessage = err?.response?.data ||
+        'Error al obtener categorías.';
+
+        showSnackbar(backendMessage, 'error');
       } finally {
         setLoadingFechas(false);
       }
@@ -157,6 +180,8 @@ export default function IndexPage() {
       dias={availableDays}
       limitMeses={availableLimitMonths}
       limitDias={availableLimitDays}
+      snackbar={snackbar}
+      handleCloseSnackbar={handleCloseSnackbar}
     />
   );
 }

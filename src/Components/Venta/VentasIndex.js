@@ -3,10 +3,11 @@ import { UnfoldLessDouble as UnfoldLessDoubleIcon, UnfoldMoreDouble as UnfoldMor
 import VentasContent from './VentasContent';
 import EmptyState from '../../Shared/Components/EmptyState'
 import EventNoteIcon from '@mui/icons-material/EventNote';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () => {}, selectedAnio, setSelectedAnio, selectedMes, setSelectedMes,
   selectedDia, setSelectedDia, selectedFecha, limitAnio, setLimitAnio, limitMes, setLimitMes, limitDia, setLimitDia, fechaLimite, anios = [],
-  meses = [], dias = [], loadingVentas, limitMeses=[], limitDias=[] }) => {
+  meses = [], dias = [], loadingVentas, limitMeses=[], limitDias=[], snackbar, handleCloseSnackbar }) => {
 
   const renderSelect = (label, value, options, onChange, disabled = false, width = '100%') => (
     <FormControl size="small" fullWidth={width === '100%'} sx={{ width }}>
@@ -96,6 +97,12 @@ const VentasIndex = ({ loadingFechas, showDateLimit, handleToggleDateLimit = () 
           minHeight={260}
         />
       )}
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleCloseSnackbar}
+      />
     </Box>
   );
 };

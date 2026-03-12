@@ -32,7 +32,10 @@ const ConfigInactividad = () => {
           setMensaje({ severity: 'info', message: 'No hay configuración disponible.' });
         }
       } catch (error) {
-        setMensaje({ severity: 'error', message: 'Error al obtener configuración.' });
+        const backendMessage =
+          error?.response?.data ||
+          'Error al obtener configuración.';
+        setMensaje({ severity: 'error', message: backendMessage + 'Contacte al desarrollador y active la licencia aqui.' });
       } finally {
         setLoading(false);
       }

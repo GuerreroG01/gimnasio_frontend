@@ -7,8 +7,9 @@ import AddIcon from '@mui/icons-material/Add';
 import SearchOffIcon from '@mui/icons-material/SearchOff';
 import EmptyState from '../../../Shared/Components/EmptyState';
 import { useNavigate } from 'react-router-dom';
+import CustomSnackbar from '../../../Shared/Components/CustomSnackbar';
 
-export default function IndexPrograma({ programas, loading, nivel, setNivel, tipo, setTipo, nivelesDisponibles, tiposDisponibles }) {
+export default function IndexPrograma({ programas, loading, nivel, setNivel, tipo, setTipo, nivelesDisponibles, tiposDisponibles, snackbar, handleCloseSnackbar }) {
     const theme = useTheme();
     const navigate = useNavigate();
     const { authenticated } = useContext(AuthContext);
@@ -194,6 +195,12 @@ export default function IndexPrograma({ programas, loading, nivel, setNivel, tip
                     ))}
                 </Grid>
             )}
+            <CustomSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={handleCloseSnackbar}
+                />
         </Box>
     );
 }

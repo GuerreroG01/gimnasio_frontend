@@ -72,8 +72,11 @@ const ConfigBackup = () => {
                 setFrecuencia(formatted.frecuenciaRespaldo);
                 setProximoRespaldo(formatted.proximoRespaldo);
             } catch (err) {
-                console.error("Error al cargar la configuración de respaldo:", err);
-                setError("Ocurrió un problema al conectar con el servidor.");
+                if (err?.response?.data === "Licencia inválida o expirada.") {
+                    setError("Solicite la nueva licencia con el desarrollador");
+                } else {
+                    setError("Ocurrió un problema al conectar con el servidor.");
+                }
             } finally {
                 setLoading(false);
             }

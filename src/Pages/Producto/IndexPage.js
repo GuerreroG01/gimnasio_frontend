@@ -31,10 +31,29 @@ export default function IndexPage() {
     const [deleteSuccess, setDeleteSuccess] = useState('');
     const [deleteError, setDeleteError] = useState('');
     const [anchorEl, setAnchorEl] = useState(null);
+    const [snackbar, setSnackbar] = useState({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
 
     useEffect(() => {
         fetchCategorias();
     }, []);
+
+    const showSnackbar = (message, severity = 'success') => {
+        setSnackbar({
+            open: true,
+            message,
+            severity
+        });
+    };
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({
+            ...prev,
+            open: false
+        }));
+    };
 
     const fetchCategorias = async () => {
         try {
@@ -49,7 +68,11 @@ export default function IndexPage() {
                 setProductos(productosIniciales);
             }
         } catch (error) {
-            console.error('Error al obtener categorías:', error);
+            const backendMessage =
+            error?.response?.data ||
+            'Error al obtener categorías.';
+
+            showSnackbar(backendMessage, 'error');
         }
     };
     useEffect(() => {
@@ -114,10 +137,10 @@ export default function IndexPage() {
         try {
             if (currentProducto.codigoProducto === 0) {
                 await productoService.createProducto(currentProducto);
-                setSuccess('Producto creado exitosamente.');
+                showSnackbar('Producto creado exitosamente.');
             } else {
                 await productoService.updateProducto(currentProducto.codigoProducto, currentProducto);
-                setSuccess('Producto actualizado exitosamente.');
+                showSnackbar('Producto actualizado exitosamente.');
             }
 
             const productosActuales = await productoService.getProductosByCategoria(categoriaSeleccionada);
@@ -125,7 +148,7 @@ export default function IndexPage() {
 
         } catch (error) {
             console.error('Error al guardar el producto:', error);
-            setError(currentProducto.codigoProducto === 0 ? 'Error al crear el producto.' : 'Error al actualizar el producto.');
+            showSnackbar(currentProducto.codigoProducto === 0 ? 'Error al crear el producto.' : 'Error al actualizar el producto.');
         } finally {
             setLoading(false);
             setTimeout(() => setSuccess(''), 2000);
@@ -142,14 +165,14 @@ export default function IndexPage() {
     const confirmDelete = async () => {
         try {
             await productoService.deleteProducto(deleteProductId);
-            setDeleteSuccess('Producto eliminado exitosamente.');
+            showSnackbar('Producto eliminado exitosamente.');
             setAnchorEl(null);
             setCurrentProducto(emptyProducto);
             const productosActuales = await productoService.getProductosByCategoria(categoriaSeleccionada);
             setProductos(productosActuales);
         } catch (error) {
             console.error('Error al eliminar el producto:', error);
-            setDeleteError('Error al eliminar el producto.');
+            showSnackbar('Error al eliminar el producto.');
         } finally {
             setOpenDeleteDialog(false);
             setTimeout(() => {
@@ -195,6 +218,8 @@ export default function IndexPage() {
             deleteSuccess={deleteSuccess}
             deleteError={deleteError}
             getCategoryIcon={getCategoryIcon}
+            snackbar={snackbar}
+            handleCloseSnackbar={handleCloseSnackbar}
         />
     );
 }

@@ -16,7 +16,11 @@ export default function IndexPage(){
     const [nombreCliente, setNombreCliente] = React.useState('');
     const [loadingSelectors, setLoadingSelectors] = React.useState(false);
     const [pagosDayData, setPagosDay] = React.useState([]);
-
+    const [snackbar, setSnackbar] = React.useState({
+        open: false,
+        message: '',
+        severity: 'error'
+    });
     const months = [
         { number: 1, name: 'Enero' },
         { number: 2, name: 'Febrero' },
@@ -31,6 +35,19 @@ export default function IndexPage(){
         { number: 11, name: 'Noviembre' },
         { number: 12, name: 'Diciembre' }
     ];
+    const showSnackbar = (message, severity = 'error') => {
+        setSnackbar({
+            open: true,
+            message,
+            severity
+        });
+    };
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({
+            ...prev,
+            open: false
+        }));
+    };
     const handleYearChange = (event) => {
         const selectedYear = event.target.value;
         setYear(selectedYear);
@@ -54,7 +71,7 @@ export default function IndexPage(){
                             setAvailableDays(daysData.map(day => day.dia));
                             setDay(daysData.length > 0 ? daysData[daysData.length - 1].dia : null);
                         } catch (err) {
-                            setError('Error al obtener los días de pagos');
+                            showSnackbar('Error al obtener los días de pagos');
                         } finally {
                             setLoadingSelectors(false);
                         }
@@ -62,7 +79,7 @@ export default function IndexPage(){
                     fetchDays();
                 }
             } catch (err) {
-                setError('Error al obtener los meses de pagos');
+                showSnackbar('Error al obtener los meses de pagos');
                 setLoadingSelectors(false);
             }
         };
@@ -83,7 +100,7 @@ export default function IndexPage(){
                 setAvailableDays(daysData.map(day => day.dia));
                 setDay(daysData.length > 0 ? daysData[daysData.length - 1].dia : null);
             } catch (err) {
-                setError('Error al obtener los días de pagos');
+                showSnackbar('Error al obtener los días de pagos');
             } finally {
                 setLoadingSelectors(false);
             }
@@ -101,14 +118,16 @@ export default function IndexPage(){
         const fetchPagos = async () => {
             if (year && month && day && !loadingSelectors) {
                 setLoading(true);
-                setError(null);
+                showSnackbar(null);
 
                 try {
                     const data = await pagoService.getPagosByMonthAndYear(year, month, day);
-                    console.log('Dato recibido en el componente:', data);
                     setPagos(data);
                 } catch (err) {
-                    setError('Hubo un problema al obtener los pagos.');
+                    const backendMessage =
+                    err?.response?.data || 'Hubo un problema al obtener los pagos.';
+
+                    showSnackbar(backendMessage);
                 } finally {
                     setLoading(false);
                 }
@@ -150,7 +169,10 @@ export default function IndexPage(){
                     }
                 }
             } catch (err) {
-                setError('Error al obtener resumen de pagos');
+                const backendMessage =
+                    err?.response?.data || 'Error al obtener resumen de pagos';
+
+                showSnackbar(backendMessage);
                 console.error('Error al obtener resumen de pagos:', err);
             }
         };
@@ -181,6 +203,7 @@ export default function IndexPage(){
             loading={loading} error={error} page={page} handlePageChange={handlePageChange}
             currentPagos={currentPagos}
             handlePagoDeleted={handlePagoDeleted} filteredPagos={filteredPagos}
+            snackbar={snackbar} handleCloseSnackbar={handleCloseSnackbar}
         />
     );
 }

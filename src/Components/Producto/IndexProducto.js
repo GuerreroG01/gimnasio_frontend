@@ -15,10 +15,11 @@ import ProductoCard from './ProductoCard';
 
 import vacioImg from '../../assets/Images/vacio.png';
 import { useNavigate } from 'react-router-dom';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCategoriaChange, handleOpenNew, handleOpenEdit, handleClose,
   loading, success, error, currentProducto, handleChange, handleSubmit, anchorEl, openDeleteDialog, setOpenDeleteDialog, confirmDelete,
-  deleteSuccess, deleteError, handleDelete, getCategoryIcon }) => {
+  deleteSuccess, deleteError, handleDelete, getCategoryIcon, snackbar, handleCloseSnackbar }) => {
 
   const navigate = useNavigate();
   const [page, setPage] = useState(1);
@@ -177,8 +178,6 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
         onClose={handleClose}
         onSubmit={handleSubmit}
         loading={loading}
-        success={success}
-        error={error}
         handleDelete={handleDelete}
       />
 
@@ -213,6 +212,12 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
           </Button>
         </DialogActions>
       </Dialog>
+      <CustomSnackbar
+        open={snackbar.open}
+        message={snackbar.message}
+        severity={snackbar.severity}
+        onClose={handleCloseSnackbar}
+      />
     </Container>
   );
 };

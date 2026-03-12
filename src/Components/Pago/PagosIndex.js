@@ -8,10 +8,11 @@ import PagosCards from './PagosCards';
 import PagosResumen from './PagosResumen';
 import EmptyState from '../../Shared/Components/EmptyState';
 import PaymentIcon from '@mui/icons-material/Payment';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months, handleDayChange, handleMonthChange, handleYearChange,
     availableDays, availableMonths, availableYears, loadingSelectors, pagosDayData, loading, error, page, handlePageChange, currentPagos,
-    handlePagoDeleted, filteredPagos }) => {
+    handlePagoDeleted, filteredPagos, snackbar, handleCloseSnackbar }) => {
     const navigate = useNavigate();
     const theme = useTheme();
     return (
@@ -191,6 +192,12 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
                     size="large"
                 />
             </Box>
+            <CustomSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={handleCloseSnackbar}
+            />
         </Box>
     );
 };

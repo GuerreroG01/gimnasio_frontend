@@ -34,11 +34,19 @@ export default function LoginPage(){
             }, 1000);
 
         } catch (err) {
-            setSnackbar({
-                open: true,
-                message: "Credenciales incorrectas o error en login.",
-                severity: "error",
-            });
+            if (err.response?.status === 403 && err.response?.data.includes("Licencia inválida")) {
+                setSnackbar({
+                    open: true,
+                    message: "Tu licencia ha expirado. Contacta al desarrollador.",
+                    severity: "error",
+                });
+            } else {
+                setSnackbar({
+                    open: true,
+                    message: "Credenciales incorrectas o error en login.",
+                    severity: "error",
+                });
+            }
         } finally {
             setLoading(false);
         }

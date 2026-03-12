@@ -97,6 +97,9 @@ const PagosAnualTable = ({ pagosData }) => {
             rowsPerPage={rowsPerPageDefault}
             rowsPerPageOptions={[]}
             sx={{ "& .MuiTablePagination-toolbar": { justifyContent: "center" } }}
+            labelDisplayedRows={({ from, to, count }) =>
+              `${from}–${to} de ${count}`
+            }
           />
         )}
       </TableContainer>

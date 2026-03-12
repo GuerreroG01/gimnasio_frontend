@@ -12,8 +12,26 @@ export default function IndexPage() {
     const [tipo, setTipo] = React.useState('');
     const [nivelesDisponibles, setNivelesDisponibles] = React.useState([]);
     const [tiposDisponibles, setTiposDisponibles] = React.useState([]);
+    const [snackbar, setSnackbar] = React.useState({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
+    const showSnackbar = React.useCallback((message, severity = 'success') => {
+        setSnackbar({
+            open: true,
+            message,
+            severity
+        });
+    }, []);
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({
+            ...prev,
+            open: false
+        }));
+    };
 
-    const fetchProgramas = async (nivelSeleccionado, tipoSeleccionado) => {
+    const fetchProgramas = React.useCallback(async (nivelSeleccionado, tipoSeleccionado) => {
         if (!nivelSeleccionado) {
             setProgramas([]);
             return;
@@ -35,12 +53,15 @@ export default function IndexPage() {
 
             setProgramas(programasConDia);
         } catch (error) {
-            console.error('Error al obtener programas', error);
+            const backendMessage = error?.response?.data ||
+                'Error al obtener categorías.';
+
+            showSnackbar(backendMessage, 'error');
             setProgramas([]);
         } finally {
             setLoading(false);
         }
-    };
+    }, [showSnackbar]);
 
     useEffect(() => {
         const cargarFiltros = async () => {
@@ -63,13 +84,17 @@ export default function IndexPage() {
 
             } catch (error) {
                 console.error('Error cargando filtros', error);
+                const backendMessage = error?.response?.data ||
+                    'Error al obtener categorías.';
+
+                showSnackbar(backendMessage, 'error');
             } finally {
                 setLoading(false);
             }
         };
 
         cargarFiltros();
-    }, []);
+    }, [fetchProgramas, showSnackbar]);
 
     useEffect(() => {
         if (!nivel) return;
@@ -93,12 +118,12 @@ export default function IndexPage() {
         };
 
         actualizarTiposYProgramas();
-    }, [nivel]);
+    }, [nivel, fetchProgramas]);
 
     useEffect(() => {
         if (!nivel) return;
         fetchProgramas(nivel, tipo);
-    }, [tipo, nivel]);
+    }, [tipo, nivel, fetchProgramas]);
     return (
         <IndexPrograma
             programas={programas}
@@ -109,6 +134,8 @@ export default function IndexPage() {
             setTipo={setTipo}
             nivelesDisponibles={nivelesDisponibles}
             tiposDisponibles={tiposDisponibles}
+            snackbar={snackbar}
+            handleCloseSnackbar={handleCloseSnackbar}
         />
     );
 }
