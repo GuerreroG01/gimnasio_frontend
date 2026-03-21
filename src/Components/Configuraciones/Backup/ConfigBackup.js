@@ -62,7 +62,6 @@ const ConfigBackup = () => {
         const fetchBackupConfig = async () => {
             try {
                 const data = await BackupService.getBackupByTipo("BaseDatos");
-                console.log('Datos obtenidos:',data);
                 if (!data) {
                     setBackup(null);
                     return;

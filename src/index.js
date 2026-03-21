@@ -28,8 +28,10 @@ import IndexPrograma from './Pages/Programa/IndexPage';
 import DetailsPrograma from './Components/ProgramaFit/Programa/DetailsPrograma';
 import ProgramasForm from './Pages/Programa/FormPage';
 import ProgresosCliente from './Pages/Progresos/ClienteProgresoPage';
-import Prueba from './Pages/User/FormPage';
-//import Prueba from './Components/Home/DashboardResumen';
+import Reportes from './Components/Reportes/DownloadReports';
+import UnauthorizedPage from './Pages/UnauthorizedPage';
+//import Prueba from './Pages/User/FormPage';
+//import Prueba from './Components/Reportes/DownloadReports';
 import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
@@ -59,6 +61,8 @@ const router = createBrowserRouter([
     children: [
       { path: '/', element: <ProtectedRoute><Dashboard /></ProtectedRoute> },
       
+      //UNAUTHORIZED
+      { path: '/unauthorized', element: <ProtectedRoute><UnauthorizedPage /></ProtectedRoute> },
       // USUARIOS
       { path: '/clientes', element: <ProtectedRoute><IndexClientes /></ProtectedRoute> },
       { path: '/clientes/form', element: <ProtectedRoute><FormularioCliente /></ProtectedRoute> },
@@ -92,11 +96,14 @@ const router = createBrowserRouter([
       {path: '/programas/:id/details', element: <ProtectedRoute optional ><DetailsPrograma /></ProtectedRoute> },
       {path: '/programas/new', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
       {path: '/programas/:id/update', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
-      {path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
+      //{path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
 
       //Usuario
-      {path: '/user/register', element: <ProtectedRoute><RegisterPage /></ProtectedRoute> },
-      {path: '/user/:id/update', element: <ProtectedRoute><RegisterPage /></ProtectedRoute> },
+      {path: '/user/register', element: <ProtectedRoute allowedRoles={['Admin']}><RegisterPage /></ProtectedRoute> },
+      {path: '/user/:id/update', element: <ProtectedRoute allowedRoles={['Admin']}><RegisterPage /></ProtectedRoute> },
+
+      // Reportes
+      {path: '/reports', element: <ProtectedRoute allowedRoles={['Admin']}><Reportes /></ProtectedRoute> },
 
 /*
       // TIPOS EJERCICIOS Y PAGOS

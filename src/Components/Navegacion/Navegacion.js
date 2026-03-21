@@ -26,27 +26,28 @@ const Logo = styled('img')({
   },
 });
 
-const NAV_LINKS = [
-  { label: "Clientes", path: "/clientes" },
-  { label: "Operaciones", children: [
-      { label: "Pagos", path: "/pagos" },
-      { label: "Productos", path: "/productos" },
-      { label: "Ventas", path: "/venta" },
-      { label: "Programas", path: "/programas" },
-      { label: "Progresos", path: "/progresos" }
-  ]}
-];
-
 const Navegacion = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { usuario, logout } = React.useContext(AuthContext);
+  const { usuario, logout, rol } = React.useContext(AuthContext);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [menuAnchor, setMenuAnchor] = React.useState(null);
   const { darkMode, toggleDarkMode } = React.useContext(ThemeContext);
   const theme = useTheme();
   const [openDrawer, setOpenDrawer] = React.useState(false);
-
+  const NAV_LINKS = [
+    { label: "Clientes", path: "/clientes" },
+    {
+      label: "Operaciones", children: [
+        { label: "Pagos", path: "/pagos" },
+        { label: "Productos", path: "/productos" },
+        { label: "Ventas", path: "/venta" },
+        { label: "Programas", path: "/programas" },
+        { label: "Progresos", path: "/progresos" },
+        ...(rol === "Admin" ? [{ label: "Reportes", path: "/reports" }] : [])
+      ]
+    }
+  ];
   const handleLogout = () => {
     setOpenDialog(false);
     setTimeout(() => {

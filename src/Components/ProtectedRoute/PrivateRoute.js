@@ -5,8 +5,8 @@ import CircularProgress from '@mui/material/CircularProgress';
 import Navegacion from '../Navegacion/Navegacion';
 import Box from '@mui/material/Box';
 
-const PrivateRoute = ({ children, optional = false }) => {
-    const { authenticated, loading, statusPage } = React.useContext(AuthContext);
+const PrivateRoute = ({ children, optional = false, allowedRoles = [] }) => {
+    const { authenticated, loading, rol, statusPage } = React.useContext(AuthContext);
 
     if (loading) {
         return (
@@ -22,17 +22,20 @@ const PrivateRoute = ({ children, optional = false }) => {
             </Box>
         );
     }
-    if (!authenticated) {
-        if (optional) {
-            return <>{children}</>;
-        }
-        
-        if (statusPage === 'private') {
-            return <Navigate to="/login" replace />;
-        }
 
+    // Usuario no autenticado
+    if (!authenticated) {
+        if (optional) return <>{children}</>;
+        if (statusPage === 'private') return <Navigate to="/login" replace />;
         return <>{children}</>;
     }
+
+    // Validar rol
+    if (allowedRoles.length > 0 && !allowedRoles.includes(rol)) {
+        // Si el usuario no tiene permisos
+        return <Navigate to="/unauthorized" replace />; // Puedes crear esta página
+    }
+
     return <Navegacion>{children}</Navegacion>;
 };
 

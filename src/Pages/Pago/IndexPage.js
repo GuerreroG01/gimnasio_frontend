@@ -8,7 +8,6 @@ export default function IndexPage(){
     const [day, setDay] = React.useState(null);
     const [pagos, setPagos] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
-    const [error, setError] = React.useState(null);
     const [availableYears, setAvailableYears] = React.useState([]);
     const [availableMonths, setAvailableMonths] = React.useState([]);
     const [availableDays, setAvailableDays] = React.useState([]);
@@ -118,7 +117,6 @@ export default function IndexPage(){
         const fetchPagos = async () => {
             if (year && month && day && !loadingSelectors) {
                 setLoading(true);
-                showSnackbar(null);
 
                 try {
                     const data = await pagoService.getPagosByMonthAndYear(year, month, day);
@@ -200,7 +198,7 @@ export default function IndexPage(){
             availableYears={availableYears} availableMonths={availableMonths} availableDays={availableDays}
             loadingSelectors={loadingSelectors}
             pagosDayData={pagosDayData}
-            loading={loading} error={error} page={page} handlePageChange={handlePageChange}
+            loading={loading} page={page} handlePageChange={handlePageChange}
             currentPagos={currentPagos}
             handlePagoDeleted={handlePagoDeleted} filteredPagos={filteredPagos}
             snackbar={snackbar} handleCloseSnackbar={handleCloseSnackbar}

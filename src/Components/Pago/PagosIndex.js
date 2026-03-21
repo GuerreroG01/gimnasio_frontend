@@ -11,7 +11,7 @@ import PaymentIcon from '@mui/icons-material/Payment';
 import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months, handleDayChange, handleMonthChange, handleYearChange,
-    availableDays, availableMonths, availableYears, loadingSelectors, pagosDayData, loading, error, page, handlePageChange, currentPagos,
+    availableDays, availableMonths, availableYears, loadingSelectors, pagosDayData, loading, page, handlePageChange, currentPagos,
     handlePagoDeleted, filteredPagos, snackbar, handleCloseSnackbar }) => {
     const navigate = useNavigate();
     const theme = useTheme();
@@ -163,13 +163,7 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
                 </Box>
             )}
 
-            {error && (
-                <Typography color="error" variant="body1" sx={{ marginBottom: 2 }}>
-                    {error}
-                </Typography>
-            )}
-
-            {!loading && !error && currentPagos.length === 0 ? (
+            {!loading && currentPagos.length === 0 ? (
             <Box
                 sx={{ minHeight: '50vh', display: 'flex', justifyContent: 'center', alignItems: 'center' }}
             >
