@@ -8,17 +8,9 @@ import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { AuthContext } from '../../Context/AuthContext';
 import { ThemeContext } from '../../Context/ThemeContext';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
+import MensajeBadge from './MensajeBadge';
 
-const NAV_LINKS = [
-  { label: "Clientes", path: "/clientes" },
-  { label: "Pagos", path: "/pagos" },
-  { label: "Productos", path: "/productos" },
-  { label: "Ventas", path: "/venta" },
-  { label: "Programas", path: "/programas" },
-  { label: "Progresos", path: "/progresos" },
-];
-
-const NavegacionMovil = ({ isActive }) => {
+const NavegacionMovil = ({ isActive, isMessagesPage }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { usuario, rol, logout } = React.useContext(AuthContext);
@@ -29,7 +21,17 @@ const NavegacionMovil = ({ isActive }) => {
 
   const handleOpen = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
-
+  const NAV_LINKS = [
+    { label: "Clientes", path: "/clientes" },
+    { label: "Pagos", path: "/pagos" },
+    { label: "Productos", path: "/productos" },
+    { label: "Ventas", path: "/venta" },
+    { label: "Programas", path: "/programas" },
+    { label: "Progresos", path: "/progresos" },
+    { label: "Asistencia", path: "/asistencia" },
+    { label: "Configuraciones", path: "/configuraciones" },
+    ...(rol === "Admin" ? [{ label: "Reportes", path: "/reports" }] : [])
+  ];
   const handleLogout = () => {
     handleClose();
     logout();
@@ -92,6 +94,13 @@ const NavegacionMovil = ({ isActive }) => {
           </Box>
 
           <Box sx={{ display: "flex", alignItems: "center", gap: 0.5 }}>
+            <Tooltip title="Mensajes">
+              <Link to="/mensajes">
+                <Box sx={{ cursor: 'pointer' }}>
+                  <MensajeBadge isActive={isMessagesPage} />
+                </Box>
+              </Link>
+            </Tooltip>
             <Tooltip title={darkMode ? "Modo Claro" : "Modo Oscuro"}>
               <Box
                 sx={{

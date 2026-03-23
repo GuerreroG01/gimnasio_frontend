@@ -9,7 +9,7 @@ const LicenseInfo = ({ license }) => {
     const isValid = license && new Date(license.expiresAt) >= new Date();
 
     return (
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 2, width: "95%" }}>
+        <Paper elevation={3} sx={{ p: 4, borderRadius: 2, width: { xs:"86%", sm:"89%",  md:"95%"} }}>
         <Typography
             variant="h5"
             textAlign="center"

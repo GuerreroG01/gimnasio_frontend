@@ -78,14 +78,12 @@ const Navegacion = ({ children }) => {
         zIndex: 1000,
         gap: 2,
       }}>
-        {/* Logo + Navegación izquierda */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
           <Link to="/"><Logo src={GymLogo} alt="Gym Logo" /></Link>
           <Typography variant="h6" sx={{ fontWeight: 700, color: theme.palette.text.primary, textTransform: 'uppercase' }}>
             System-GYM
           </Typography>
 
-          {/* Menú de navegación */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1.5, alignItems: 'center' }}>
             {NAV_LINKS.map((link) => {
               if (link.children) {
@@ -272,7 +270,7 @@ const Navegacion = ({ children }) => {
           </DialogActions>
         </Dialog>
       </Box>
-      <NavegacionMovil openDrawer={openDrawer} toggleDrawer={() => setOpenDrawer(!openDrawer)} isActive={isActive} />
+      <NavegacionMovil openDrawer={openDrawer} toggleDrawer={() => setOpenDrawer(!openDrawer)} isActive={isActive} isMessagesPage={isMessagesPage} />
       <Box sx={{ padding: 2 }}>
         {children || <Outlet />}
       </Box>

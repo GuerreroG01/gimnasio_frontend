@@ -108,7 +108,7 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
             direction="down"
             sx={{
               position: 'fixed',
-              bottom: { xl: 330, lg: 250, md: 200, sm: 185, xs: 390 },
+              bottom: { xl: 330, lg: 250, md: 200, sm: 275, xs: 390 },
               right: 12,
               zIndex: 1500,
             }}

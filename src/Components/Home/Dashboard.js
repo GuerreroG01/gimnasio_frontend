@@ -25,8 +25,8 @@ const Dashboard = ({ pagosData = [] }) => {
     
     const actions = [
         {
-            title: "Tipos de Pago",
-            description: "Gestiona planes de membresía o tipos de pagos",
+            title: "Membresías",
+            description: "Gestiona planes y promociones de tus membresías.",
             icon: <PaymentIcon sx={{ fontSize: 40, color: "#1976d2" }} />,
             onClick: () => setOpenTipoPago(true),
         },

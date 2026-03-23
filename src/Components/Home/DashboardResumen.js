@@ -158,7 +158,7 @@ export default function DashboardResumen() {
                   label={item.isPercent
                     ? `${Math.abs(diferencia).toFixed(2)}%`
                     : item.isDecimal
-                      ? `${item.prefix || ''}${Math.abs(diferencia).toFixed(2)}`
+                      ? `${item.prefix || ''}${Math.abs(diferencia).toLocaleString('es-NI', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`
                       : `${item.prefix || ''}${Math.abs(diferencia).toLocaleString('es-NI', { maximumFractionDigits: 0 })}`
                   }
                   size="small"

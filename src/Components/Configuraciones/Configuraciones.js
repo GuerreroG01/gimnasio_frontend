@@ -9,7 +9,7 @@ import { AuthContext } from '../../Context/AuthContext';
 const Configuraciones = () => {
     const { rol } =useContext(AuthContext);
     return (
-        <Box sx={{ width: '100%', mt: 4 }}>
+        <Box sx={{ width:"100%", mt: 4 }}>
             <Box sx={{ mb: 4 }}>
                 <InfoUser />
             </Box>

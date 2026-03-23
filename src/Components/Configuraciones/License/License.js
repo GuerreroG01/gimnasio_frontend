@@ -40,7 +40,12 @@ const License = () => {
     }
 
     return (
-        <Box>
+        <Box
+            display="flex"
+            flexDirection={{ xs: "column", md: "row" }}
+            gap={3}
+            width="100%"
+        >
             {license ? (
                 <LicenseInfo license={license} />
             ) : (

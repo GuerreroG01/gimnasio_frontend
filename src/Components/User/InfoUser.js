@@ -46,7 +46,7 @@ const InfoUser = () => {
     };
 
     return (
-        <Paper elevation={3} sx={{ p: 4, borderRadius: 2 }}>
+        <Paper elevation={3} sx={{ p: 2, borderRadius: 2, height: 'auto' }}>
             <Typography 
                 variant="h4" 
                 component="h1" 
@@ -68,9 +68,10 @@ const InfoUser = () => {
                     elevation={3} 
                     sx={{ 
                         p: 3, 
-                        borderRadius: 2, 
+                        borderRadius: 2,
                         flex: user.rol === "Admin" ? '0 0 300px' : '1 1 100%', 
-                        width: user.rol === "Admin" ? 'auto' : '100%' 
+                        width: user.rol === "Admin" ? 'auto' : '100%',
+                        maxHeight: { xs: 230, md: 'none' }
                     }}
                 >
                     <Box display="flex" alignItems="center" mb={3}>
