@@ -84,6 +84,7 @@ export default function FormPage(){
         formData.append('Apellidos', clienteConDefaults.apellidos);
         formData.append('Telefono', clienteConDefaults.telefono);
         formData.append('Correo', clienteConDefaults.correo);
+        formData.append('nivelActual', clienteConDefaults.nivelActual);
         if (clienteConDefaults.foto) {
             formData.append('Foto', clienteConDefaults.foto);
         }

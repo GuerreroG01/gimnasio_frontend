@@ -34,11 +34,12 @@ const ProductoForm = ({
   handleDelete
 }) => {
   const theme = useTheme();
-  const normalizedCategoria = currentProducto.categoria
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-
+  const categoriaMap = {
+    'Bebidas Y Alimentos': 'Bebidas y Alimentos',
+    'Recuperación Y Cuidado Personal': 'Recuperación y Cuidado Personal',
+    'Clases Y Servicios': 'Clases y Servicios'
+  };
+  const normalizedCategoria = categoriaMap[currentProducto.categoria] || currentProducto.categoria || '';
   return (
     <Popover
       open={open}

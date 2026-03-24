@@ -5,7 +5,6 @@ const API_URL = '/ProgramaFit';
 // ------------------- PROGRAMAS -------------------
 
 const getProgramas = async (nivel, tipo = null) => {
-    console.log('Fetching programas with nivel:', nivel, 'and tipo:', tipo);
     try {
         const response = await axiosInstance.get(API_URL, {
             params: { nivel, ...(tipo && { tipo }) }

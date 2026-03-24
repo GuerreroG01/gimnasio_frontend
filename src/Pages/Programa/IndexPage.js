@@ -64,7 +64,7 @@ export default function IndexPage() {
     }, [showSnackbar]);
 
     useEffect(() => {
-        const cargarFiltros = async () => {
+        const cargarNiveles = async () => {
             try {
                 setLoading(true);
 
@@ -72,29 +72,44 @@ export default function IndexPage() {
                 setNivelesDisponibles(niveles);
 
                 if (niveles.length > 0) {
-                    const primerNivel = niveles[0];
-                    setNivel(primerNivel);
-
-                    const tipos = await ProgrmaFitService.getTiposByNiveles(primerNivel);
-                    setTiposDisponibles(tipos);
-                    setTipo(tipos.length > 0 ? tipos[0] : '');
-
-                    await fetchProgramas(primerNivel, tipos.length > 0 ? tipos[0] : '');
+                    // Seleccionamos el primer nivel automáticamente
+                    setNivel(niveles[0]);
                 }
-
             } catch (error) {
-                console.error('Error cargando filtros', error);
-                const backendMessage = error?.response?.data ||
-                    'Error al obtener categorías.';
-
+                console.error('Error cargando niveles', error);
+                const backendMessage = error?.response?.data || 'Error al obtener niveles.';
                 showSnackbar(backendMessage, 'error');
             } finally {
                 setLoading(false);
             }
         };
 
-        cargarFiltros();
-    }, [fetchProgramas, showSnackbar]);
+        cargarNiveles();
+    }, [showSnackbar]);
+
+    // 2️⃣ Efecto para cargar los tipos cada vez que cambie el nivel
+    useEffect(() => {
+        if (!nivel) return;
+
+        const cargarTipos = async () => {
+            try {
+                setLoading(true);
+
+                const tipos = await ProgrmaFitService.getTiposByNiveles(nivel);
+                setTiposDisponibles(tipos);
+
+                setTipo(tipos.length > 0 ? tipos[0] : '');
+            } catch (error) {
+                console.error('Error cargando tipos', error);
+                const backendMessage = error?.response?.data || 'Error al obtener tipos.';
+                showSnackbar(backendMessage, 'error');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        cargarTipos();
+    }, [nivel, showSnackbar]);
 
     useEffect(() => {
         if (!nivel) return;
@@ -107,9 +122,6 @@ export default function IndexPage() {
                 setTiposDisponibles(tipos);
                 const primerTipo = tipos.length > 0 ? tipos[0] : '';
                 setTipo(primerTipo);
-
-                await fetchProgramas(nivel, primerTipo);
-
             } catch (error) {
                 console.error('Error actualizando tipos y programas', error);
             } finally {
@@ -118,12 +130,13 @@ export default function IndexPage() {
         };
 
         actualizarTiposYProgramas();
-    }, [nivel, fetchProgramas]);
+    }, [nivel]);
 
     useEffect(() => {
-        if (!nivel) return;
+        if (!nivel || !tipo) return;
         fetchProgramas(nivel, tipo);
-    }, [tipo, nivel, fetchProgramas]);
+    // eslint-disable-next-line
+    }, [tipo]);
     return (
         <IndexPrograma
             programas={programas}

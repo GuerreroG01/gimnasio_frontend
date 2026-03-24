@@ -69,7 +69,7 @@ const RutinasDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
     }, [open, loadEjercicios]);
 
     const handleOpenForm = (event, ejercicio = null) => {
-        setAnchorEl(event.currentTarget);
+        setAnchorEl(event ? event.currentTarget : null);
         setRutina(
             ejercicio || {
                 id: null,
@@ -113,7 +113,7 @@ const RutinasDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
                 );
             } else {
                 const { id, ...rutinaSinId } = rutina;
-                await ProgramaFitService.postRutinas(rutinaSinId, videoFile);
+                await ProgramaFitService.postRutina(rutinaSinId, videoFile);
             }
 
             await loadEjercicios(page);
@@ -252,7 +252,7 @@ const RutinasDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
                         </IconButton>
                         )}
 
-                        <IconButton color="primary" onClick={() => handleOpenForm(null)}>
+                        <IconButton color="primary" onClick={(e) => handleOpenForm(e)}>
                         <AddIcon />
                         </IconButton>
                         <IconButton onClick={handleCloseDialog}>

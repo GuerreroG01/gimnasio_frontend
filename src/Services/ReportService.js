@@ -3,7 +3,7 @@ import axiosInstance from './AxiosInstance';
 const API_URL = "/Report";
 
 const downloadReporteFinanciero = () => {
-  return axiosInstance.get(`${API_URL}/download-reporte-financiero`, {
+  return axiosInstance.get(`${API_URL}/download-reporte-ingresos`, {
     responseType: 'blob'
   });
 };

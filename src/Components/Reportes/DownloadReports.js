@@ -11,7 +11,7 @@ import InfoIcon from "@mui/icons-material/Info";
 const reports = [
     {
         id: "financiero",
-        title: "Reporte Financiero",
+        title: "Reporte de Ingresos",
         description: "Comparación detallada de los ingresos, pagos y ventas entre el mes actual y el mes anterior, incluyendo el porcentaje de cambio en los ingresos.",
         serviceCall: ReportService.downloadReporteFinanciero,
         icon: <MonetizationOnIcon sx={{ fontSize: 50, color: "#4caf50" }} />,
