@@ -249,7 +249,6 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
           </Box>
         </Box>
 
-        {/* BOTONES */}
         <Box mt={3} display="flex" gap={2}>
           <Button
             type="submit"

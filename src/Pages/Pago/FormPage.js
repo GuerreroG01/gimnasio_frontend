@@ -209,15 +209,14 @@ export default function FormPage({ pagoId, onSuccess }) {
     const cargarUltimoPago = useCallback(async (codigoCliente) => {
         try {
             const ultimoPago = await pagosService.getUltimoPagoPorCliente(codigoCliente);
-
             if (!ultimoPago?.codigoTipoPago) return;
 
             const response = await TiposPagoService.getTipoPagoById(
                 ultimoPago.codigoTipoPago
             );
-
-            const tipoValido = response.data;
-
+            
+            const tipoValido = response;
+            setFieldValue("TipoPago", tipoValido);
             if (!tipoValido) {
                 limpiarTipoPago();
                 showSnackbar(
@@ -245,7 +244,7 @@ export default function FormPage({ pagoId, onSuccess }) {
             );
         }
 
-    }, [handleTipoPagoChange, limpiarTipoPago]);
+    }, [handleTipoPagoChange, limpiarTipoPago, setFieldValue]);
     
     useEffect(() => {
         if (clienteId) {
