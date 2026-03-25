@@ -1,5 +1,6 @@
 import axios from 'axios';
 import AuthService from './AuthService';
+import Logger from './Logger';
 
 const BASE_PATH  = (window._env_ ? window._env_.REACT_APP_API_URL : process.env.REACT_APP_API_URL);
 
@@ -35,7 +36,7 @@ axiosInstance.interceptors.response.use(
       error.response?.status === 401 &&
       !esRutaPermitida(currentPath)
     ) {
-      console.log('Sesión expirada o token inválido, cerrando sesión...');
+      Logger.log('Sesión expirada o token inválido, cerrando sesión...');
       localStorage.removeItem('token');
       window.location.href = '/login';
     }

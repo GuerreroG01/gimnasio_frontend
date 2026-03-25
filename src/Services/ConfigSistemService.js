@@ -1,4 +1,5 @@
 import axiosInstance from './AxiosInstance';
+import Logger from './Logger';
 
 const API_URL = "/ConfiguracionesSistema";
 
@@ -8,10 +9,10 @@ const getConfig = async () => {
         return response.data;
     } catch (error) {
         if (error.response?.status === 404) {
-            console.warn("No hay configuración del sistema.");
+            Logger.warn("No hay configuración del sistema.");
             return null;
         }
-        console.error("Error al obtener la configuración del sistema", error);
+        Logger.error("Error al obtener la configuración del sistema", error);
         throw error;
     }
 };
@@ -23,7 +24,7 @@ const updateConfig = async (config) => {
         });
         return response.data;
     } catch (error) {
-        console.error('Error al actualizar la configuración del sistema', error);
+        Logger.error('Error al actualizar la configuración del sistema', error);
         throw error;
     }
 };
@@ -33,7 +34,7 @@ const getinfoinactivos = async () => {
         const response = await axiosInstance.get(`${API_URL}/usuarios-inactivos`);
         return response.data;
     } catch (error) {
-        console.error('Error al obtener información de inactivos', error);
+        Logger.error('Error al obtener información de inactivos', error);
         throw error;
     }
 };
@@ -47,7 +48,7 @@ const getInactivosByIdMess = async (idMensaje) => {
 
         return response.data;
     } catch (error) {
-        console.error(
+        Logger.error(
         'Error al obtener clientes inactivos por mensaje',
         error
         );

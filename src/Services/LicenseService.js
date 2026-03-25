@@ -1,4 +1,5 @@
 import axiosInstance from './AxiosInstance';
+import Logger from './Logger';
 
 const API_URL = '/license';
 
@@ -7,7 +8,7 @@ const getActiveLicense = async () => {
     const response = await axiosInstance.get(`${API_URL}/get_license_active`);
     return response.data;
   } catch (error) {
-    console.error('Error al obtener la licencia activa', error);
+    Logger.error('Error al obtener la licencia activa', error);
     throw error;
   }
 };
@@ -28,7 +29,7 @@ const activateLicense = async (licenseKey) => {
       throw new Error(error.response.data.message);
     }
 
-    console.error('Error al activar la licencia', error);
+    Logger.error('Error al activar la licencia', error);
     throw error;
   }
 };

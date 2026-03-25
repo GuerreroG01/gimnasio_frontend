@@ -1,4 +1,5 @@
 import axiosInstance from './AxiosInstance';
+import Logger from './Logger';
 
 const API_URL = '/ClienteProgreso';
 
@@ -9,7 +10,7 @@ const getProgresoById = async (id) => {
         const response = await axiosInstance.get(`${API_URL}/${id}`);
         return response.data;
     } catch (error) {
-        console.error(`Error al obtener progreso con ID ${id}`, error.response?.data || error);
+        Logger.error(`Error al obtener progreso con ID ${id}`, error.response?.data || error);
         throw error;
     }
 };
@@ -20,7 +21,7 @@ const getProgresosByCliente = async (clienteId) => {
         const response = await axiosInstance.get(`${API_URL}/cliente/${clienteId}`);
         return response.data;
     } catch (error) {
-        console.error(
+        Logger.error(
             `Error al obtener progresos del cliente ${clienteId}`,
             error.response?.data || error
         );
@@ -34,7 +35,7 @@ const getProgresosByPrograma = async (programaFitId) => {
         const response = await axiosInstance.get(`${API_URL}/programa/${programaFitId}`);
         return response.data;
     } catch (error) {
-        console.error(
+        Logger.error(
             `Error al obtener progresos del programa ${programaFitId}`,
             error.response?.data || error
         );
@@ -51,7 +52,7 @@ const incrementDiasEnNivel = async (clienteId) => {
         );
         return response.data;
     } catch (error) {
-        console.error(
+        Logger.error(
             `Error al incrementar días en nivel para el cliente ${clienteId}`,
             error.response?.data || error
         );
@@ -67,7 +68,7 @@ const incrementDiaPrograma = async (clienteId) => {
         );
         return response.data;
     } catch (error) {
-        console.error(
+        Logger.error(
             `Error al incrementar día de programa para el cliente ${clienteId}`,
             error.response?.data || error
         );
@@ -83,7 +84,7 @@ const crearSiguienteProgreso = async (clienteId) => {
         );
         return response.data;
     } catch (error) {
-        console.error(
+        Logger.error(
             `Error al crear siguiente progreso para el cliente ${clienteId}`,
             error.response?.data || error
         );
@@ -99,7 +100,7 @@ const getProgresoPorNiveles = async (clienteId) => {
         );
         return response.data;
     } catch (error) {
-        console.error(
+        Logger.error(
             `Error al obtener progreso por niveles del cliente ${clienteId}`,
             error.response?.data || error
         );

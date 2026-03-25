@@ -1,11 +1,12 @@
 import axiosInstance from './AxiosInstance';
+import Logger from './Logger';
 
 const getDatosResumen = async () => {
     try {
         const response = await axiosInstance.get('/DashBoard');
         return response.data;
     } catch (error) {
-        console.error('Error al obtener los mensajes', error);
+        Logger.error('Error al obtener los mensajes', error);
         throw error;
     }
 };

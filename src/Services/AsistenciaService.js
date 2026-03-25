@@ -1,14 +1,14 @@
 import axiosInstance from './AxiosInstance';
-
+import Logger from './Logger';
 const API_URL = '/Asistencia';
 
 const getAsistencias = async (id) => {
   try {
     const response = await axiosInstance.get(`${API_URL}/${id}`);
-    console.log('Asistencias obtenidas:', response.data);
+    Logger.log('Asistencias obtenidas:', response.data);
     return response.data;
   } catch (error) {
-    console.error(
+    Logger.error(
       'Error al obtener las asistencias:',
       error.response ? error.response.data : error.message
     );
@@ -22,7 +22,7 @@ const postAsistencias = async (codigoCliente) => {
     });
     return response.data;
   } catch (error) {
-    console.error('Error al registrar la asistencia', error);
+    Logger.error('Error al registrar la asistencia', error);
     throw error;
   }
 };
@@ -32,7 +32,7 @@ const putAsistencias = async (id, asistencias) => {
     const response = await axiosInstance.put(`${API_URL}/${id}`, asistencias);
     return response.data;
   } catch (error) {
-    console.error(
+    Logger.error(
       'Error al actualizar la asistencia:',
       error.response ? error.response.data : error.message
     );
@@ -50,7 +50,7 @@ const getAsistenciasPorFecha = async (primerafecha, segundafecha = null) => {
     const response = await axiosInstance.get(url);
     return response.data;
   } catch (error) {
-    console.error(
+    Logger.error(
       'Error al obtener asistencias por fecha:',
       error.response ? error.response.data : error.message
     );
@@ -68,7 +68,7 @@ const getAñosConAsistencia = async () => {
     if (error.response && error.response.status === 404) {
       return [];
     }
-    console.error('Error al obtener los datos anuales de asistencias');
+    Logger.error('Error al obtener los datos anuales de asistencias');
     throw error;
   }
 };
@@ -83,7 +83,7 @@ const getMesesConAsistencia = async (year) => {
     if (error.response && error.response.status === 404) {
       return [];
     }
-    console.error('Error al obtener los datos mensuales de asistencias');
+    Logger.error('Error al obtener los datos mensuales de asistencias');
     throw error;
   }
 };
@@ -98,7 +98,7 @@ const getDiasConAsistencia = async (year, month) => {
     if (error.response && error.response.status === 404) {
       return [];
     }
-    console.error(
+    Logger.error(
       'Error al obtener los días con asistencias:',
       error.response ? error.response.data : error.message
     );
