@@ -13,8 +13,9 @@ const MensajeSistema = () => {
     const [mensajes, setMensajes] = useState([]);
     const [error, setError] = useState('');
     const [anchorEl, setAnchorEl] = useState(null);
-    const [usuariosInactivos, setUsuariosInactivos] = useState([]);
+    const [clientes, setClientes] = useState([]);
     const [loadingInactivos, setLoadingInactivos] = useState(false);
+    const [motivoSeleccionado, setMotivoSeleccionado] = useState('');
     const theme = useTheme();
 
     const fetchMessages = async () => {
@@ -31,14 +32,34 @@ const MensajeSistema = () => {
         }
     };
 
-    const handleOpenInactivos = async (event, idMensaje) => {
+    const getTituloPopover = () => {
+        const motivo = motivoSeleccionado.toLowerCase();
+
+        if (motivo.includes('inactivos')) {
+            return 'Clientes Inactivos';
+        }
+
+        if (motivo.includes('salvacliente')) {
+            return 'Clientes Notificados';
+        }
+
+        return 'Clientes';
+    };
+    const handleOpenInactivos = async (event, idMensaje, motivo) => {
         setAnchorEl(event.currentTarget);
+        setMotivoSeleccionado(motivo);
         setLoadingInactivos(true);
         try {
-            const data = await configSistemaService.getInactivosByIdMess(idMensaje);
-            setUsuariosInactivos(data);
+            let data = [];
+            if (motivo.toLowerCase().includes('salvacliente')) {
+                data = await configSistemaService.getSalvaClienteByIdMess(idMensaje);
+            } else {
+                data = await configSistemaService.getInactivosByIdMess(idMensaje);
+            }
+            console.log('Data obtenida:',data);
+            setClientes(data);
         } catch (err) {
-            setUsuariosInactivos([]);
+            setClientes([]);
             console.log('Ocurrio un error:',err);
         } finally {
             setLoadingInactivos(false);
@@ -106,6 +127,7 @@ const MensajeSistema = () => {
                             boxShadow: 'none',
                             borderRadius: 1,
                             display: 'flex',
+                            flexDirection: { xs: 'column', sm: 'row' },
                             alignItems: 'center',
                             padding: 2,
                             position: 'relative',
@@ -149,7 +171,7 @@ const MensajeSistema = () => {
                                     <IconButton
                                     size="medium"
                                     disabled={loadingInactivos}
-                                    onClick={(e) => handleOpenInactivos(e, mensaje.codigo)}
+                                    onClick={(e) => handleOpenInactivos(e, mensaje.codigo, mensaje.motivo)}
                                     sx={{ position: 'relative' }}
                                     >
                                     <VisibilityIcon fontSize="small" />
@@ -196,32 +218,52 @@ const MensajeSistema = () => {
             >
                 <Box sx={{ p: 2, minWidth: 300 }}>
                     <Typography variant="subtitle1" sx={{ mb: 1 }}>
-                        Usuarios Inactivos
+                        {getTituloPopover()}
                     </Typography>
                     {loadingInactivos ? (
                         <Typography variant="body2">Cargando...</Typography>
-                    ) : usuariosInactivos.length > 0 ? (
+                    ) : clientes.length > 0 ? (
                         <List dense>
-                            {usuariosInactivos.map((usuario) => (
-                                <ListItem key={usuario.codigo} alignItems="flex-start">
+                            {clientes.map((cliente) => (
+                                <ListItem key={cliente.codigo} alignItems="flex-start">
                                     <ListItemAvatar>
                                         <Avatar
-                                            alt={`${usuario.nombres} ${usuario.apellidos}`}
-                                            src={usuario.foto || undefined}
+                                            alt={`${cliente.nombres} ${cliente.apellidos}`}
+                                            src={cliente.foto || undefined}
                                         >
-                                            {(usuario.codigo || '')}
+                                            {(cliente.codigo || '')}
                                         </Avatar>
                                     </ListItemAvatar>
                                     <ListItemText
-                                        primary={`${usuario.nombres} ${usuario.apellidos}`}
-                                        secondary={`Ultimó Pago: ${formatFecha(usuario.fechaPago)}
-                                        Venció: ${formatFecha(usuario.fechaVencimiento)}`}
+                                        primary={
+                                            cliente.nombreCompleto ??
+                                            `${cliente.nombres ?? ''} ${cliente.apellidos ?? ''}`.trim()
+                                        }
+                                        secondary={
+                                            <>
+                                            {cliente.fechaPago ? (
+                                                <>Último Pago: {formatFecha(cliente.fechaPago)}</>
+                                            ) : cliente.fechaVencimiento ? (
+                                                <>Pago Venció: {formatFecha(cliente.fechaVencimiento)}</>
+                                            ) : (
+                                                <>Sin información de pago</>
+                                            )}
+                                            <br />
+                                            {cliente.fechaInactivacion ? (
+                                                <>Inactivación: {formatFecha(cliente.fechaInactivacion)}</>
+                                            ) : cliente.fechaVencimiento ? (
+                                                <>Venció: {formatFecha(cliente.fechaVencimiento)}</>
+                                            ) : (
+                                                <>Sin fecha de vencimiento o inactivación</>
+                                            )}
+                                            </>
+                                        }
                                     />
                                 </ListItem>
                             ))}
                         </List>
                     ) : (
-                        <Typography variant="body2">No hay usuarios inactivos.</Typography>
+                        <Typography variant="body2">No hay clientes inactivos.</Typography>
                     )}
                 </Box>
             </Popover>

@@ -52,7 +52,10 @@ const IndexMensajes = () => {
         variant="scrollable"
         value={tabIndex}
         onChange={handleChange}
-        sx={{ borderRight: 1, borderColor: 'divider', minWidth: 180 }}
+        sx={{
+          borderRight: 1, borderColor: 'divider',
+          minWidth: { xs: 100, md: 180}
+        }}
       >
         <Tab
           label={

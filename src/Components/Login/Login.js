@@ -1,5 +1,5 @@
 import { Container, TextField, Button, Typography, Box, CircularProgress, Paper, IconButton, Tooltip, useTheme } from "@mui/material";
-import { Lock, FitnessCenter, TrendingUp } from "@mui/icons-material";
+import { Lock, FitnessCenter } from "@mui/icons-material";
 import CustomSnackbar from "../../Shared/Components/CustomSnackbar";
 
 const Login = ({ handleLogin, handleKeyPress, username, setUsername, clave, setClave, loading, snackbar, setSnackbar,
@@ -110,21 +110,6 @@ const Login = ({ handleLogin, handleKeyPress, username, setUsername, clave, setC
                             }}
                         >
                             <FitnessCenter />
-                        </IconButton>
-                        </Tooltip>
-
-                        <Tooltip title="Ver Progreso">
-                        <IconButton
-                            color="secondary"
-                            onClick={() => navigate("/progresos")}
-                            sx={{
-                            backgroundColor: isDark ? '#333' : '#FFEBEE',
-                            '&:hover': {
-                                backgroundColor: isDark ? '#444' : '#FFCDD2',
-                            }
-                            }}
-                        >
-                            <TrendingUp />
                         </IconButton>
                         </Tooltip>
                     </Box>

@@ -55,12 +55,30 @@ const getInactivosByIdMess = async (idMensaje) => {
         throw error;
     }
 };
+const getSalvaClienteByIdMess = async (idMensaje) => {
+    if (!idMensaje) return [];
+
+    try {
+        const response = await axiosInstance.get(
+            `${API_URL}/message-salvaCliente/mensaje/${idMensaje}`
+        );
+
+        return response.data;
+    } catch (error) {
+        Logger.error(
+            'Error al obtener clientes notificados por SalvaCliente',
+            error
+        );
+        throw error;
+    }
+};
 
 const ConfigSistemService = {
     getConfig,
     updateConfig,
     getinfoinactivos,
-    getInactivosByIdMess
+    getInactivosByIdMess,
+    getSalvaClienteByIdMess
 };
 
 export default ConfigSistemService;

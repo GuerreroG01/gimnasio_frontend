@@ -72,7 +72,7 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
       <Box display="flex" justifyContent="center" mt={2}>
         <Stack spacing={2}>
           <Pagination
-            count={totalPaginas || 10}
+            count={totalPaginas || null}
             page={page}
             onChange={handleChangePage}
             shape="rounded"
