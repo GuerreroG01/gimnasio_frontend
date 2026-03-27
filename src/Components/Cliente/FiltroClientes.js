@@ -1,62 +1,53 @@
 import React, { useEffect } from 'react';
-import { Box, useTheme, Chip, Avatar, TextField, Tooltip, Grid, IconButton } from '@mui/material';
+import { Box, useTheme, Chip, Avatar, TextField, Tooltip, IconButton } from '@mui/material';
 import AccountCircle from '@mui/icons-material/AccountCircle';
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import Slide from '@mui/material/Slide';
 
-const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setApellidoCliente, showFilters, setShowFilters, setLoadingFilter  }) => {
+const FiltroClientes = ({
+  nombreCliente,
+  setNombreCliente,
+  apellidoCliente,
+  setApellidoCliente,
+  showFilters,
+  setShowFilters
+}) => {
   const [tempNombreCliente, setTempNombreCliente] = React.useState(nombreCliente);
   const [tempApellidoCliente, setTempApellidoCliente] = React.useState(apellidoCliente);
   const [filteredName, setFilteredName] = React.useState('');
   const [filteredLastName, setFilteredLastName] = React.useState('');
   const theme = useTheme();
+
   useEffect(() => {
     setTempNombreCliente(nombreCliente);
     setTempApellidoCliente(apellidoCliente);
   }, [nombreCliente, apellidoCliente]);
 
   const handleBuscar = () => {
-    setLoadingFilter(true);
-    if (tempNombreCliente && tempApellidoCliente) {
-      setFilteredName(tempNombreCliente);
-      setFilteredLastName(tempApellidoCliente);
-      setNombreCliente(tempNombreCliente);
-      setApellidoCliente(tempApellidoCliente);
-    } else if (tempNombreCliente) {
-      setFilteredName(tempNombreCliente);
-      setFilteredLastName('');
-      setNombreCliente(tempNombreCliente);
-      setApellidoCliente('');
-    } else if (tempApellidoCliente) {
-      setFilteredLastName(tempApellidoCliente);
-      setFilteredName('');
-      setApellidoCliente(tempApellidoCliente);
-      setNombreCliente('');
-    }
-    setLoadingFilter(false);
+    setNombreCliente(tempNombreCliente || '');
+    setApellidoCliente(tempApellidoCliente || '');
+    setFilteredName(tempNombreCliente || '');
+    setFilteredLastName(tempApellidoCliente || '');
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "nombreCliente") {
-      setTempNombreCliente(value);
-    } else if (name === "apellidoCliente") {
-      setTempApellidoCliente(value);
-    }
+    if (name === "nombreCliente") setTempNombreCliente(value);
+    else if (name === "apellidoCliente") setTempApellidoCliente(value);
   };
 
   const handleSwitchChange = () => {
     setShowFilters((prev) => {
       const newValue = !prev;
-
       if (!newValue) {
         setNombreCliente('');
         setApellidoCliente('');
         setFilteredName('');
         setFilteredLastName('');
+        setTempNombreCliente('');
+        setTempApellidoCliente('');
       }
-
       return newValue;
     });
   };
@@ -65,128 +56,109 @@ const FiltroClientes = ({ nombreCliente, setNombreCliente, apellidoCliente, setA
     if (campo === 'nombre') {
       setFilteredName('');
       setNombreCliente('');
+      setTempNombreCliente('');
     } else if (campo === 'apellido') {
       setFilteredLastName('');
       setApellidoCliente('');
+      setTempApellidoCliente('');
     }
   };
 
   return (
-    <Box display="flex" flexDirection="row" alignItems="center" gap={1}
-      sx={{
-        transform: showFilters ? 'translateX(0)' : '-600px',
-        transition: 'transform 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
-      }}>
-      <Grid container spacing={1} alignItems="flex-start" sx={{ mb: 2 }}>
-        <Grid item xs={12} sm="auto" display="flex" alignItems="center" justifyContent="flex-start" >
-          <Tooltip title={showFilters ? 'Filtros activados' : 'Filtros desactivados'}>
-            <IconButton
-              onClick={handleSwitchChange}
-              sx={{
-                color: showFilters ? 'success.main' : 'grey.500',
-                transition: 'color 0.3s ease',
-              }}
-            >
-              <SearchIcon fontSize="large" />
-            </IconButton>
-          </Tooltip>
-        </Grid>
+    <Box display="flex" alignItems="center" position="relative">
+      <Tooltip title={showFilters ? 'Cerrar filtros' : 'Abrir filtros'}>
+        <IconButton
+          onClick={handleSwitchChange}
+          sx={{
+            color: showFilters ? 'error.main' : 'grey.500',
+            transition: 'color 0.3s ease',
+            height: 40,
+            width: 40,
+            p: 0,
+          }}
+        >
+          {showFilters ? <CloseIcon /> : <SearchIcon />}
+        </IconButton>
+      </Tooltip>
 
-        <Grid item xs={12} sm>
-          <Slide
-            in={showFilters}
-            direction="right"
-            timeout={300}
-            easing={{
-              enter: 'cubic-bezier(0.4, 0, 0.2, 1)',
-              exit: 'cubic-bezier(0.4, 0, 1, 1)',
-            }}
-            mountOnEnter
-            unmountOnExit
-          >
-            <Grid container spacing={3} alignItems="flex-start">
-              <Grid item xs={12} sm={6}>
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  backgroundColor: theme.palette.background.paper,
-                  borderRadius: 1,
-                  p: 0.5,
-                  boxShadow: 1,
-                  minWidth: 200,
-                  '&:hover': { boxShadow: 3 },
-                }}>
-                  <AccountCircle sx={{ color: 'action.active', mr: 1 }} />
-                  <TextField
-                    label="Nombre del Cliente"
-                    name="nombreCliente"
-                    variant="outlined"
-                    value={tempNombreCliente}
-                    onChange={handleChange}
-                    fullWidth
-                    sx={{ backgroundColor: theme.palette.background.default, borderRadius: 1 }}
-                  />
-                  <IconButton onClick={handleBuscar}>
-                    <SearchIcon />
-                  </IconButton>
-                </Box>
-
-                {filteredName && (
-                  <Box sx={{ display: 'inline-flex', alignItems: 'center', mt: 0.5 }}>
-                    <Chip
-                      avatar={<Avatar>{filteredName.charAt(0).toUpperCase()}</Avatar>}
-                      label={filteredName}
-                      onDelete={() => handleClearFilter('nombre')}
-                      deleteIcon={<CloseIcon sx={{ color: theme.palette.error.main }} />}
-                      sx={{ fontSize: '0.875rem', borderRadius: 2, color: theme.palette.text.primary }}
-                    />
-                  </Box>
-                )}
-              </Grid>
-
-              <Grid item xs={12} sm={6}>
-                <Box sx={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  backgroundColor: theme.palette.background.paper,
-                  borderRadius: 1,
-                  p: 0.5,
-                  boxShadow: 1,
-                  minWidth: 200,
-                  '&:hover': { boxShadow: 3 },
-                }}>
-                  <AccountCircle sx={{ color: 'action.active', mr: 1 }} />
-                  <TextField
-                    label="Apellido del Cliente"
-                    name="apellidoCliente"
-                    variant="outlined"
-                    value={tempApellidoCliente}
-                    onChange={handleChange}
-                    fullWidth
-                    sx={{ backgroundColor: theme.palette.background.default, borderRadius: 1 }}
-                  />
-                  <IconButton onClick={handleBuscar}>
-                    <SearchIcon />
-                  </IconButton>
-                </Box>
-
-                {filteredLastName && (
-                  <Box sx={{ display: 'inline-flex', alignItems: 'center', mt: 0.5 }}>
-                    <Chip
-                      avatar={<Avatar>{filteredLastName.charAt(0).toUpperCase()}</Avatar>}
-                      label={filteredLastName}
-                      onDelete={() => handleClearFilter('apellido')}
-                      deleteIcon={<CloseIcon sx={{ color: theme.palette.error.main }} />}
-                      sx={{ fontSize: '0.875rem', borderRadius: 2, color: theme.palette.text.primary }}
-                    />
-                  </Box>
-                )}
-              </Grid>
-            </Grid>
-          </Slide>
-        </Grid>
-      </Grid>
+      <Slide
+        in={showFilters}
+        direction="left"
+        timeout={300}
+        mountOnEnter
+        unmountOnExit
+      >
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: { xs: 'column', md: 'row' },
+            position: { xs: 'relative', md: 'absolute' },
+            right: { xs: 'auto', md: 40 },
+            width: { xs: '100%', md: 'auto' },
+            gap: 2,
+            alignItems: 'flex-start',
+            backgroundColor: theme.palette.background.paper,
+            p: 1,
+            borderRadius: 1,
+            boxShadow: 3,
+            zIndex: 1300,
+            transformOrigin: 'right center',
+          }}
+        >
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', height: 40 }}>
+              <AccountCircle sx={{ color: 'action.active', mr: 1 }} />
+              <TextField
+                label="Nombre"
+                name="nombreCliente"
+                value={tempNombreCliente}
+                onChange={handleChange}
+                size="small"
+                sx={{ width: 150 }}
+              />
+              <IconButton onClick={handleBuscar} sx={{ p: 0, ml: 0.5 }}>
+                <SearchIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            {filteredName && (
+              <Chip
+                avatar={<Avatar>{filteredName.charAt(0).toUpperCase()}</Avatar>}
+                label={filteredName}
+                onDelete={() => handleClearFilter('nombre')}
+                deleteIcon={<CloseIcon sx={{ color: theme.palette.error.main }} />}
+                sx={{ fontSize: '0.875rem', borderRadius: 2, color: theme.palette.text.primary }}
+              />
+            )}
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', height: 40 }}>
+              <AccountCircle sx={{ color: 'action.active', mr: 1 }} />
+              <TextField
+                label="Apellido"
+                name="apellidoCliente"
+                value={tempApellidoCliente}
+                onChange={handleChange}
+                size="small"
+                sx={{ width: 150 }}
+              />
+              <IconButton onClick={handleBuscar} sx={{ p: 0, ml: 0.5 }}>
+                <SearchIcon fontSize="small" />
+              </IconButton>
+            </Box>
+            {filteredLastName && (
+              <Chip
+                avatar={<Avatar>{filteredLastName.charAt(0).toUpperCase()}</Avatar>}
+                label={filteredLastName}
+                onDelete={() => handleClearFilter('apellido')}
+                deleteIcon={<CloseIcon sx={{ color: theme.palette.error.main }} />}
+                sx={{ fontSize: '0.875rem', borderRadius: 2, color: theme.palette.text.primary }}
+              />
+            )}
+          </Box>
+        </Box>
+      </Slide>
     </Box>
   );
 };
+
 export default FiltroClientes;

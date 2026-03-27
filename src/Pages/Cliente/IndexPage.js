@@ -3,118 +3,82 @@ import ClienteService from '../../Services/ClienteService';
 import Index from "../../Components/Cliente/Index";
 import { useNavigate } from 'react-router-dom';
 export default function IndexPage(){
-    const [Clientes, setClientes] = React.useState([]);
     const [loading, setLoading] = React.useState(true);
-    const [loadingFilter, setLoadingFilter] = React.useState(false);
     const [alerta, setAlerta] = React.useState({ mensaje: '', tipo: '' });
+
     const [modalOpen, setModalOpen] = React.useState(false);
     const [clienteAEliminar, setClienteAEliminar] = React.useState(null);
+
     const [nombreCliente, setNombreCliente] = React.useState('');
     const [apellidoCliente, setApellidoCliente] = React.useState('');
     const [clienteFiltrados, setClienteFiltrados] = React.useState([]);
-    const [page, setPage] = React.useState(0);
-    //eslint-disable-next-line
-    const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [paginationRange, setPaginationRange] = React.useState({ start: 0, end: 5 });
-    const [letrasDisponibles, setLetrasDisponibles] = React.useState([]);
-    const [letraSeleccionada, setLetraSeleccionada] = React.useState('');
+
+    const [page, setPage] = React.useState(1);
+    const [rowsPerPage] = React.useState(10);
+    const [totalPaginas, setTotalPaginas] = React.useState(0);
+
+    const [ordenarPor, setOrdenarPor] = React.useState(null);
+    const [orden, setOrden] = React.useState("asc");
     const [showFilters, setShowFilters] = React.useState(false);
+
     const navigate = useNavigate();
-    const [showLetras, setShowLetras] = React.useState(true);
-    const fetchLetrasDisponibles = async () => {
+
+    const fetchClientes = useCallback(async () => {
         try {
-          const response = await ClienteService.getClientePorPrimeraLetra();
-          setLetrasDisponibles(response.data);
-          if (response.data && response.data.length > 0) {
-            setLetraSeleccionada(response.data[0].primeraLetra);
-          }
-        } catch (error) {
-          console.error('Error fetching letters:', error);
-        }
-    };
-    const fetchClientePorLetra = async (letra) => {
-        try {
-          setLoading(true);
-          const response = await ClienteService.getClientePorLetra(letra);
-          const clienteData = Array.isArray(response) ? response : [];
-          setClientes(clienteData);
-          setClienteFiltrados(clienteData);
-          setLoading(false);
-        } catch (error) {
-          console.error('Error fetching users by letter:', error);
-          setLoading(false);
-        }
-    };
-    
-    useEffect(() => {
-        fetchLetrasDisponibles();
-    }, []);
-      
-    const handleFilterChange = useCallback(async () => {
-        let filtered = [];
-        setLoadingFilter(true);
-    
-        if (nombreCliente || apellidoCliente) {
-            try {
-                const response = await ClienteService.buscarCliente(nombreCliente, apellidoCliente);
-                filtered = response.data;
-            } catch (error) {
-                console.error('Error al realizar la búsqueda:', error);
-                return;
+            setLoading(true);
+
+            let response;
+
+            if (nombreCliente || apellidoCliente) {
+                response = await ClienteService.buscarCliente(
+                    nombreCliente,
+                    apellidoCliente,
+                    page,
+                    rowsPerPage
+                );
+
+                setClienteFiltrados(response.data.clientes);
+            } else {
+                response = await ClienteService.getClientes(
+                    page,
+                    ordenarPor,
+                    orden
+                );
+
+                setClienteFiltrados(response.clientes);
             }
-        } else {
-          filtered = Clientes;
+
+            if (nombreCliente || apellidoCliente) {
+                setClienteFiltrados(response.data.clientes);
+                setTotalPaginas(response.data.totalPaginas);
+            } else {
+                setClienteFiltrados(response.clientes);
+                setTotalPaginas(response.totalPaginas);
+            }
+        } catch (error) {
+            console.error(error);
+        } finally {
+            setLoading(false);
         }
-        setClienteFiltrados(filtered);
-        setTimeout(() => {
-            setLoadingFilter(false);
-        }, 100);
-    }, [nombreCliente, apellidoCliente, Clientes]);
-      
+    }, [page, rowsPerPage, ordenarPor, orden, nombreCliente, apellidoCliente]);
+
     useEffect(() => {
-        if (letraSeleccionada && !showFilters) {
-          fetchClientePorLetra(letraSeleccionada);
-          setPage(0);
-        }
-    }, [letraSeleccionada, showFilters]);
-    
+        fetchClientes();
+    }, [fetchClientes]);
+
     useEffect(() => {
-        if (showFilters) {
-          handleFilterChange();
-        }
-    }, [showFilters, nombreCliente, apellidoCliente, handleFilterChange]);
-    
-    const handleEdit = (id) => {
-        navigate(`/clientes/${id}/update`);
-    };
-    
-    const handleDeleteOpen = (cliente) => {
-        setClienteAEliminar(cliente);
-        setModalOpen(true);
-    };
-    
+        setPage(1);
+    }, [nombreCliente, apellidoCliente]);
+
     const handleDeleteConfirm = async () => {
         if (clienteAEliminar) {
             try {
                 await ClienteService.deleteCliente(clienteAEliminar.codigo);
 
-                const letrasResponse = await ClienteService.getClientePorPrimeraLetra();
-                setLetrasDisponibles(letrasResponse.data);
-
-                const letraActualExiste = letrasResponse.data.some(
-                    l => l.primeraLetra === letraSeleccionada
-                );
-
-                if (letraActualExiste) {
-                    fetchClientePorLetra(letraSeleccionada);
-                } else if (letrasResponse.data.length > 0) {
-                    const nuevaLetra = letrasResponse.data[0].primeraLetra;
-                    setLetraSeleccionada(nuevaLetra);
-                    fetchClientePorLetra(nuevaLetra);
+                if (clienteFiltrados.length === 1 && page > 1) {
+                    setPage(prev => prev - 1);
                 } else {
-                    setClientes([]);
-                    setClienteFiltrados([]);
-                    setLetraSeleccionada('');
+                    fetchClientes();
                 }
 
                 setAlerta({ mensaje: 'Cliente eliminado exitosamente', tipo: 'success' });
@@ -130,62 +94,81 @@ export default function IndexPage(){
         setModalOpen(false);
         setClienteAEliminar(null);
     };
-    
+
+    const handleEdit = (id) => {
+        navigate(`/clientes/${id}/update`);
+    };
+
+    const handleDeleteOpen = (cliente) => {
+        setClienteAEliminar(cliente);
+        setModalOpen(true);
+    };
+
     const handleViewDetails = (id) => {
         navigate(`/clientes/${id}/details`);
     };
-    
+
     const handleCreateNew = () => {
         navigate('/clientes/form');
     };
-    
-    const updatePaginationRange = (newPage) => {
-        const totalPages = Math.ceil(clienteFiltrados.length / rowsPerPage);
-        const start = Math.floor(newPage / 4) * 4;
-        const end = Math.min(start + 4, totalPages);
-        setPaginationRange({ start, end });
-    };
-    
-    const handleChangePage = (event, newPage) => {
-        setPage(newPage - 1);
-        updatePaginationRange(newPage - 1);
-    };
-            
-    const mostrarPaginacion = clienteFiltrados.length === Clientes.length;
 
-    const paginationButtons = [];
-        for (let i = paginationRange.start; i < paginationRange.end; i++) {
-            if (i < Math.ceil(clienteFiltrados.length / rowsPerPage)) {
-                paginationButtons.push(i + 1);
-            }
+    const handleChangePage = (event, newPage) => {
+        setPage(newPage);
+    };
+
+    const handleSort = (campo) => {
+        let direccion = 'asc';
+
+        if (ordenarPor === campo && orden === 'asc') {
+            direccion = 'desc';
         }
-    useEffect(() => {
-        if (showFilters) {
-            setShowLetras(false);
-        } else {
-            const timer = setTimeout(() => setShowLetras(true), 500);
-            return () => clearTimeout(timer);
-        }
-    }, [showFilters]);
+
+        setOrdenarPor(campo);
+        setOrden(direccion);
+        setPage(1);
+    };
+    const resetFiltrado = () => {
+        setNombreCliente('');
+        setApellidoCliente('');
+
+        setOrdenarPor(null);
+        setOrden('asc');
+        setPage(1);
+
+        setLoading(true);
+        fetchClientes().finally(() => setLoading(false));
+    };
 
     return(
         <Index
             alerta={alerta} setAlerta={setAlerta}
-            nombreCliente={nombreCliente}   setNombreCliente={setNombreCliente}
-            apellidoCliente={apellidoCliente}   setApellidoCliente={setApellidoCliente}
+            nombreCliente={nombreCliente} setNombreCliente={setNombreCliente}
+            apellidoCliente={apellidoCliente} setApellidoCliente={setApellidoCliente}
             showFilters={showFilters}    setShowFilters={setShowFilters}
-            letrasDisponibles={letrasDisponibles}
-            letraSeleccionada={letraSeleccionada}   setLetraSeleccionada={setLetraSeleccionada}
-            loadingFilter={loadingFilter}    setLoadingFilter={setLoadingFilter}
+
             handleCreateNew={handleCreateNew}
             clienteFiltrados={clienteFiltrados}
             loading={loading}
-            page={page} rowsPerPage={rowsPerPage}
-            handleEdit={handleEdit} handleDeleteOpen={handleDeleteOpen}
-            handleDeleteConfirm={handleDeleteConfirm}  handleViewDetails={handleViewDetails}
-            mostrarPaginacion={mostrarPaginacion}   handleChangePage={handleChangePage}
-            modalOpen={modalOpen}    setModalOpen={setModalOpen}
-            showLetras={showLetras}
+
+            page={page}
+            rowsPerPage={rowsPerPage}
+            totalPaginas={totalPaginas}
+
+            handleEdit={handleEdit}
+            handleDeleteOpen={handleDeleteOpen}
+            handleDeleteConfirm={handleDeleteConfirm}
+            handleViewDetails={handleViewDetails}
+
+            handleChangePage={handleChangePage}
+
+            modalOpen={modalOpen}
+            setModalOpen={setModalOpen}
+            ordenarPor={ordenarPor}
+            setOrdenarPor={setOrdenarPor}
+            orden={orden}
+            setOrden={setOrden}
+            handleSort={handleSort}
+            resetFiltrado={resetFiltrado}
         />
     );
 }

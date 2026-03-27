@@ -2,9 +2,13 @@ import axiosInstance from './AxiosInstance';
 
 const API_URL = "/Cliente";
 
-const getClientePorLetra = (letra) => {
+const getClientes = (pagina = 1, ordenarPor = null, orden = "asc") => {
   return axiosInstance.get(API_URL, {
-    params: { letra },
+    params: {
+      pagina,
+      ordenarPor,
+      orden
+    }
   }).then(res => res.data);
 };
 
@@ -50,7 +54,7 @@ const actualizarNivelCliente = (clienteId) => {
 
 
 const ClienteService = {
-  getClientePorLetra,
+  getClientes,
   getClienteById,
   createCliente,
   updateCliente,

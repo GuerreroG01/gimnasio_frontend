@@ -6,12 +6,14 @@ import './Style.css';
 import CircularProgress from '@mui/material/CircularProgress';
 import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
-const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCliente, setApellidoCliente, showFilters, setShowFilters, letrasDisponibles, letraSeleccionada, setLetraSeleccionada, loadingFilter, setLoadingFilter, handleCreateNew,
-    clienteFiltrados, loading, page, rowsPerPage, handleEdit, handleDeleteOpen, handleDeleteConfirm, handleViewDetails, mostrarPaginacion, handleChangePage, modalOpen, setModalOpen, showLetras
-}) => {
+const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCliente, setApellidoCliente,
+      showFilters, setShowFilters, handleCreateNew, clienteFiltrados, loading, page, handleEdit,
+      handleDeleteOpen, handleDeleteConfirm, handleViewDetails, handleChangePage, modalOpen, 
+      setModalOpen, totalPaginas, ordenarPor, orden, handleSort, resetFiltrado }) => {
   const theme = useTheme();
   return (
-    <Container maxWidth={false} sx={{backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
+    <Container maxWidth={false} sx={{ backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
+
       <CustomSnackbar
         open={!!alerta.mensaje}
         message={alerta.mensaje}
@@ -19,13 +21,15 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
         onClose={() => setAlerta({ mensaje: '', tipo: '' })}
         autoHideDuration={3000}
       />
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-        {/* Contenedor del título + filtros */}
-        <Box display="flex" alignItems="center" gap={1}>
-          <Typography variant="h4" sx={{ fontWeight: 'bold', color: theme.palette.primary.main }}>
-            Clientes
-          </Typography>
 
+      <Box display="flex" justifyContent="space-between" alignItems="center">
+        <Typography
+          variant="h4"
+          sx={{ fontWeight: 'bold', color: theme.palette.primary.main }}
+        >
+          Clientes
+        </Typography>
+        <Box display="flex" alignItems="center">
           <FiltroClientes
             nombreCliente={nombreCliente}
             setNombreCliente={setNombreCliente}
@@ -33,135 +37,78 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
             setApellidoCliente={setApellidoCliente}
             showFilters={showFilters}
             setShowFilters={setShowFilters}
-            setLoadingFilter={setLoadingFilter}
           />
+          <Tooltip title="Nuevo Usuario">
+            <IconButton color="primary" onClick={handleCreateNew}>
+              <PersonAddAltOutlinedIcon />
+            </IconButton>
+          </Tooltip>
         </Box>
-        {showLetras && (
-        <Box
-          display="flex"
-          flexWrap="wrap"
-          justifyContent="center"
-          mb={2}
-          sx={{ gap: 2 }}
-        >
-          {letrasDisponibles.map((letra) => (
-            <Box
-              key={letra.primeraLetra}
-              sx={{
-                position: 'relative',
-                width: '30px',
-                height: '30px',
-                borderRadius: '50%',
-                backgroundColor: '#1976d2',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                cursor: 'pointer',
-                transition: 'all 0.3s ease',
-                transform: letraSeleccionada === letra.primeraLetra ? 'scale(1.2)' : 'scale(1)',
-                '&:hover': {
-                  transform: 'scale(1.2)',
-                },
-              }}
-              onClick={() => setLetraSeleccionada(letra.primeraLetra)}
-            >
-              <Typography
-                className={letraSeleccionada === letra.primeraLetra ? 'letra blinking' : ''} 
-                variant="caption"
-                sx={{
-                  position: 'absolute',
-                  opacity: letraSeleccionada === letra.primeraLetra ? 1 : 1,
-                  color: 'white',
-                  fontSize: '14px',
-                  fontWeight: 'bold',
-                  transition: 'opacity 0.3s ease',
-                }}
-              >
-                {letra.primeraLetra}
-              </Typography>
-            </Box>                                  
-          ))}
-        </Box>
-      )}
-        {/* Botón nuevo cliente */}
-        <Tooltip title="Nuevo Usuario">
-          <IconButton color="primary" onClick={handleCreateNew}>
-            <PersonAddAltOutlinedIcon />
-          </IconButton>
-        </Tooltip>
       </Box>
-      {loadingFilter ? (
+
+      {loading ? (
         <Box display="flex" justifyContent="center" mt={2}>
           <CircularProgress />
         </Box>
-      ) : (
-        <>
-          {clienteFiltrados.length === 0 ? (
-            <Box display="flex" justifyContent="center" mt={2}>
-              <Typography variant="h6" color="textSecondary">
-                No se han encontrado usuarios registrados.
-              </Typography>
-            </Box>
-          ) : (
-            <TableClientes
-              usuarios={clienteFiltrados}
-              loading={loading}
-              page={page}
-              rowsPerPage={rowsPerPage}
-              onEdit={handleEdit}
-              onDelete={handleDeleteOpen}
-              onViewDetails={handleViewDetails}
-            />
-          )}
-        </>
-      )}
-
-      {mostrarPaginacion && (
+      ) : clienteFiltrados.length === 0 ? (
         <Box display="flex" justifyContent="center" mt={2}>
-          <Stack spacing={2}>
-            <Pagination
-              count={Math.ceil(clienteFiltrados.length / rowsPerPage)}
-              page={page + 1}
-              onChange={handleChangePage}
-              shape="rounded"
-              siblingCount={1}
-              boundaryCount={1}
-              color="primary"
-              sx={{
-                '& .MuiPaginationItem-root': {
-                  borderRadius: '8px',
-                  fontSize: '14px',
-                  backgroundColor: 'transparent',
-                  border: `2px solid ${theme.palette.primary.main}`,
-                  transition: 'transform 0.3s ease',
-                  '&:hover': {
-                    transform: 'scale(1.1)',
-                    backgroundColor: theme.palette.action.hover,
-                  },
-                },
-                '& .MuiPaginationItem-root.Mui-selected': {
-                  backgroundColor: theme.palette.primary.main,
-                  color: 'white',
-                  border: `2px solid ${theme.palette.primary.main}`,
-                  transform: 'scale(1.1)',
-                },
-              }}
-            />
-          </Stack>
+          <Typography variant="h6" color="textSecondary">
+            No se han encontrado usuarios registrados.
+          </Typography>
         </Box>
+      ) : (
+        <TableClientes
+          usuarios={clienteFiltrados}
+          loading={loading}
+          onEdit={handleEdit}
+          onDelete={handleDeleteOpen}
+          onViewDetails={handleViewDetails}
+          onSort={handleSort}
+          ordenarPor={ordenarPor}
+          orden={orden}
+          resetFiltrado ={resetFiltrado}
+        />
       )}
+      <Box display="flex" justifyContent="center" mt={2}>
+        <Stack spacing={2}>
+          <Pagination
+            count={totalPaginas || 10}
+            page={page}
+            onChange={handleChangePage}
+            shape="rounded"
+            color="primary"
+          />
+        </Stack>
+      </Box>
+
+      {/* MODAL */}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <Box sx={{ p: 2, backgroundColor: theme.palette.background.paper, borderRadius: 2, boxShadow: 3, width: '300px', margin: 'auto', marginTop: '20%' }}>
-          <Typography variant="h6" gutterBottom sx={{ color: theme.palette.text.primary }}>
+        <Box sx={{
+          p: 2,
+          backgroundColor: theme.palette.background.paper,
+          borderRadius: 2,
+          boxShadow: 3,
+          width: '300px',
+          margin: 'auto',
+          marginTop: '20%'
+        }}>
+          <Typography variant="h6" gutterBottom>
             ¿Estás seguro de eliminar este usuario?
           </Typography>
+
           <Box display="flex" justifyContent="space-between">
-            <Button onClick={() => setModalOpen(false)} color="secondary">Cancelar</Button>
-            <Button onClick={handleDeleteConfirm} color="primary">Eliminar</Button>
+            <Button onClick={() => setModalOpen(false)} color="secondary">
+              Cancelar
+            </Button>
+            <Button onClick={handleDeleteConfirm} color="primary">
+              Eliminar
+            </Button>
           </Box>
         </Box>
       </Modal>
+
     </Container>
   );
 };
+
 export default Index;
