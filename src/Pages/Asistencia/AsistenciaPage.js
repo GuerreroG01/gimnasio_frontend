@@ -66,6 +66,7 @@ export default function AsistenciaPage(){
         try {
             const data = await AsistenciaService.getAsistencias(clientId);
             const pagoData = await PagoService.getUltimoPagoVigente(clientId);
+            setLoading(false);
             setCliente(data);
             setDiasRestantes(pagoData.diasRestantes);
             setShowInfo(true);
@@ -74,7 +75,6 @@ export default function AsistenciaPage(){
             
             if (registrarAsistencia) {
                 await AsistenciaService.postAsistencias(clientId);
-                setLoading(false);
                 const progresoResponse = await ClienteProgresoService.crearSiguienteProgreso(clientId);
                 if (progresoResponse?.mensaje) {
                     setSnackbar({
@@ -103,6 +103,8 @@ export default function AsistenciaPage(){
         } catch (err) {
             setError('No se pudo obtener la información.');
             setOpenSnackbar(true);
+        } finally {
+            setLoading(false);
         }
     };
     return(
