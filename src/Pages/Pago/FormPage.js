@@ -264,18 +264,20 @@ export default function FormPage({ pagoId, onSuccess }) {
 
     const handleBuscarClienteDebounced = (inputValue) => {
         if (!inputValue) return;
-
+        console.log('Buscando cliente con:', inputValue);
         setLoadingClientes(true);
 
         ClienteService.buscarCliente(inputValue, '')
             .then((res) => {
-            if (res.data.length > 0) {
-                setClientes(res.data);
-            } else {
-                return ClienteService.buscarCliente('', inputValue).then((res2) => {
-                setClientes(res2.data);
-                });
-            }
+                if (res.data.clientes && res.data.clientes.length > 0) {
+                    setClientes(res.data.clientes);
+                    console.log('Clientes encontrados:', res.data.clientes);
+                } else {
+                    return ClienteService.buscarCliente('', inputValue).then((res2) => {
+                        setClientes(res2.data.clientes);
+                        console.log('Clientes encontrados:', res2.data.clientes);
+                    });
+                }
             })
             .finally(() => setLoadingClientes(false));
     };
