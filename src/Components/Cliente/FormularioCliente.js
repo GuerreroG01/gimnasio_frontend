@@ -110,7 +110,7 @@ const FormularioCliente = ({
                     name="nivelActual"
                     value={cliente.nivelActual || ''}
                     onChange={handleNivelChange}
-                    sx={{ mb: 2, width: { xs: '100%', sm: '100%', md: '210px' } }}
+                    sx={{ mb: 2, minWidth: { xs : 213 }, width: { xs: '100%', sm: '100%', md: '210px' } }}
                     slotProps={{
                       select: {
                         MenuProps: {
@@ -140,7 +140,7 @@ const FormularioCliente = ({
                 </Grid>
               </Grid>
               <Grid item xs={12}>
-                <FormControl size="medium" sx={{ minWidth: 120 }}>
+                <FormControl size="medium" sx={{ minWidth: 213 }}>
                   <InputLabel>Género</InputLabel>
                   <Select
                     name="genero"

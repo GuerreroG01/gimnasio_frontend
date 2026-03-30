@@ -30,8 +30,8 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
           }}
         >
           {/* COLUMNA IZQUIERDA */}
-          <Box sx={{ width: { xs: '100%', sm: '50%' } }}>
-            <Grid container spacing={2}>
+          <Box sx={{ width: { xs: '100%', sm: '50%' }, mb: { xs: 2, sm: 0 } }}>
+            <Grid container spacing={2} direction={{ xs: "column", sm: "row" }}>
               <Grid item xs={12}>
                 <Autocomplete
                   sx={{

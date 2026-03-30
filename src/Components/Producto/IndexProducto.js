@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import {
   Typography, Grid, Dialog, DialogActions, DialogContent,
-  DialogTitle, Button, Container, Box,
+  DialogTitle, Button, Container, Box, IconButton,
   Alert, AlertTitle, SpeedDial, SpeedDialIcon, SpeedDialAction,
   FormControl, InputLabel, Select, MenuItem, Pagination, useTheme
 } from '@mui/material';
@@ -95,10 +95,21 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
             ))}
           </Select>
         </FormControl>
+        <IconButton
+          sx={{
+            display: { xs: 'flex', sm: 'none', md: 'none' },
+            color: 'primary.main',
+            ml: 1,
+            mt: '-25px',
+          }}
+          onClick={(e) => handleOpenNew(e)}
+        >
+          <AddIcon />
+        </IconButton>
         <Box
           sx={{
             height: 56,
-            display: 'flex',
+            display: { xs: 'none', sm: 'flex' },
             alignItems: 'center',
           }}
         >
@@ -108,7 +119,7 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
             direction="down"
             sx={{
               position: 'fixed',
-              bottom: { xl: 330, lg: 250, md: 200, sm: 275, xs: 390 },
+              bottom: { xl: 330, lg: 250, md: 200, sm: 255 },
               right: 12,
               zIndex: 1500,
             }}
