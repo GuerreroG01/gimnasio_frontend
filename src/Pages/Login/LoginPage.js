@@ -31,7 +31,7 @@ export default function LoginPage(){
 
             setTimeout(() => {
                 window.location.href = "/";
-            }, 1000);
+            }, 800);
 
         } catch (err) {
             if (err.response?.status === 403 && err.response?.data.includes("Licencia inválida")) {

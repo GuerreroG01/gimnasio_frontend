@@ -10,7 +10,7 @@ import { ThemeContext } from '../../Context/ThemeContext';
 import ManageAccountsIcon from '@mui/icons-material/ManageAccounts';
 import MensajeBadge from './MensajeBadge';
 
-const NavegacionMovil = ({ isActive, isMessagesPage }) => {
+const NavegacionMovil = ({ isActive, isMessagesPage, setOpenUpgradeDialog, canAccessRoute }) => {
   const theme = useTheme();
   const navigate = useNavigate();
   const { usuario, rol, logout } = React.useContext(AuthContext);
@@ -21,6 +21,7 @@ const NavegacionMovil = ({ isActive, isMessagesPage }) => {
 
   const handleOpen = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
+
   const NAV_LINKS = [
     { label: "Clientes", path: "/clientes" },
     { label: "Pagos", path: "/pagos" },
@@ -177,7 +178,15 @@ const NavegacionMovil = ({ isActive, isMessagesPage }) => {
             key={path}
             component={Link}
             to={path}
-            onClick={handleClose}
+            onClick={(e) => {
+              if (!canAccessRoute(path)) {
+                e.preventDefault();
+                setOpenUpgradeDialog(true);
+                handleClose();
+              } else {
+                handleClose();
+              }
+            }}
             selected={isActive(path)}
             sx={{
               fontWeight: isActive(path) ? 600 : 400,

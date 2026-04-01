@@ -11,19 +11,24 @@ export const AuthProvider = ({ children }) => {
     const [token, setToken] = React.useState(null);
     const [loading, setLoading] = React.useState(true);
     const [rol, setRol] = React.useState(null);
+    const [plan, setPlan] = React.useState(null);
+
+    const applyAuthData = (token) => {
+        const decodedToken = jwtDecode(token);
+        setUsuario(decodedToken.sub);
+        setUserId(decodedToken.id);
+        setRol(decodedToken.role);
+        setToken(token);
+        setAuthenticated(true);
+        setPlan(decodedToken.plan);
+    };
 
     useEffect(() => {
         const checkAuth = () => {
             const token = localStorage.getItem('token');
             if (token) {
                 try {
-                    const decodedToken = jwtDecode(token);
-                    setUsuario(decodedToken.sub);
-                    setUserId(decodedToken.id);
-                    setToken(token);
-                    setAuthenticated(true);
-                    setRol(decodedToken.role);
-                    console.log('El rol del usuario es :', decodedToken.role);
+                    applyAuthData(token);
                 } catch (error) {
                     console.error('Token inválido o expirado', error);
                     setAuthenticated(false);
@@ -61,12 +66,7 @@ export const AuthProvider = ({ children }) => {
             }
             const token = response.token;
             localStorage.setItem('token', token);
-            const decodedToken = jwtDecode(token);
-            setUsuario(decodedToken.sub);
-            setUserId(decodedToken.id);
-            setToken(token);
-            setAuthenticated(true);
-            setStatusPage('private');
+            applyAuthData(token);
             return true;
         } catch (error) {
             console.error('Error al iniciar sesión:', error);
@@ -91,7 +91,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={{ authenticated, usuario, userId, token, login, logout, loading, statusPage, setStatusPage, rol }}>
+        <AuthContext.Provider value={{ authenticated, usuario, userId, token, login, logout, loading, statusPage, setStatusPage, rol, plan }}>
             {children}
         </AuthContext.Provider>
     );

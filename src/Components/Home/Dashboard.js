@@ -15,6 +15,8 @@ import GananciasTable from "./GananciasTable";
 import PagosAnualTable from "./PagosAnualTable";
 import GananciasMensualesChart from "./GananciasMensualesChart";
 import VencimientosProximos from "./VencimientosProximos";
+import UpgradeLicense from "../../Shared/Components/UpgradeLicense";
+import { AuthContext } from "../../Context/AuthContext";
 
 const Dashboard = ({ pagosData = [] }) => {
     const theme = useTheme();
@@ -22,7 +24,17 @@ const Dashboard = ({ pagosData = [] }) => {
     const [openTipoPago, setOpenTipoPago] = React.useState(false);
     const [searchOpenTipoPago, setSearchOpenTipoPago] = React.useState(false);
     const [searchRutinasOpen, setSearchRutinasOpen] = React.useState(false);
+    const { plan } = React.useContext(AuthContext);
+    const [upgradeOpen, setUpgradeOpen] = React.useState(false);
     
+    const handleRutinasClick = () => {
+        if (plan.toUpperCase() === "BASIC") {
+            setUpgradeOpen(true);
+            return;
+        }
+
+        setOpenRutinas(true);
+    };
     const actions = [
         {
             title: "Membresías",
@@ -159,7 +171,7 @@ const Dashboard = ({ pagosData = [] }) => {
                             
                             <Paper
                                 elevation={4}
-                                onClick={actions[1].onClick}
+                                onClick={handleRutinasClick}
                                 sx={{
                                 p: 3,
                                 display: "flex",
@@ -263,6 +275,11 @@ const Dashboard = ({ pagosData = [] }) => {
             <RutinasDialog open={openRutinas} onClose={() => { setOpenRutinas(false); setSearchRutinasOpen(false); }}
                 searchOpen={searchRutinasOpen}
                 setSearchOpen={setSearchRutinasOpen}
+            />
+            <UpgradeLicense 
+                open={upgradeOpen} 
+                onClose={() => setUpgradeOpen(false)} 
+                currentPlan={plan}
             />
         </Container>
     );

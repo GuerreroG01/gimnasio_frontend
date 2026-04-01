@@ -12,7 +12,7 @@ import ExitToAppIcon from '@mui/icons-material/ExitToApp';
 import WbSunnyIcon from '@mui/icons-material/WbSunny';
 import DarkModeIcon from '@mui/icons-material/DarkMode';
 import { ThemeContext } from '../../Context/ThemeContext';
-
+import UpgradeLicense from '../../Shared/Components/UpgradeLicense';
 const Logo = styled('img')({
   width: 50,
   height: 50,
@@ -29,12 +29,41 @@ const Logo = styled('img')({
 const Navegacion = ({ children }) => {
   const location = useLocation();
   const navigate = useNavigate();
-  const { usuario, logout, rol } = React.useContext(AuthContext);
+  const { usuario, logout, rol, plan } = React.useContext(AuthContext);
   const [openDialog, setOpenDialog] = React.useState(false);
   const [menuAnchor, setMenuAnchor] = React.useState(null);
   const { darkMode, toggleDarkMode } = React.useContext(ThemeContext);
   const theme = useTheme();
   const [openDrawer, setOpenDrawer] = React.useState(false);
+  const [openUpgradeDialog, setOpenUpgradeDialog] = React.useState(false);
+  const BASIC = [
+    "/", 
+    "/clientes", 
+    "/pagos", 
+    "/asistencia", 
+    "/membresias", 
+    "/reports"
+  ];
+
+  const PRO = [
+    ...BASIC,
+    "/productos",
+    "/venta",
+    "/programas",
+    "/progresos",
+  ];
+
+  const allowedRoutesByPlan = {
+    BASIC,
+    PRO,
+    FULL: ["*"], 
+  };
+  const canAccessRoute = (route) => {
+    const normalizedPlan = plan?.toUpperCase() || "BASIC";
+    const allowedRoutes = allowedRoutesByPlan[normalizedPlan] || [];
+    
+    return allowedRoutes.includes("*") || allowedRoutes.includes(route);
+  };
   const NAV_LINKS = [
     { label: "Clientes", path: "/clientes" },
     {
@@ -115,7 +144,15 @@ const Navegacion = ({ children }) => {
                           key={child.path}
                           component={Link}
                           to={child.path}
-                          onClick={handleMenuClose}
+                          onClick={(e) => {
+                            if (!canAccessRoute(child.path)) {
+                              e.preventDefault();
+                              setOpenUpgradeDialog(true);
+                              handleMenuClose();
+                            } else {
+                              handleMenuClose();
+                            }
+                          }}
                           selected={isActive(child.path)}
                         >
                           {child.label}
@@ -153,13 +190,15 @@ const Navegacion = ({ children }) => {
             Hola, <strong>{usuario?.toUpperCase()}</strong>
           </Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Tooltip title="Mensajes">
-              <Link to="/mensajes">
-                <Box sx={{ cursor: 'pointer' }}>
-                  <MensajeBadge isActive={isMessagesPage} />
-                </Box>
-              </Link>
-            </Tooltip>
+            {canAccessRoute("/mensajes") && (
+              <Tooltip title="Mensajes">
+                <Link to="/mensajes">
+                  <Box sx={{ cursor: 'pointer' }}>
+                    <MensajeBadge isActive={isMessagesPage} />
+                  </Box>
+                </Link>
+              </Tooltip>
+            )}
 
             <Tooltip title="Asistencia">
               <Link to="/asistencia">
@@ -178,8 +217,16 @@ const Navegacion = ({ children }) => {
             </Tooltip>
 
             <Tooltip title="Ajustes">
-              <Link to="/configuraciones">
+              <Box sx={{ cursor: 'pointer' }}>
                 <IconButton
+                  onClick={(e) => {
+                    if (!canAccessRoute("/configuraciones")) {
+                      e.preventDefault();
+                      setOpenUpgradeDialog(true);
+                    } else {
+                      navigate("/configuraciones");
+                    }
+                  }}
                   sx={{
                     color: isActive('/configuraciones') 
                       ? theme.palette.success.main 
@@ -190,7 +237,7 @@ const Navegacion = ({ children }) => {
                 >
                   <SettingsIcon sx={{ fontSize: 26 }} />
                 </IconButton>
-              </Link>
+              </Box>
             </Tooltip>
 
             <Tooltip title={darkMode ? "Modo Claro" : "Modo Oscuro"}>
@@ -270,10 +317,17 @@ const Navegacion = ({ children }) => {
           </DialogActions>
         </Dialog>
       </Box>
-      <NavegacionMovil openDrawer={openDrawer} toggleDrawer={() => setOpenDrawer(!openDrawer)} isActive={isActive} isMessagesPage={isMessagesPage} />
+      <NavegacionMovil openDrawer={openDrawer} toggleDrawer={() => setOpenDrawer(!openDrawer)} isActive={isActive} setOpenUpgradeDialog={setOpenUpgradeDialog}
+        isMessagesPage={isMessagesPage} canAccessRoute={canAccessRoute}
+      />
       <Box sx={{ padding: 2 }}>
         {children || <Outlet />}
       </Box>
+      <UpgradeLicense
+        open={openUpgradeDialog}
+        onClose={() => setOpenUpgradeDialog(false)}
+        currentPlan={plan?.toUpperCase()}
+      />
     </>
   );
 };
