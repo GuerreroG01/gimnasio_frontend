@@ -7,13 +7,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 
 const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCliente, setApellidoCliente,
-      showFilters, setShowFilters, handleCreateNew, clienteFiltrados, loading, page, handleEdit,
-      handleDeleteOpen, handleDeleteConfirm, handleViewDetails, handleChangePage, modalOpen, 
-      setModalOpen, totalPaginas, ordenarPor, orden, handleSort, resetFiltrado }) => {
+  showFilters, setShowFilters, handleCreateNew, clienteFiltrados, loading, page, handleEdit,
+  handleDeleteOpen, handleDeleteConfirm, handleViewDetails, handleChangePage, modalOpen, 
+  setModalOpen, totalPaginas, ordenarPor, orden, handleSort, resetFiltrado }) => {
   const theme = useTheme();
   return (
     <Container maxWidth={false} sx={{ backgroundColor: theme.palette.background.paper, minHeight: '100vh' }}>
-
       <CustomSnackbar
         open={!!alerta.mensaje}
         message={alerta.mensaje}
