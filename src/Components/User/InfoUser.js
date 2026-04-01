@@ -9,16 +9,22 @@ import EditIcon from "@mui/icons-material/Edit";
 import PersonAddIcon from "@mui/icons-material/PersonAdd";
 
 const InfoUser = () => {
-    const { usuario, userId, rol } = useContext(AuthContext);
+    const { usuario, userId, rol, plan } = useContext(AuthContext);
     const navigate = useNavigate();
 
     const rolMap = {
+        "SuperAdmin": "SuperAdmin",
         "Admin": "Administrador",
         "Administrador": "Administrador",
         "Empleado": "Empleado",
         "Cliente": "Cliente"
     };
-
+    const isAdmin = ["Admin", "SuperAdmin"].includes(rol);
+    const isSuperAdmin = rol === "SuperAdmin";
+    const isAdminFull = rol === "Admin" && plan?.toUpperCase() === "FULL";
+    const permitido = isSuperAdmin || isAdminFull;
+    const isAdminBasicOrPro = rol === "Admin" && ["BASIC", "PRO"].includes(plan?.toUpperCase());
+    const usar100 = (!isSuperAdmin && !isAdminFull) || isAdminBasicOrPro;
     if (!usuario || !userId) {
         return (
             <Box display="flex" justifyContent="center" mt={6}>
@@ -69,8 +75,8 @@ const InfoUser = () => {
                     sx={{ 
                         p: 3, 
                         borderRadius: 2,
-                        flex: user.rol === "Admin" ? '0 0 300px' : '1 1 100%', 
-                        width: user.rol === "Admin" ? 'auto' : '100%',
+                        flex: usar100 ? '1 1 100%' : '0 0 300px',
+                        width: usar100 ? '100%' : 'auto',
                         maxHeight: { xs: 230, md: 'none' }
                     }}
                 >
@@ -113,7 +119,7 @@ const InfoUser = () => {
                     </Box>
                 </Paper>
 
-                {user.rol === "Admin" && (
+                {permitido && (
                     <Paper
                         elevation={6}
                         sx={(theme) => ({

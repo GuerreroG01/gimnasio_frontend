@@ -33,10 +33,20 @@ const activateLicense = async (licenseKey) => {
     throw error;
   }
 };
+const getActiveOrLastLicense = async () => {
+  try {
+    const response = await axiosInstance.get(`${API_URL}/get_active_or_last_license`);
+    return response.data;
+  } catch (error) {
+    Logger.error('Error al obtener la licencia activa', error);
+    throw error;
+  }
+};
 
 const licenseService = {
   getActiveLicense,
-  activateLicense
+  activateLicense,
+  getActiveOrLastLicense
 };
 
 export default licenseService;

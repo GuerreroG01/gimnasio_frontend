@@ -1,3 +1,4 @@
+import React from "react";
 import { 
   Box, TextField, Button, Stack, Typography, CircularProgress, Popover, Paper, InputAdornment, Grid, MenuItem,
   Switch, FormControlLabel, Dialog, DialogContent, useMediaQuery, useTheme
@@ -6,6 +7,7 @@ import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
 import ScheduleIcon from "@mui/icons-material/Schedule";
 import DescriptionIcon from "@mui/icons-material/Description";
 import PaymentsIcon from "@mui/icons-material/Payments";
+import { AuthContext } from "../../Context/AuthContext";
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -24,7 +26,8 @@ const fieldSx = {
 const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
-
+  const { plan } = React.useContext(AuthContext);
+  const isFull = plan?.toUpperCase() === "FULL";
   const content = (
     <Paper sx={{ p: 4, width: 460, maxWidth: "95vw" }}>
       <Typography variant="h6" mb={3} fontWeight={600} textAlign="center">
@@ -175,7 +178,7 @@ const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loadi
               fullWidth
               size="small"
               label="Detalle"
-              placeholder="Beneficios del pago"
+              placeholder="Beneficios(Opcional)"
               value={data?.Detalle || ""}
               onChange={(e) => onChange({ ...data, Detalle: e.target.value })}
               disabled={loading}
@@ -209,34 +212,38 @@ const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loadi
               <MenuItem value={3}>Salva Cliente</MenuItem>
             </TextField>
           </Grid>
+          
+          {isFull && (
+          <>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={data?.Alimentacion ?? false}
+                    onChange={(e) => onChange({ ...data, Alimentacion: e.target.checked })}
+                    color="primary"
+                    disabled={loading}
+                  />
+                }
+                label={<Typography fontWeight={500}>Incluir alimentación</Typography>}
+              />
+            </Grid>
 
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={data?.Alimentacion ?? false}
-                  onChange={(e) => onChange({ ...data, Alimentacion: e.target.checked })}
-                  color="primary"
-                  disabled={loading}
-                />
-              }
-              label={<Typography fontWeight={500}>Incluir alimentación</Typography>}
-            />
-          </Grid>
-
-          <Grid item xs={12}>
-            <FormControlLabel
-              control={
-                <Switch
-                  checked={data?.Rutinas ?? false}
-                  onChange={(e) => onChange({ ...data, Rutinas: e.target.checked })}
-                  color="primary"
-                  disabled={loading}
-                />
-              }
-              label={<Typography fontWeight={500}>Incluir Rutinas</Typography>}
-            />
-          </Grid>
+            <Grid item xs={12}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={data?.Rutinas ?? false}
+                    onChange={(e) => onChange({ ...data, Rutinas: e.target.checked })}
+                    color="primary"
+                    disabled={loading}
+                  />
+                }
+                label={<Typography fontWeight={500}>Incluir Rutinas</Typography>}
+              />
+            </Grid>
+          </>
+        )}
         </Grid>
 
         <Stack direction={{ xs: "column", sm: "row" }} spacing={2} mt={4}>

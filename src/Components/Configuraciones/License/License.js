@@ -27,7 +27,7 @@ const License = () => {
         fetchLicense();
     }, []);
 
-    if (rol !== "Admin") {
+    if (rol !== "SuperAdmin" && rol !== "Admin") {
         return null;
     }
 

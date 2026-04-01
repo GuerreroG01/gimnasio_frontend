@@ -99,11 +99,11 @@ const router = createBrowserRouter([
       //{path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
 
       //Usuario
-      {path: '/user/register', element: <ProtectedRoute allowedRoles={['Admin']}><RegisterPage /></ProtectedRoute> },
-      {path: '/user/:id/update', element: <ProtectedRoute allowedRoles={['Admin']}><RegisterPage /></ProtectedRoute> },
+      {path: '/user/register', element: <ProtectedRoute allowedRoles={['SuperAdmin']}><RegisterPage /></ProtectedRoute> },
+      {path: '/user/:id/update', element: <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}><RegisterPage /></ProtectedRoute> },
 
       // Reportes
-      {path: '/reports', element: <ProtectedRoute allowedRoles={['Admin']}><Reportes /></ProtectedRoute> },
+      {path: '/reports', element: <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}><Reportes /></ProtectedRoute> },
 
 /*
       // TIPOS EJERCICIOS Y PAGOS

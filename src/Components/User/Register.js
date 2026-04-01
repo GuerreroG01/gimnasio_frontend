@@ -7,7 +7,6 @@ import LockIcon from '@mui/icons-material/Lock';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import CancelIcon from '@mui/icons-material/Cancel';
 import CustomSnackbar from "../../Shared/Components/CustomSnackbar";
-
 const Register = ({ formData, setFormData, handleSubmit, handleKeyPress, toggleActivo, snackbarInfo,
     isEdit = false }) => {
     const theme = useTheme();
@@ -37,7 +36,6 @@ const Register = ({ formData, setFormData, handleSubmit, handleKeyPress, toggleA
                 position: "relative", // necesario para posicionar el chip
                 }}
             >
-                {/* Chip en la esquina superior derecha */}
                 <Box
                 sx={{
                     position: "absolute",
@@ -179,12 +177,29 @@ const Register = ({ formData, setFormData, handleSubmit, handleKeyPress, toggleA
                             label="Rol"
                             name="rol"
                             fullWidth
-                            value={formData.rol || "Empleado"}
+                            value={formData.rol || ""}
                             onChange={e => setFormData({ ...formData, rol: e.target.value })}
                             required
                             variant="outlined"
+                            slotProps={{
+                                inputLabel: {
+                                    shrink: true
+                                },
+                                select: {
+                                displayEmpty: true,
+                                renderValue: (selected) => {
+                                    if (!selected) {
+                                    return "Seleccionar Rol";
+                                    }
+                                    return selected;
+                                }
+                                }
+                            }}
                             sx={{ "& .MuiOutlinedInput-root": { borderRadius: 3 } }}
-                        >
+                            >
+                            <MenuItem value="" disabled>
+                                Seleccionar Rol
+                            </MenuItem>
                             <MenuItem value="Admin">Administrador</MenuItem>
                             <MenuItem value="Empleado">Empleado</MenuItem>
                             <MenuItem value="Cliente">Cliente</MenuItem>

@@ -9,7 +9,7 @@ import InfoOutlinedIcon from '@mui/icons-material/InfoOutlined';
 import ConfigSistemService from '../../../Services/ConfigSistemService';
 import CustomSnackbar from '../../../Shared/Components/CustomSnackbar';
 
-const ConfigInactividad = () => {
+const ConfigInactividad = ({ permitido }) => {
   const [config, setConfig] = React.useState([]);
   const [loading, setLoading] = React.useState(true);
   const [mensaje, setMensaje] = React.useState(null);
@@ -24,7 +24,7 @@ const ConfigInactividad = () => {
         const data = await ConfigSistemService.getConfig();
         if (Array.isArray(data) && data.length > 0) {
           const configFiltrada = data.filter(c =>
-            c.id === 1 || c.id === 2 || c.id === 3
+            c.id === 1 || c.id === 2 || (c.id === 3 && permitido)
           );
           setConfig(configFiltrada);
         } else {

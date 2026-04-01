@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, useContext } from 'react';
 import { Dialog, DialogTitle, DialogContent, DialogActions, Typography, Button, Box, Chip, Divider, useTheme } from '@mui/material';
 import LockIcon from '@mui/icons-material/Lock';
 import UpgradeIcon from '@mui/icons-material/ArrowUpward';
-
+import { AuthContext } from '../../Context/AuthContext';
 export default function UpgradeLicense({ open, onClose, currentPlan }) {
     const theme = useTheme();
     const isDark = theme.palette.mode === 'dark';
     const [selectedPlan, setSelectedPlan] = useState('');
-
+    const { plan } = useContext(AuthContext);
+    const isPro = plan?.toUpperCase() === "PRO";
     const handleWhatsApp = () => {
         if (!selectedPlan) return;
 
@@ -21,7 +22,7 @@ export default function UpgradeLicense({ open, onClose, currentPlan }) {
         window.open(`https://wa.me/${numero}?text=${mensaje}`, '_blank');
     };
 
-    const plans = ['PRO', 'FULL'];
+    const plans = ['PRO', 'FULL'].filter(p => !(isPro && p === 'PRO'));
 
     return (
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth

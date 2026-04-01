@@ -3,10 +3,10 @@ import { Lock, FitnessCenter } from "@mui/icons-material";
 import CustomSnackbar from "../../Shared/Components/CustomSnackbar";
 
 const Login = ({ handleLogin, handleKeyPress, username, setUsername, clave, setClave, loading, snackbar, setSnackbar,
-    navigate }) => {
+    navigate, plan }) => {
         const theme = useTheme();
         const isDark = theme.palette.mode === "dark";
-
+        const isPermited = (plan === "FULL");
     return (
         <Container maxWidth="md">
             <Box
@@ -97,22 +97,26 @@ const Login = ({ handleLogin, handleKeyPress, username, setUsername, clave, setC
                         {loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : "Ingresar"}
                     </Button>
 
-                    <Box display="flex" justifyContent="center" gap={2} mt={1}>
-                        <Tooltip title="Ver Programas">
-                        <IconButton
-                            color="primary"
-                            onClick={() => navigate("/programas")}
-                            sx={{
-                            backgroundColor: isDark ? '#333' : '#FFEBEE',
-                            '&:hover': {
-                                backgroundColor: isDark ? '#444' : '#FFCDD2',
-                            }
-                            }}
-                        >
-                            <FitnessCenter />
-                        </IconButton>
-                        </Tooltip>
-                    </Box>
+                    {isPermited && (
+                     <>
+                        <Box display="flex" justifyContent="center" gap={2} mt={1}>
+                            <Tooltip title="Ver Programas">
+                                <IconButton
+                                    color="primary"
+                                    onClick={() => navigate("/programas")}
+                                    sx={{
+                                    backgroundColor: isDark ? '#333' : '#FFEBEE',
+                                    '&:hover': {
+                                        backgroundColor: isDark ? '#444' : '#FFCDD2',
+                                    }
+                                    }}
+                                >
+                                    <FitnessCenter />
+                                </IconButton>
+                            </Tooltip>
+                        </Box>
+                     </>   
+                    )}
                 </Paper>
 
                 <CustomSnackbar

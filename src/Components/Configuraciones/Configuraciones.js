@@ -7,13 +7,16 @@ import License from './License/License';
 import { AuthContext } from '../../Context/AuthContext';
 
 const Configuraciones = () => {
-    const { rol } =useContext(AuthContext);
+    const { rol, plan } =useContext(AuthContext);
+    const isSuperAdmin = rol === "SuperAdmin";
+    const isAdminFullOrPro = rol === "Admin" && ["FULL", "PRO"].includes(plan?.toUpperCase());
+    const permitido = isSuperAdmin || isAdminFullOrPro;
+    const isFull = isSuperAdmin || (rol === "Admin" && plan?.toUpperCase() === "FULL");
     return (
         <Box sx={{ width:"100%", mt: 4 }}>
             <Box sx={{ mb: 4 }}>
                 <InfoUser />
             </Box>
-            {rol === 'Admin' && (
                 <Paper elevation={3} sx={{ p: 2, borderRadius: 3 }}>
                     <Typography 
                         variant="h4" 
@@ -29,18 +32,24 @@ const Configuraciones = () => {
                     <Box sx={{ mb: 4 }}>
                         <License />
                     </Box>
+                    {permitido && (
+                        <>
+                            {isSuperAdmin && (
+                                <Box sx={{ mb: 5 }}>
+                                    <ConfigBackup />
+                                </Box>  
+                            )}
 
-                    <Box sx={{ mb: 5 }}>
-                        <ConfigBackup />
-                    </Box>
+                            <Divider sx={{ mb: 4 }} />
 
-                    <Divider sx={{ mb: 4 }} />
-
-                    <Box>
-                        <ConfigInactividad />
-                    </Box>
+                            <Box>
+                                <ConfigInactividad
+                                    permitido={isFull}
+                                />
+                            </Box>
+                        </>
+                    )}
                 </Paper>
-            )}
         </Box>
     );
 };

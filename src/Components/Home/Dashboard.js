@@ -24,11 +24,11 @@ const Dashboard = ({ pagosData = [] }) => {
     const [openTipoPago, setOpenTipoPago] = React.useState(false);
     const [searchOpenTipoPago, setSearchOpenTipoPago] = React.useState(false);
     const [searchRutinasOpen, setSearchRutinasOpen] = React.useState(false);
-    const { plan } = React.useContext(AuthContext);
+    const { plan, rol } = React.useContext(AuthContext);
     const [upgradeOpen, setUpgradeOpen] = React.useState(false);
-    
+    const isFullOrSuperAdmin = plan?.toUpperCase() === "FULL" || rol?.toUpperCase() === "SUPERADMIN";
     const handleRutinasClick = () => {
-        if (plan.toUpperCase() === "BASIC") {
+        if (!isFullOrSuperAdmin) {
             setUpgradeOpen(true);
             return;
         }

@@ -42,15 +42,15 @@ const Navegacion = ({ children }) => {
     "/pagos", 
     "/asistencia", 
     "/membresias", 
-    "/reports"
+    "/reports",
+    "/configuraciones"
   ];
 
   const PRO = [
     ...BASIC,
     "/productos",
     "/venta",
-    "/programas",
-    "/progresos",
+    "/mensajes",
   ];
 
   const allowedRoutesByPlan = {
@@ -58,7 +58,9 @@ const Navegacion = ({ children }) => {
     PRO,
     FULL: ["*"], 
   };
+  const isSuperAdmin = rol?.toUpperCase() === "SUPERADMIN";
   const canAccessRoute = (route) => {
+    if (isSuperAdmin) return true;
     const normalizedPlan = plan?.toUpperCase() || "BASIC";
     const allowedRoutes = allowedRoutesByPlan[normalizedPlan] || [];
     

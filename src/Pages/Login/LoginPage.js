@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Login from "../../Components/Login/Login";
 import { AuthContext } from "../../Context/AuthContext";
+import licenseService from "../../Services/LicenseService";
 
 export default function LoginPage(){
     const [username, setUsername] = React.useState("");
@@ -14,7 +15,24 @@ export default function LoginPage(){
         message: "",
         severity: "success",
     });
+    const [plan, setPlan] = React.useState(null);
+    useEffect(() => {
+        const fetchLicense = async () => {
+            try {
+                const licenseData = await licenseService.getActiveOrLastLicense();
+                setPlan(licenseData.plan);
+            } catch (error) {
+                console.error("Error al obtener licencia al cargar la página", error);
+                setSnackbar({
+                    open: true,
+                    message: "No se pudo verificar la licencia",
+                    severity: "error",
+                });
+            }
+        };
 
+        fetchLicense();
+    }, []);
 
     const handleLogin = async () => {
         setLoading(true);
@@ -69,7 +87,7 @@ export default function LoginPage(){
             snackbar={snackbar}
             setSnackbar={setSnackbar}
             navigate={navigate} 
-
+            plan={plan}
         />
     );
 }
