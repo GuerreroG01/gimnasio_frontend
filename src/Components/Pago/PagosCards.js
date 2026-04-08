@@ -1,12 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Box, Divider, useTheme, Card, CardContent, Typography, Grid, IconButton, Dialog, DialogActions, DialogContent, Button } from '@mui/material';
 import { keyframes } from '@mui/system';
-import {/* Edit as EditIcon,*/ Delete as DeleteIcon } from '@mui/icons-material';
-//import { useNavigate } from 'react-router-dom';
+import {Delete as DeleteIcon } from '@mui/icons-material';
 import DetailsPago from './DetailsPago';
 import pagoService from '../../Services/PagoService';
 import TiempoPagoService from '../../Services/TiempoPagoService';
 import { obtenerSimboloMoneda } from '../../Utils/MonedaUtils';
+import { AuthContext } from '../../Context/AuthContext';
 
 const fadeInUp = keyframes`
   0% {
@@ -32,7 +32,8 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2
   })}`;
-
+  const { rol } = useContext(AuthContext);
+  const isAdminorSuper = rol === 'Admin' || rol === 'SuperAdmin';
   const handleOpenModal = (pago) => {
 
     const fetchInfoPago = async () => {
@@ -164,17 +165,19 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
                     >
                       <EditIcon />
                     </IconButton>*/}
-                    <IconButton
-                      sx={{
-                        position: 'absolute',
-                        top: 10,
-                        right: 10,
-                      }}
-                      color="error"
-                      onClick={(e) => handleDeleteClick(pago, e)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
+                    {isAdminorSuper && (
+                      <IconButton
+                        sx={{
+                          position: 'absolute',
+                          top: 10,
+                          right: 10,
+                        }}
+                        color="error"
+                        onClick={(e) => handleDeleteClick(pago, e)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    )}
                   </Box>
                 </CardContent>
               </Card>

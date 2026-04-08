@@ -59,6 +59,7 @@ const Navegacion = ({ children }) => {
     FULL: ["*"], 
   };
   const isSuperAdmin = rol?.toUpperCase() === "SUPERADMIN";
+  const isPermitted = rol?.toUpperCase() === "ADMIN" || isSuperAdmin;
   const canAccessRoute = (route) => {
     if (isSuperAdmin) return true;
     const normalizedPlan = plan?.toUpperCase() || "BASIC";
@@ -75,7 +76,7 @@ const Navegacion = ({ children }) => {
         { label: "Ventas", path: "/venta" },
         { label: "Programas", path: "/programas" },
         { label: "Progresos", path: "/progresos" },
-        ...(rol === "Admin" ? [{ label: "Reportes", path: "/reports" }] : [])
+        ...(isPermitted ? [{ label: "Reportes", path: "/reports" }] : [])
       ]
     }
   ];

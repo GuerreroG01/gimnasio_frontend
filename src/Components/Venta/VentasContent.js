@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useContext, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import VentaService from "../../Services/VentaService";
 import { CircularProgress, Typography, Card, CardContent, Table, TableBody, TableCell, TableContainer, TableHead,
@@ -11,22 +11,25 @@ import { toZonedTime } from "date-fns-tz";
 import { format } from "date-fns";
 import { es } from "date-fns/locale";
 import { convertirPrecio, obtenerSimboloMoneda } from "../../Utils/MonedaUtils";
+import { AuthContext } from "../../Context/AuthContext";
 
 const ITEMS_PER_PAGE = 10;
 
 const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
-  const [ventas, setVentas] = useState([]);
-  const [loadingVentas, setLoadingVentas] = useState(true);
-  const [deleteDialog, setDeleteDialog] = useState(false);
-  const [ventaToDelete, setVentaToDelete] = useState(null);
-  const [snackbar, setSnackbar] = useState({ open: false, message: "", severity: "success" });
-  const [selectedRow, setSelectedRow] = useState(null);
-  const [page, setPage] = useState(1);
+  const [ventas, setVentas] = React.useState([]);
+  const [loadingVentas, setLoadingVentas] = React.useState(true);
+  const [deleteDialog, setDeleteDialog] = React.useState(false);
+  const [ventaToDelete, setVentaToDelete] = React.useState(null);
+  const [snackbar, setSnackbar] = React.useState({ open: false, message: "", severity: "success" });
+  const [selectedRow, setSelectedRow] = React.useState(null);
+  const [page, setPage] = React.useState(1);
   const theme = useTheme();
   const navigate = useNavigate();
   const isSmallScreen = useMediaQuery("(max-width:600px)");
   const isMediumScreen = useMediaQuery("(min-width:601px) and (max-width:960px)");
   const isLargeScreen = !isSmallScreen && !isMediumScreen;
+  const { rol } = useContext(AuthContext);
+  const isAdminorSuper = rol === 'Admin' || rol === 'SuperAdmin';
 
   useEffect(() => {
     const fetchVentas = async () => {
@@ -191,19 +194,23 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
               >
                 <AddIcon />
               </IconButton>
-              <IconButton color="primary" disabled={!selectedRow} onClick={() => handleEditVenta(selectedRow)}>
-                <EditIcon />
-              </IconButton>
-              <IconButton
-                color="error"
-                disabled={!selectedRow}
-                onClick={() => {
-                  setVentaToDelete(ventas.find(v => v.codigo_venta === selectedRow));
-                  setDeleteDialog(true);
-                }}
-              >
-                <DeleteIcon />
-              </IconButton>
+              {isAdminorSuper && (
+                <>
+                  <IconButton color="primary" disabled={!selectedRow} onClick={() => handleEditVenta(selectedRow)}>
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    color="error"
+                    disabled={!selectedRow}
+                    onClick={() => {
+                      setVentaToDelete(ventas.find(v => v.codigo_venta === selectedRow));
+                      setDeleteDialog(true);
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>  
+                </>
+              )}
             </Box>
 
             {ventas.length > ITEMS_PER_PAGE && (

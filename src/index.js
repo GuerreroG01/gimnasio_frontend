@@ -99,7 +99,7 @@ const router = createBrowserRouter([
       //{path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
 
       //Usuario
-      {path: '/user/register', element: <ProtectedRoute allowedRoles={['SuperAdmin']}><RegisterPage /></ProtectedRoute> },
+      {path: '/user/register', element: <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}><RegisterPage /></ProtectedRoute> },
       {path: '/user/:id/update', element: <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}><RegisterPage /></ProtectedRoute> },
 
       // Reportes
