@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, useTheme, Snackbar,
-    Alert, CircularProgress } from "@mui/material";
+    Alert } from "@mui/material";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -37,14 +37,6 @@ const GananciasTable = ({ pagosData }) => {
 
     const handleChangePage = (event, newPage) => setPage(newPage);
 
-    if (!dataConTendencia.length) {
-        return (
-            <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 300 }}>
-                <CircularProgress />
-            </Box>
-        );
-    }
-
     return (
         <Box sx={{ width: "100%", overflowX: "auto" }}>
             <TableContainer
@@ -56,7 +48,6 @@ const GananciasTable = ({ pagosData }) => {
                     borderRadius: 2,
                     width: "fit-content",
                     mx: "auto",
-                    // Ajustes responsivos
                     [theme.breakpoints.down("sm")]: {
                         maxWidth: "100%",
                         width: "100%",
@@ -78,30 +69,34 @@ const GananciasTable = ({ pagosData }) => {
                     </TableHead>
 
                     <TableBody>
-                        {dataConTendencia
-                            .slice(page * rowsPerPageDefault, page * rowsPerPageDefault + rowsPerPageDefault)
-                            .map((item) => (
-                                <TableRow
-                                    key={item.año}
-                                    sx={{
-                                        "&:hover": {
-                                            backgroundColor: isDarkMode ? "#444" : "#f0f0f0",
-                                        },
-                                    }}
-                                >
-                                    <TableCell>{item.año}</TableCell>
-                                    <TableCell align="right">{item.totalGananciasNIO.toLocaleString()}</TableCell>
-                                    <TableCell align="right">
-                                        {item.totalGananciasUSD.toLocaleString(undefined, {
-                                            minimumFractionDigits: 2,
-                                            maximumFractionDigits: 2,
-                                        })}
-                                    </TableCell>
-                                    <TableCell align="center">
-                                        <item.trend.Icon sx={{ color: item.trend.color }} />
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                        {dataConTendencia.length > 0 ? (
+                            dataConTendencia
+                                .slice(page * rowsPerPageDefault, page * rowsPerPageDefault + rowsPerPageDefault)
+                                .map((item) => (
+                                    <TableRow
+                                        key={item.año}
+                                        sx={{ "&:hover": { backgroundColor: isDarkMode ? "#444" : "#f0f0f0" } }}
+                                    >
+                                        <TableCell>{item.año}</TableCell>
+                                        <TableCell align="right">{item.totalGananciasNIO.toLocaleString()}</TableCell>
+                                        <TableCell align="right">
+                                            {item.totalGananciasUSD.toLocaleString(undefined, {
+                                                minimumFractionDigits: 2,
+                                                maximumFractionDigits: 2,
+                                            })}
+                                        </TableCell>
+                                        <TableCell align="center">
+                                            <item.trend.Icon sx={{ color: item.trend.color }} />
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                        ) : (
+                            <TableRow>
+                                <TableCell colSpan={4} align="center" sx={{ py: 4 }}>
+                                    Aún no hay datos registrados.
+                                </TableCell>
+                            </TableRow>
+                        )}
                     </TableBody>
                 </Table>
 

@@ -159,16 +159,19 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
                   helperText={formik.touched.DetallePago && formik.errors.DetallePago}
                 />
               </Grid>
-              <Grid item xs={12}>
+              <Grid item xs={12} sm={6} md={4}>
                 <TextField
                   select
-                  fullWidth
                   label="Moneda"
                   name="Moneda"
                   value={formik.values.Moneda}
                   onChange={formik.handleChange}
                   error={formik.touched.Moneda && Boolean(formik.errors.Moneda)}
                   helperText={formik.touched.Moneda && formik.errors.Moneda}
+                  sx={{
+                    minWidth: 100,
+                    width: '100%',
+                  }}
                 >
                   {monedas.map((option) => (
                     <MenuItem key={option.value} value={option.value}>

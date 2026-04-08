@@ -13,10 +13,28 @@ import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 export default function FormPage({ pagoId, onSuccess }) {
     const location = useLocation();
     const { clienteId } = location.state || {};
-    const monedas = [
-        { value: 'NIO', label: 'NIO' },
-        { value: 'USD', label: 'USD' },
-    ];
+    const [tipoCambio, setTipoCambio] = React.useState([]); 
+    useEffect(() => {
+        TipoCambioService.getTipoCambios()
+            .then((data) => setTipoCambio(data))
+            .catch((err) => console.error(err));
+    }, []);
+    const monedas = React.useMemo(() => {
+        const monedasSet = new Set();
+
+        tipoCambio.forEach(t => {
+            const origen = t.monedaOrigen || t.MonedaOrigen;
+            const destino = t.monedaDestino || t.MonedaDestino;
+
+            if (origen) monedasSet.add(origen);
+            if (destino) monedasSet.add(destino);
+        });
+
+        return Array.from(monedasSet).map(m => ({
+            value: m,
+            label: m
+        }));
+    }, [tipoCambio]);
     const [clientes, setClientes] = React.useState([]);
     const [loadingClientes, setLoadingClientes] = React.useState(false);
     const [tiposPago, setTiposPago] = React.useState([]);
@@ -27,7 +45,7 @@ export default function FormPage({ pagoId, onSuccess }) {
         CodigoCliente: clienteId || '',
         MesesPagados: 1,
         FechaPago: fechaActual,
-        Moneda: 'NIO',
+        Moneda: '',
         Efectivo: 0,
         Cambio: 0,
         Monto: 0,
@@ -37,8 +55,7 @@ export default function FormPage({ pagoId, onSuccess }) {
         TipoPago: null,
     });
     const [montoBase, setMontoBase]= React.useState(0);
-    const [monedaBase, setMonedaBase] = React.useState('NIO');
-    const [tipoCambio, setTipoCambio] = React.useState([]); 
+    const [monedaBase, setMonedaBase] = React.useState('');
     const [cambioEquivalente, setCambioEquivalente] = React.useState(0);
     const navigate= useNavigate();
     const [snackbar, setSnackbar] = React.useState({
@@ -130,12 +147,6 @@ export default function FormPage({ pagoId, onSuccess }) {
     }, [pagoId]);
 
     useEffect(() => {
-        TipoCambioService.getTipoCambios()
-            .then((data) => setTipoCambio(data))
-            .catch((err) => console.error(err));
-    }, []);
-
-    useEffect(() => {
         if (!montoBase || !monedaBase) return;
 
         const montoConvertido = convertirPrecio(
@@ -168,7 +179,7 @@ export default function FormPage({ pagoId, onSuccess }) {
         setFieldValue("TipoPago", null);
         setFieldValue("CodigoTipoPago", "");
         setMontoBase(0);
-        setMonedaBase("NIO");
+        setMonedaBase("");
     }, [setFieldValue]);
 
     const handleTipoPagoInputChange = (event, value, reason) => {

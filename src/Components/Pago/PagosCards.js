@@ -20,6 +20,7 @@ const fadeInUp = keyframes`
 `;
 
 const PagosCards = ({ pagos, onPagoDeleted }) => {
+  console.log('Renderizando PagosCards con pagos:', pagos);
   const [openModal, setOpenModal] = useState(false);
   const [pagoSeleccionado, setPagoSeleccionado] = useState(null);
   const [pagoAEliminar, setPagoAEliminar] = useState(null);
@@ -27,11 +28,22 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
   const [infopago, setinfopago] = useState(null);
   //const navigate = useNavigate();
   const theme = useTheme();
-  const formatearMonto = (monto, moneda) =>
-  `${obtenerSimboloMoneda(moneda)}${Number(monto).toLocaleString('es-NI', {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  })}`;
+  const formatearMonto = (monto, moneda) => {
+    const simbolo = obtenerSimboloMoneda(moneda || '');
+
+    const montoNumero = Number(monto);
+    const montoFormateado = isNaN(montoNumero)
+      ? '0.00'
+      : montoNumero.toLocaleString('es-NI', {
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
+        });
+    if (!simbolo) {
+      return `${moneda || ''} ${montoFormateado}`;
+    }
+
+    return `${simbolo}${montoFormateado}`;
+  };
   const { rol } = useContext(AuthContext);
   const isAdminorSuper = rol === 'Admin' || rol === 'SuperAdmin';
   const handleOpenModal = (pago) => {

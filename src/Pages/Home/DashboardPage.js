@@ -14,8 +14,14 @@ export default function DashboardPage() {
                 const response = await PagoService.getAñosConPagos();
                 setPagosData(response);
             } catch (err) {
-                console.error(err);
-                setError(true);
+                const mensaje = err.response?.data?.message;
+                console.error("Error al obtener los pagos:", mensaje || err.message);
+
+                if (mensaje === "No se encontraron pagos registrados.") {
+                    setPagosData([]);
+                } else {
+                    setError(true);
+                }
             } finally {
                 setLoading(false);
             }

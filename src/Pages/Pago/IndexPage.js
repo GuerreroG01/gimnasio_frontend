@@ -144,31 +144,73 @@ export default function IndexPage(){
             try {
                 const response = await pagoService.getAñosConPagos();
                 const yearsData = response;
+
+                if (!yearsData || yearsData.length === 0) {
+                    setAvailableYears([]);
+                    setYear(null);
+                    setAvailableMonths([]);
+                    setMonth(null);
+                    setAvailableDays([]);
+                    setDay(null);
+                    setPagosDay([]);
+                    return;
+                }
+
                 setAvailableYears(yearsData.map(year => year.año));
 
-                const defaultYear = yearsData.length > 0 ? yearsData[yearsData.length - 1].año : null;
+                const defaultYear = yearsData[yearsData.length - 1].año;
                 setYear(defaultYear);
 
                 if (defaultYear) {
                     const responseMonths = await pagoService.getMesesConPagos(defaultYear);
                     const monthsData = responseMonths;
+
+                    if (!monthsData || monthsData.length === 0) {
+                        setAvailableMonths([]);
+                        setMonth(null);
+                        setAvailableDays([]);
+                        setDay(null);
+                        setPagosDay([]);
+                        return;
+                    }
+
                     setAvailableMonths(monthsData.map(month => month.mes));
 
-                    const lastMonth = monthsData.length > 0 ? monthsData[monthsData.length - 1].mes : null;
+                    const lastMonth = monthsData[monthsData.length - 1].mes;
                     setMonth(lastMonth);
 
                     if (lastMonth) {
                         const responseDays = await pagoService.getDiasConPagos(defaultYear, lastMonth);
                         const daysData = responseDays;
+
+                        if (!daysData || daysData.length === 0) {
+                            setPagosDay([]);
+                            setAvailableDays([]);
+                            setDay(null);
+                            return;
+                        }
+
                         setPagosDay(daysData);
                         setAvailableDays(daysData.map(day => day.dia));
-                        const lastDay = daysData.length > 0 ? daysData[daysData.length - 1].dia : null;
+                        const lastDay = daysData[daysData.length - 1].dia;
                         setDay(lastDay);
                     }
                 }
             } catch (err) {
-                const backendMessage =
-                    err?.response?.data || 'Error al obtener resumen de pagos';
+                const backendMessage = err?.response?.data?.message 
+                                    || 'Error al obtener resumen de pagos';
+
+                // Si es 404 con mensaje específico, inicializamos con vacíos
+                if (err?.response?.status === 404 && backendMessage === "No se encontraron pagos registrados.") {
+                    setAvailableYears([]);
+                    setYear(null);
+                    setAvailableMonths([]);
+                    setMonth(null);
+                    setAvailableDays([]);
+                    setDay(null);
+                    setPagosDay([]);
+                    setLoading(false);
+                }
 
                 showSnackbar(backendMessage);
                 console.error('Error al obtener resumen de pagos:', err);

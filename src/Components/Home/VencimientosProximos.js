@@ -27,7 +27,12 @@ const VencimientosProximos = () => {
         const data = await PagoService.getVencimientosProximos();
         setClientes(data);
       } catch (error) {
-        console.error("Error al obtener vencimientos:", error);
+        const mensaje = error.response?.data?.message;
+        if (mensaje === "No se encontraron usuarios con vencimientos próximos (dentro de 7 días).") {
+          setClientes([]);
+        } else {
+          console.error("Error al obtener vencimientos:", error);
+        }
       } finally {
         setLoading(false);
       }

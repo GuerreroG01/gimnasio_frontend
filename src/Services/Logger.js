@@ -10,6 +10,9 @@ const Logger = {
     debug: (...args) => {
         if (isDev) console.debug(...args);
     },
+    warn: (...args) => {
+        if (isDev) console.warn(...args);
+    },
     error: (...args) => console.error(...args),
 };
 

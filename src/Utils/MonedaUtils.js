@@ -16,11 +16,11 @@ export const convertirPrecio = ( precio, monedaOrigen, monedaDestino, tipoCambio
 export const obtenerSimboloMoneda = (moneda) => {
     switch (moneda) {
         case 'NIO':
-        return 'C$';
+            return 'C$';
         case 'USD':
-        return '$';
+            return '$';
         default:
-        return '';
+            return moneda;
     }
 };
 

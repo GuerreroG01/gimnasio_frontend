@@ -6,6 +6,7 @@ import ProgramaFitService from '../../Services/ProgramaFitService';
 import { toZonedTime } from 'date-fns-tz';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
+import CustomSnackbar from '../../Shared/Components/CustomSnackbar';
 export default function FormPage(){
     const { id } = useParams();
     const navigate = useNavigate();
@@ -32,6 +33,22 @@ export default function FormPage(){
     const [cargando, setCargando] = useState(false);
     const [mensajeAlerta, setMensajeAlerta] = useState('');
     const [niveles, setNiveles] = useState([]);
+    const [snackbar, setSnackbar] = React.useState({
+        open: false,
+        message: '',
+        severity: 'warning'
+    });
+
+    const showSnackbar = (message, severity = 'warning') => {
+        setSnackbar({
+            open: true,
+            message,
+            severity
+        });
+    };
+    const handleCloseSnackbar = () => {
+        setSnackbar(prev => ({ ...prev, open: false }));
+    };
 
     useEffect(() => {
         if (id) {
@@ -67,6 +84,33 @@ export default function FormPage(){
         setImagePreview(file ? URL.createObjectURL(file) : null);
     };
 
+    const getErrorMessage = (error) => {
+        if (error.response) {
+            const data = error.response.data;
+
+            if (data.errors) {
+                const mensajes = [];
+
+                for (const campo in data.errors) {
+                    mensajes.push(`${campo}: ${data.errors[campo].join(', ')}`);
+                }
+
+                return mensajes.join(' | ');
+            }
+
+            if (data.title) return data.title;
+            if (data.message) return data.message;
+
+            return `Error ${error.response.status}`;
+        }
+
+        if (error.request) {
+            return 'No se pudo conectar con el servidor';
+        }
+
+        return error.message || 'Error desconocido';
+    };
+
     const handleSubmitCreate = async (e) => {
         e.preventDefault();
         const clienteConDefaults = {
@@ -95,23 +139,25 @@ export default function FormPage(){
         setCargando(true);
         const start = Date.now();
         try {
-        await ClienteService.createCliente(formData);
-        const end = Date.now();
-        const duration = end - start;
+            await ClienteService.createCliente(formData);
+            const end = Date.now();
+            const duration = end - start;
 
-        if (duration < 500) {
-            await new Promise(resolve => setTimeout(resolve, 500 - duration));
-        }
+            if (duration < 500) {
+                await new Promise(resolve => setTimeout(resolve, 500 - duration));
+            }
 
-        setexitocreacion('Cliente creado exitosamente');
-        setTimeout(() => {
-            setexitocreacion('');
-            navigate(`/clientes`);
+            setexitocreacion('Cliente creado exitosamente');
+            setTimeout(() => {
+                setexitocreacion('');
+                navigate(`/clientes`);
         }, 500);
         } catch (error) {
-        console.error('Error creando cliente:', error);
+            console.error('Error creando cliente:', error);
+            const mensaje = getErrorMessage(error);
+            showSnackbar(mensaje, 'error');
         } finally {
-        setCargando(false);
+            setCargando(false);
         }
     };
 
@@ -161,7 +207,8 @@ export default function FormPage(){
             }, 500);
         } catch (error) {
             console.error('Error actualizando cliente:', error);
-            alert(`Error: ${error.response?.data?.title || 'Error al procesar la solicitud'}`);
+            const mensaje = getErrorMessage(error);
+            showSnackbar(mensaje, 'error');
         } finally {
             setCargando(false);
         }
@@ -196,12 +243,20 @@ export default function FormPage(){
         setCliente({ ...cliente, nivelActual: e.target.value });
     };
     return(
-        <FormularioCliente 
-            id={id} cliente={cliente} setCliente={setCliente} fecha={fechaActual} formatDate={formatDate}
-            fileName={fileName} imagePreview={imagePreview} exitocreacion={exitocreacion} mensaje_error={mensaje_error}
-            mensajeAlerta={mensajeAlerta} setMensajeAlerta={setMensajeAlerta} cargando={cargando} handleChange={handleChange}
-            handleFileChange={handleFileChange} handleSubmitCreate={handleSubmitCreate} handleSubmitUpdate={handleSubmitUpdate}
-            handleTelefonoChange={handleTelefonoChange} navigate={navigate} niveles={niveles} handleNivelChange={handleNivelChange}
-        />
+        <>
+            <FormularioCliente 
+                id={id} cliente={cliente} setCliente={setCliente} fecha={fechaActual} formatDate={formatDate}
+                fileName={fileName} imagePreview={imagePreview} exitocreacion={exitocreacion} mensaje_error={mensaje_error}
+                mensajeAlerta={mensajeAlerta} setMensajeAlerta={setMensajeAlerta} cargando={cargando} handleChange={handleChange}
+                handleFileChange={handleFileChange} handleSubmitCreate={handleSubmitCreate} handleSubmitUpdate={handleSubmitUpdate}
+                handleTelefonoChange={handleTelefonoChange} navigate={navigate} niveles={niveles} handleNivelChange={handleNivelChange}
+            />
+            <CustomSnackbar
+                open={snackbar.open}
+                message={snackbar.message}
+                severity={snackbar.severity}
+                onClose={handleCloseSnackbar}
+            />
+        </>
     );
 }

@@ -80,26 +80,44 @@ const Index = ({ alerta, setAlerta, nombreCliente, setNombreCliente, apellidoCli
         </Stack>
       </Box>
 
-      {/* MODAL */}
       <Modal open={modalOpen} onClose={() => setModalOpen(false)}>
-        <Box sx={{
-          p: 2,
-          backgroundColor: theme.palette.background.paper,
-          borderRadius: 2,
-          boxShadow: 3,
-          width: '300px',
-          margin: 'auto',
-          marginTop: '20%'
-        }}>
+        <Box
+          sx={{
+            p: 3,
+            bgcolor: 'background.paper',
+            color: 'text.primary',
+            borderRadius: 2,
+            boxShadow: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '0 0 20px rgba(0,0,0,0.8)'
+                : theme.shadows[5],
+            width: 320,
+            mx: 'auto',
+            mt: '20%',
+            border: (theme) =>
+              theme.palette.mode === 'dark'
+                ? '1px solid rgba(255,255,255,0.1)'
+                : 'none',
+          }}
+        >
           <Typography variant="h6" gutterBottom>
             ¿Estás seguro de eliminar este usuario?
           </Typography>
 
-          <Box display="flex" justifyContent="space-between">
-            <Button onClick={() => setModalOpen(false)} color="secondary">
+          <Box display="flex" justifyContent="flex-end" gap={1} mt={2}>
+            <Button
+              onClick={() => setModalOpen(false)}
+              color="inherit"
+              variant="outlined"
+            >
               Cancelar
             </Button>
-            <Button onClick={handleDeleteConfirm} color="primary">
+
+            <Button
+              onClick={handleDeleteConfirm}
+              color="error"
+              variant="contained"
+            >
               Eliminar
             </Button>
           </Box>

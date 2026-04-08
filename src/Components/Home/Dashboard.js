@@ -35,6 +35,7 @@ const Dashboard = ({ pagosData = [] }) => {
 
         setOpenRutinas(true);
     };
+    console.log('PAGOSDATA EN DASHBOARD:', pagosData);
     const actions = [
         {
             title: "Membresías",

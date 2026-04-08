@@ -1,6 +1,6 @@
 import React, { useMemo } from "react";
 import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, useTheme, Snackbar,
-  Alert, CircularProgress } from "@mui/material";
+  Alert } from "@mui/material";
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
 import TrendingDownIcon from '@mui/icons-material/TrendingDown';
@@ -37,14 +37,6 @@ const PagosAnualTable = ({ pagosData }) => {
 
   const handleChangePage = (event, newPage) => setPage(newPage);
 
-  if (!dataConTendencia.length) {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: 200 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
   return (
     <Box sx={{ width: "fit-content", ml: "auto" }}>
       <TableContainer
@@ -67,24 +59,30 @@ const PagosAnualTable = ({ pagosData }) => {
           </TableHead>
 
           <TableBody>
-            {dataConTendencia
-              .slice(page * rowsPerPageDefault, page * rowsPerPageDefault + rowsPerPageDefault)
-              .map((item) => (
-                <TableRow
-                  key={item.año}
-                  sx={{
-                    "&:hover": { backgroundColor: isDarkMode ? "#444" : "#f0f0f0" },
-                  }}
-                >
-                  <TableCell sx={{ textAlign: "center" }}>{item.año}</TableCell>
-                  <TableCell align="right" sx={{ color: item.trend.color }}>
-                    {item.pagosRealizados.toLocaleString()}
-                  </TableCell>
-                  <TableCell align="center">
-                    <item.trend.Icon sx={{ color: item.trend.color }} />
-                  </TableCell>
-                </TableRow>
-              ))}
+            {dataConTendencia.length > 0 ? (
+              dataConTendencia
+                .slice(page * rowsPerPageDefault, page * rowsPerPageDefault + rowsPerPageDefault)
+                .map((item) => (
+                  <TableRow
+                    key={item.año}
+                    sx={{ "&:hover": { backgroundColor: isDarkMode ? "#444" : "#f0f0f0" } }}
+                  >
+                    <TableCell sx={{ textAlign: "center" }}>{item.año}</TableCell>
+                    <TableCell align="right" sx={{ color: item.trend.color }}>
+                      {item.pagosRealizados.toLocaleString()}
+                    </TableCell>
+                    <TableCell align="center">
+                      <item.trend.Icon sx={{ color: item.trend.color }} />
+                    </TableCell>
+                  </TableRow>
+                ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={3} align="center" sx={{ py: 4 }}>
+                  Aún no hay datos registrados.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
 
