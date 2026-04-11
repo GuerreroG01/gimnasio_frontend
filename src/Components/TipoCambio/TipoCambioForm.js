@@ -49,7 +49,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
                         value={data?.monedaOrigen || ""}
                         onChange={(e) => onChange({ ...data, monedaOrigen: e.target.value.toUpperCase() })}
                         required
-                        disabled={loading}
+                        disabled
                         sx={fieldSx}
                         inputProps={{ maxLength: 3 }}
                     />
@@ -64,7 +64,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
                         value={data?.monedaDestino || ""}
                         onChange={(e) => onChange({ ...data, monedaDestino: e.target.value.toUpperCase() })}
                         required
-                        disabled={loading}
+                        disabled
                         sx={fieldSx}
                         inputProps={{ maxLength: 3 }}
                     />
@@ -87,10 +87,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
                             <AttachMoneyIcon fontSize="small" />
                             </InputAdornment>
                         ),
-                        inputProps: {
-                            min: 0.000001,
-                            step: "any"
-                        },
+                        inputProps: { min: 0.000001 },
                         }}
                     />
                     </Grid>
@@ -104,7 +101,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
                         value={data?.Fecha ? data.Fecha.split("T")[0] : new Date().toISOString().split("T")[0]}
                         onChange={(e) => onChange({ ...data, fecha: e.target.value })}
                         required
-                        disabled={loading}
+                        disabled
                         sx={fieldSx}
                         InputLabelProps={{ shrink: true }}
                         InputProps={{
