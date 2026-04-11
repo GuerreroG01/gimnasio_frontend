@@ -46,11 +46,21 @@ const deleteTipoCambio = async (id) => {
         throw error;
     }
 };
+const getMonedas = async () => {
+    try {
+        const response = await axiosInstance.get(`${API_URL}/monedas`);
+        return response.data;
+    } catch (error) {
+        console.error('Error al obtener las monedas:', error);
+        throw error;
+    }
+};
 const TipoCambioService = {
     getTipoCambios,
     getTipoCambioById,
     createTipoCambio,
     updateTipoPago,
     deleteTipoCambio,
+    getMonedas
 };
 export default TipoCambioService;

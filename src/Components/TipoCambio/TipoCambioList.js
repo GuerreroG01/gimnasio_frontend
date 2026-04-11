@@ -215,6 +215,7 @@ const TipoCambioList = () => {
             onClose={handleCloseForm}
             onSubmit={handleSubmitForm}
             loading={loading}
+            tipoCambios={tipoCambios}
         />
         </>
     );

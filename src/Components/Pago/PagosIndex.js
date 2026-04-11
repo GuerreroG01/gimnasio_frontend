@@ -1,7 +1,7 @@
 import {
     Box, Typography, MenuItem, Select, InputLabel, FormControl, CircularProgress, Pagination, IconButton, Grid, useTheme
 } from '@mui/material';
-import AddCircleIcon from '@mui/icons-material/AddCircle';
+import AddIcon from '@mui/icons-material/Add';
 import { useNavigate } from 'react-router-dom';
 import FiltroPagos from './FiltroPagos';
 import PagosCards from './PagosCards';
@@ -14,147 +14,143 @@ const PagosIndex = ({ nombreCliente, setNombreCliente, year, month, day, months,
     availableDays, availableMonths, availableYears, loadingSelectors, pagosDayData, loading, page, handlePageChange, currentPagos,
     handlePagoDeleted, filteredPagos, snackbar, handleCloseSnackbar }) => {
     const navigate = useNavigate();
-    const theme = useTheme();
     return (
         <Box sx={{ width: '100%', margin: 'auto' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-                <Typography variant="h4" gutterBottom sx={{ fontWeight: 'bold', color: '#1976d2' }}>
-                    Pagos Registrados
-                </Typography>
-                <IconButton
-                    color="primary"
-                    onClick={() => navigate('/pagos/form')}
-                    sx={{
-                        fontSize: 30,
-                        backgroundColor: theme.palette.primary.main,
-                        color: theme.palette.primary.contrastText,
-                        '&:hover': { backgroundColor: theme.palette.primary.dark },
-                        padding: 1,
-                        display: { xs: 'flex', sm: 'none' }
-                    }}
-                >
-                    <AddCircleIcon />
-                </IconButton>
-            </Box>
-
-            <Grid container spacing={2}>
-                <Grid item xs={12} sm={6} sx={{ mt: { xs: -1, sm: -2, md: -2 } }}>
-                    <FiltroPagos nombreCliente={nombreCliente} setNombreCliente={setNombreCliente} />
-                    <Grid container spacing={2} sx={{ marginTop: 2 }}>
+            <Grid
+                container
+                sx={{
+                    mt: 1,
+                    display: 'flex',
+                    flexDirection: { xs: 'column', sm: 'row' },
+                    justifyContent: 'space-between',
+                    alignItems: { xs: 'stretch', sm: 'flex-start' },
+                    gap: 2
+                }}
+            >
+                <Box>
+                    <Box sx={{ mb: 2 }}>
+                        <Typography
+                            variant="h4"
+                            sx={{
+                                fontWeight: 'bold',
+                                color: '#1976d2'
+                            }}
+                        >
+                            Pagos Registrados
+                        </Typography>
+                    </Box>
+                    <Grid container spacing={2} sx={{ mt: 1, maxWidth: 400 }}>
                         <Grid item xs={12} sm={4}>
-                            <FormControl sx={{ width: '100%' }}>
-                                <InputLabel sx={{ color: '#333' }}>Año</InputLabel>
+                            <FormControl fullWidth>
+                                <InputLabel>Año</InputLabel>
                                 <Select
                                     value={year || ''}
                                     label="Año"
                                     onChange={handleYearChange}
-                                    sx={{ fontSize: '0.9rem' }}
                                 >
-                                    {availableYears.length > 0 ? (
-                                        availableYears.map((yearOption) => (
-                                            <MenuItem key={yearOption} value={yearOption}>
-                                                {yearOption}
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem disabled>No hay años disponibles</MenuItem>
-                                    )}
+                                    {availableYears.map((yearOption) => (
+                                        <MenuItem key={yearOption} value={yearOption}>
+                                            {yearOption}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
                         </Grid>
+
                         <Grid item xs={12} sm={4}>
-                            <FormControl sx={{ width: '100%' }}>
-                                <InputLabel sx={{ color: '#333' }}>Mes</InputLabel>
+                            <FormControl fullWidth>
+                                <InputLabel>Mes</InputLabel>
                                 <Select
                                     value={month || ''}
                                     label="Mes"
                                     onChange={handleMonthChange}
-                                    sx={{ fontSize: '0.9rem' }}
                                 >
-                                    {availableMonths.length > 0 ? (
-                                        availableMonths.map((monthOption) => (
-                                            <MenuItem key={monthOption} value={monthOption}>
-                                                {months.find(m => m.number === monthOption)?.name}
-                                            </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem disabled>No hay meses disponibles</MenuItem>
-                                    )}
+                                    {availableMonths.map((monthOption) => (
+                                        <MenuItem key={monthOption} value={monthOption}>
+                                            {months.find(m => m.number === monthOption)?.name}
+                                        </MenuItem>
+                                    ))}
                                 </Select>
                             </FormControl>
                         </Grid>
+
                         <Grid item xs={12} sm={4}>
-                            <FormControl sx={{ width: '100%', position: 'relative' }}>
-                                <InputLabel sx={{ color: '#333' }}>Día</InputLabel>
-                                <Select
-                                    value={day || ''}
-                                    label="Día"
-                                    onChange={handleDayChange}
-                                    disabled={loadingSelectors}
-                                    sx={{ fontSize: '0.9rem' }}
+                            <Box
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'center',
+                                    gap: 1
+                                }}
+                            >
+                                <FormControl
+                                    sx={{
+                                        flex: 1,
+                                        position: 'relative'
+                                    }}
                                 >
-                                    {availableDays.length > 0 ? (
-                                        availableDays.map((dayOption) => (
+                                    <InputLabel>Día</InputLabel>
+                                    <Select
+                                        value={day || ''}
+                                        label="Día"
+                                        onChange={handleDayChange}
+                                        disabled={loadingSelectors}
+                                    >
+                                        {availableDays.map((dayOption) => (
                                             <MenuItem key={dayOption} value={dayOption}>
                                                 {dayOption}
                                             </MenuItem>
-                                        ))
-                                    ) : (
-                                        <MenuItem disabled>No hay días disponibles</MenuItem>
+                                        ))}
+                                    </Select>
+
+                                    {loadingSelectors && (
+                                        <CircularProgress
+                                            size={24}
+                                            sx={{
+                                                position: 'absolute',
+                                                top: '50%',
+                                                left: '50%',
+                                                transform: 'translate(-50%, -50%)'
+                                            }}
+                                        />
                                     )}
-                                </Select>
-                                {loadingSelectors && (
-                                    <CircularProgress
-                                        size={24}
-                                        sx={{
-                                            position: 'absolute',
-                                            top: '50%',
-                                            left: '50%',
-                                            transform: 'translate(-50%, -50%)',
-                                            zIndex: 1,
-                                        }}
-                                    />
-                                )}
-                            </FormControl>
+                                </FormControl>
+
+                                <IconButton
+                                    color="primary"
+                                    onClick={() => navigate('/pagos/form')}
+                                    sx={{
+                                        flexShrink: 0,
+                                        display: { xs: 'flex', sm: 'none' }
+                                    }}
+                                >
+                                    <AddIcon />
+                                </IconButton>
+                            </Box>
                         </Grid>
                     </Grid>
-                </Grid>
+                </Box>
 
-                <Grid
-                    item
-                    xs={12}
-                    sm={6}
-                    sx={{
-                        display: 'flex',
-                        flexDirection: { xs: 'column', sm: 'row' },
-                        marginTop: { xs: 2, sm: -6, md: -8 },
-                        marginBottom: 0,
-                        marginLeft: { xs: 0, sm: 'auto' },
-                        alignItems: { xs: 'flex-start', sm: 'center' },
-                        gap: { xs: 2, sm: 6 }
-                    }}
-                >
-                    <PagosResumen 
-                        diaseleccionado={day} 
-                        pagosDayData={pagosDayData} 
-                        sx={{ width: { xs: '100%', sm: 'auto' } }} 
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end' }}>
+                    <FiltroPagos
+                        nombreCliente={nombreCliente}
+                        setNombreCliente={setNombreCliente}
                     />
-                    <IconButton
-                        color="primary"
-                        onClick={() => navigate('/pagos/form')}
-                        sx={{
-                            fontSize: 30,
-                            backgroundColor: theme.palette.primary.main,
-                            color: theme.palette.primary.contrastText,
-                            '&:hover': { backgroundColor: theme.palette.primary.dark },
-                            padding: 1,
-                            display: { xs: 'none', sm: 'flex' },
-                            alignSelf: { xs: 'flex-end', sm: 'center' }
-                        }}
-                    >
-                        <AddCircleIcon />
-                    </IconButton>
-                </Grid>
+                    <Box sx={{ mb: 2, display: 'flex', gap: 1 }}>
+                        <PagosResumen
+                            diaseleccionado={day}
+                            pagosDayData={pagosDayData}
+                        />
+                        <IconButton
+                            color="primary"
+                            onClick={() => navigate('/pagos/form')}
+                            sx={{
+                            display: { xs: 'none', sm: 'flex' }
+                            }}
+                        >
+                            <AddIcon />
+                        </IconButton>
+                    </Box>
+                </Box>
             </Grid>
 
             {loading && (

@@ -31,7 +31,7 @@ import ProgresosCliente from './Pages/Progresos/ClienteProgresoPage';
 import Reportes from './Components/Reportes/DownloadReports';
 import UnauthorizedPage from './Pages/UnauthorizedPage';
 //import Prueba from './Pages/User/FormPage';
-//import Prueba from './Components/Reportes/DownloadReports';
+import Prueba from './Components/Home/GananciasMensualesChart';
 import {MensajeProvider} from './Context/MensajeContext'
 /*
 import FormularioEjercicioPage from './Pages/Tipo_Ejercicio/FormularioEjercicioPage';
@@ -96,7 +96,7 @@ const router = createBrowserRouter([
       {path: '/programas/:id/details', element: <ProtectedRoute optional ><DetailsPrograma /></ProtectedRoute> },
       {path: '/programas/new', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
       {path: '/programas/:id/update', element: <ProtectedRoute ><ProgramasForm /></ProtectedRoute> },
-      //{path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
+      {path: '/prueba', element: <ProtectedRoute><Prueba /></ProtectedRoute> },
 
       //Usuario
       {path: '/user/register', element: <ProtectedRoute allowedRoles={['SuperAdmin', 'Admin']}><RegisterPage /></ProtectedRoute> },

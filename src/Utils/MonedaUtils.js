@@ -24,6 +24,18 @@ export const obtenerSimboloMoneda = (moneda) => {
     }
 };
 
-export const obtenerMonedaEquivalente = (moneda) => {
-    return moneda === 'NIO' ? 'USD' : 'NIO';
+export const obtenerMonedaEquivalente = (moneda, tipoCambio) => {
+    if (!moneda || !Array.isArray(tipoCambio) || tipoCambio.length === 0) {
+        return null;
+    }
+
+    const cambio = tipoCambio.find(
+        t => t.monedaOrigen === moneda || t.monedaDestino === moneda
+    );
+
+    if (!cambio) return null;
+
+    return cambio.monedaOrigen === moneda
+        ? cambio.monedaDestino
+        : cambio.monedaOrigen;
 };

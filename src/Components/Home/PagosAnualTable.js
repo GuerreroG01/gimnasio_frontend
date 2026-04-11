@@ -1,39 +1,70 @@
-import React, { useMemo } from "react";
-import { Box, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, TablePagination, useTheme, Snackbar,
-  Alert } from "@mui/material";
-import TrendingUpIcon from '@mui/icons-material/TrendingUp';
-import TrendingFlatIcon from '@mui/icons-material/TrendingFlat';
-import TrendingDownIcon from '@mui/icons-material/TrendingDown';
+import React, { useMemo, useState, useEffect } from "react";
+import {
+  Box,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  TablePagination,
+  useTheme,
+  Snackbar,
+  Alert
+} from "@mui/material";
+
+import TrendingUpIcon from "@mui/icons-material/TrendingUp";
+import TrendingFlatIcon from "@mui/icons-material/TrendingFlat";
+import TrendingDownIcon from "@mui/icons-material/TrendingDown";
 
 const rowsPerPageDefault = 5;
 
 const PagosAnualTable = ({ pagosData }) => {
-  const [page, setPage] = React.useState(0);
-  const [openSnackbar, setOpenSnackbar] = React.useState(false);
+  const [page, setPage] = useState(0);
+  const [openSnackbar, setOpenSnackbar] = useState(false);
 
   const theme = useTheme();
   const isDarkMode = theme.palette.mode === "dark";
 
-  const dataConTendencia = useMemo(() => {
+  const dataNormalizada = useMemo(() => {
     if (!pagosData || pagosData.length === 0) {
-      setOpenSnackbar(true);
       return [];
     }
 
-    const sortedData = [...pagosData].sort((a, b) => b.año - a.año);
+    const sorted = [...pagosData].sort((a, b) => b.año - a.año);
 
-    return sortedData.map((item, index, array) => {
-      const prev = array[index - 1] || null;
-      const trend = prev
-        ? item.pagosRealizados > prev.pagosRealizados
+    return sorted.map((item) => ({
+      año: item.año,
+      pagosRealizados: item.pagosRealizados ?? 0
+    }));
+  }, [pagosData]);
+
+  // 🔹 Snackbar
+  useEffect(() => {
+    if (!pagosData || pagosData.length === 0) {
+      setOpenSnackbar(true);
+    }
+  }, [pagosData]);
+
+  // 🔹 Tendencia corregida (comparando con el siguiente año en la lista)
+  const dataConTendencia = useMemo(() => {
+    if (!dataNormalizada.length) return [];
+
+    return dataNormalizada.map((item, index, array) => {
+      const next = array[index + 1] || null;
+
+      const trend = next
+        ? item.pagosRealizados > next.pagosRealizados
           ? { Icon: TrendingUpIcon, color: "#43A047" }
-          : item.pagosRealizados < prev.pagosRealizados
+          : item.pagosRealizados < next.pagosRealizados
             ? { Icon: TrendingDownIcon, color: "#E53935" }
             : { Icon: TrendingFlatIcon, color: "#757575" }
         : { Icon: TrendingFlatIcon, color: "#757575" };
+
       return { ...item, trend };
     });
-  }, [pagosData]);
+  }, [dataNormalizada]);
 
   const handleChangePage = (event, newPage) => setPage(newPage);
 
@@ -46,31 +77,73 @@ const PagosAnualTable = ({ pagosData }) => {
           borderRadius: 2,
           backgroundColor: isDarkMode ? theme.palette.background.default : "#fff",
           width: "fit-content",
-          maxWidth: 400,
+          maxWidth: 400
         }}
       >
         <Table>
           <TableHead sx={{ backgroundColor: isDarkMode ? "#333" : "#f5f5f5" }}>
             <TableRow>
-              <TableCell sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000", minWidth: 50 }}>Año</TableCell>
-              <TableCell align="right" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000", minWidth: 80 }}>Pagos</TableCell>
-              <TableCell align="center" sx={{ fontWeight: "bold", color: isDarkMode ? "#fff" : "#000", minWidth: 50 }}>Tendencia</TableCell>
+              <TableCell
+                sx={{
+                  fontWeight: "bold",
+                  color: isDarkMode ? "#fff" : "#000",
+                  minWidth: 50
+                }}
+              >
+                Año
+              </TableCell>
+
+              <TableCell
+                align="right"
+                sx={{
+                  fontWeight: "bold",
+                  color: isDarkMode ? "#fff" : "#000",
+                  minWidth: 80
+                }}
+              >
+                Pagos
+              </TableCell>
+
+              <TableCell
+                align="center"
+                sx={{
+                  fontWeight: "bold",
+                  color: isDarkMode ? "#fff" : "#000",
+                  minWidth: 50
+                }}
+              >
+                Tendencia
+              </TableCell>
             </TableRow>
           </TableHead>
 
           <TableBody>
             {dataConTendencia.length > 0 ? (
               dataConTendencia
-                .slice(page * rowsPerPageDefault, page * rowsPerPageDefault + rowsPerPageDefault)
+                .slice(
+                  page * rowsPerPageDefault,
+                  page * rowsPerPageDefault + rowsPerPageDefault
+                )
                 .map((item) => (
                   <TableRow
                     key={item.año}
-                    sx={{ "&:hover": { backgroundColor: isDarkMode ? "#444" : "#f0f0f0" } }}
+                    sx={{
+                      "&:hover": {
+                        backgroundColor: isDarkMode ? "#444" : "#f0f0f0"
+                      }
+                    }}
                   >
-                    <TableCell sx={{ textAlign: "center" }}>{item.año}</TableCell>
-                    <TableCell align="right" sx={{ color: item.trend.color }}>
+                    <TableCell sx={{ textAlign: "center" }}>
+                      {item.año}
+                    </TableCell>
+
+                    <TableCell
+                      align="right"
+                      sx={{ color: item.trend.color }}
+                    >
                       {item.pagosRealizados.toLocaleString()}
                     </TableCell>
+
                     <TableCell align="center">
                       <item.trend.Icon sx={{ color: item.trend.color }} />
                     </TableCell>
@@ -94,7 +167,11 @@ const PagosAnualTable = ({ pagosData }) => {
             onPageChange={handleChangePage}
             rowsPerPage={rowsPerPageDefault}
             rowsPerPageOptions={[]}
-            sx={{ "& .MuiTablePagination-toolbar": { justifyContent: "center" } }}
+            sx={{
+              "& .MuiTablePagination-toolbar": {
+                justifyContent: "center"
+              }
+            }}
             labelDisplayedRows={({ from, to, count }) =>
               `${from}–${to} de ${count}`
             }
@@ -102,8 +179,16 @@ const PagosAnualTable = ({ pagosData }) => {
         )}
       </TableContainer>
 
-      <Snackbar open={openSnackbar} autoHideDuration={3000} onClose={() => setOpenSnackbar(false)}>
-        <Alert onClose={() => setOpenSnackbar(false)} severity="error" sx={{ width: "100%" }}>
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={3000}
+        onClose={() => setOpenSnackbar(false)}
+      >
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity="error"
+          sx={{ width: "100%" }}
+        >
           No se encontraron datos de pagos.
         </Alert>
       </Snackbar>

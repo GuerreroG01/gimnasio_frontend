@@ -1,9 +1,10 @@
 import React, { useEffect } from 'react';
 import { Card, CardContent, Typography, Box } from '@mui/material';
 import { useExistencias } from '../../Context/ExistenciaContext';
+import { obtenerSimboloMoneda } from '../../Utils/MonedaUtils';
 
 const ProductosCard = ({ producto, onClick, getCategoryIcon }) => {
-  const monedaSimbolo = producto.moneda === 'USD' ? '$' : 'C$';
+  const monedaSimbolo = obtenerSimboloMoneda(producto.moneda);
   const modelo = 'productos';
   const { existencias } = useExistencias();
   
@@ -52,7 +53,10 @@ const ProductosCard = ({ producto, onClick, getCategoryIcon }) => {
         </Typography>
 
         <Typography variant="body1" color="primary" fontWeight={600}>
-          {monedaSimbolo}{producto.precio.toFixed(2)}
+          <Box component="span" sx={{ fontSize: '0.8em', mr: 0.3 }}>
+            {monedaSimbolo}
+          </Box>
+          {producto.precio.toFixed(2)}
         </Typography>
 
         <Typography

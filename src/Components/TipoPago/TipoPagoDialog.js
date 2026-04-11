@@ -12,6 +12,7 @@ import TipoPagoForm from "./TipoPagoForm";
 import EmptyState from "../../Shared/Components/EmptyState";
 import CustomSnackbar from "../../Shared/Components/CustomSnackbar";
 import Slide from "@mui/material/Slide";
+import TipoCambioService from "../../Services/TipoCambioService";
 
 const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
   const theme = useTheme();
@@ -47,6 +48,7 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
     severity: 'warning'
   });
   const [searchDescripcion, setSearchDescripcion] = React.useState("");
+  const [monedas, setMonedas] = React.useState([]);
 
   const showSnackbar = (message, severity = 'warning') => {
     setSnackbar({
@@ -74,7 +76,12 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
     if (open) loadTipoPagos();
   }, [open, page, pageSize, loadTipoPagos]);
 
-  const handleOpenForm = (tp = null) => {
+  const handleOpenForm = async (tp = null) => {
+    const response = await TipoCambioService.getMonedas();
+    setMonedas(response);
+
+    const defaultMoneda = response?.[0] || "";
+
     setEditPago(
       tp
         ? {
@@ -85,7 +92,7 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
             UnidadTiempo: tp.unidadTiempo,
             Alimentacion: tp.alimentacion,
             Rutinas: tp.rutinas,
-            Moneda: tp.moneda,
+            Moneda: tp.moneda || defaultMoneda,
             Detalle: tp.detalle,
             Categoria: tp.categoria,
             Activo: tp.activo ?? true,
@@ -98,12 +105,13 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
             UnidadTiempo: "Dias",
             Alimentacion: false,
             Rutinas: false,
-            Moneda: "NIO",
+            Moneda: defaultMoneda,
             Detalle: "",
             Categoria: 1,
             Activo: true,
           }
     );
+
     setOpenForm(true);
   };
 
@@ -400,6 +408,7 @@ const TipoPagoDialog = ({ open, onClose, searchOpen, setSearchOpen }) => {
         onClose={handleCloseForm}
         onSubmit={handleSubmitForm}
         loading={loading}
+        monedas={monedas}
       />
     </>
   );

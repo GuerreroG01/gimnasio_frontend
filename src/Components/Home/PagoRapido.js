@@ -24,9 +24,10 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
   const [tiposPago, setTiposPago] = React.useState([]);
   const [tipoPagoSeleccionado, setTipoPagoSeleccionado] = React.useState(null);
 
-  const [moneda, setMoneda] = React.useState('NIO');
+  const [moneda, setMoneda] = React.useState('');
+  const [monedasDisponibles, setMonedasDisponibles] = React.useState([]);
   const [montoBase, setMontoBase] = React.useState(0);
-  const [monedaBase, setMonedaBase] = React.useState('NIO');
+  const [monedaBase, setMonedaBase] = React.useState('');
 
   const [monto, setMonto] = React.useState(0);
   const [efectivo, setEfectivo] = React.useState(0);
@@ -44,9 +45,26 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
 
   useEffect(() => {
     TipoCambioService.getTipoCambios()
-      .then(setTipoCambio)
+        .then((data) => {
+          setTipoCambio(data);
+
+          const monedas = new Set();
+
+          data.forEach((item) => {
+              monedas.add(item.monedaOrigen);
+              monedas.add(item.monedaDestino);
+          });
+
+          const listaMonedas = Array.from(monedas);
+          setMonedasDisponibles(listaMonedas);
+      })
       .catch(console.error);
   }, []);
+  useEffect(() => {
+    if (!moneda && monedasDisponibles.length > 0) {
+      setMoneda(monedasDisponibles[0]);
+    }
+}, [monedasDisponibles, moneda]);
 
   useEffect(() => {
     if (!montoBase) return;
@@ -58,7 +76,7 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
     const nuevoCambio = Math.max(0, (efectivo || 0) - monto);
     setCambio(nuevoCambio);
 
-    const monedaDestino = obtenerMonedaEquivalente(moneda);
+    const monedaDestino = obtenerMonedaEquivalente(moneda, tipoCambio);
     const cambioEq = convertirPrecio(nuevoCambio, moneda, monedaDestino, tipoCambio);
     setCambioEquivalente(cambioEq);
 
@@ -67,24 +85,25 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
   useEffect(() => {
     if (!tipoPagoSeleccionado) return;
 
+    const hoy = dayjs();
+
     let baseFecha = hoy;
 
     if (cliente?.diasRestantes > 0 && cliente?.fechaVencimiento) {
-      baseFecha = dayjs(cliente.fechaVencimiento);
+        baseFecha = dayjs(cliente.fechaVencimiento);
     }
 
     let nuevaFecha = baseFecha;
 
     if (intervaloPago === 1) {
-      nuevaFecha = nuevaFecha.add(mesesPagados, 'month');
+        nuevaFecha = nuevaFecha.add(mesesPagados, 'month');
     } else {
-      nuevaFecha = nuevaFecha.add(mesesPagados, 'day');
+        nuevaFecha = nuevaFecha.add(mesesPagados, 'day');
     }
 
     setNuevaFechaVencimiento(nuevaFecha.format('DD/MM/YYYY'));
 
-  }, [tipoPagoSeleccionado, mesesPagados, intervaloPago, cliente]);
-
+  }, [ tipoPagoSeleccionado, mesesPagados, intervaloPago, cliente ]);
   const handleBuscarTipoPagoDebounced = (inputValue) => {
     if (!inputValue) return;
 
@@ -157,7 +176,7 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
   };
   const resetForm = () => {
     setTipoPagoSeleccionado(null);
-    setMoneda('NIO');
+    setMoneda('');
     setMontoBase(0);
     setMonto(0);
     setEfectivo(0);
@@ -285,7 +304,8 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
                 getOptionLabel={(option) => option?.descripcion || ''}
                 onChange={handleTipoPagoChange}
                 onInputChange={handleTipoPagoInputChange}
-                renderInput={(params) => <TextField {...params} label="Tipo de Pago" fullWidth />}
+                renderInput={(params) => <TextField {...params} label="Membresia" fullWidth />}
+                noOptionsText="Sin resultados"
               />
 
               <TextField
@@ -295,10 +315,13 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
                 value={moneda}
                 onChange={(e) => setMoneda(e.target.value)}
                 sx={{ mt: 2 }}
-              >
-                <MenuItem value="NIO">NIO</MenuItem>
-                <MenuItem value="USD">USD</MenuItem>
-              </TextField>
+            >
+                {monedasDisponibles?.map((moneda) => (
+                    <MenuItem key={moneda} value={moneda}>
+                        {moneda}
+                    </MenuItem>
+                ))}
+            </TextField>
 
               <Paper
                 elevation={0}
@@ -309,9 +332,21 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
                   bgcolor: 'action.hover',
                 }}
               >
-                <Typography variant="h6" fontWeight="bold">
-                  {obtenerSimboloMoneda(moneda)} {monto.toFixed(2)}
-                </Typography>
+                <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                  <Typography variant="h6" fontWeight="bold">
+                      {monto.toFixed(2)}
+                  </Typography>
+
+                  <Typography
+                      variant="caption"
+                      sx={{
+                          color: "text.secondary",
+                          fontSize: "0.75rem"
+                      }}
+                  >
+                      {obtenerSimboloMoneda(moneda)}
+                  </Typography>
+                </Box>
 
                 <TextField
                   fullWidth
@@ -322,18 +357,41 @@ const PagoRapido = ({ anchorEl, cliente, onClose, onPagoRenovado }) => {
                   sx={{ mt: 2 }}
                 />
 
-                <Box mt={2}>
-                  <Typography variant="body2">Cambio:</Typography>
-                  <Typography fontWeight="bold">
-                    {obtenerSimboloMoneda(moneda)} {cambio.toFixed(2)}
-                  </Typography>
+                  <Box sx={{ display: "flex", flexDirection: "column", gap: 0.3 }}>
+                    <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                      <Typography variant="body2">Cambio:</Typography>
 
-                  {cambioEquivalente > 0 && (
-                    <Typography variant="caption" color="text.secondary">
-                      Equivalente: {obtenerSimboloMoneda(obtenerMonedaEquivalente(moneda))}{' '}
-                      {cambioEquivalente.toFixed(2)}
-                    </Typography>
-                  )}
+                      <Typography fontWeight="bold">
+                          {cambio.toFixed(2)}
+                      </Typography>
+
+                      <Typography
+                        variant="caption"
+                          sx={{
+                            color: "text.secondary",
+                            fontSize: "0.75rem"
+                          }}
+                        >
+                          {obtenerSimboloMoneda(moneda)}
+                        </Typography>
+                    </Box>
+                    {cambioEquivalente > 0 && (
+                      <Box sx={{ display: "flex", alignItems: "baseline", gap: 0.5 }}>
+                        <Typography variant="caption" color="text.secondary">
+                          Equivalente:
+                        </Typography>
+
+                        <Typography variant="caption" color="text.secondary">
+                          {cambioEquivalente.toFixed(2)}
+                        </Typography>
+
+                        <Typography variant="caption" color="text.secondary">
+                            {obtenerSimboloMoneda(
+                              obtenerMonedaEquivalente(moneda, tipoCambio)
+                            )}
+                        </Typography>
+                      </Box>
+                    )}
                 </Box>
               </Paper>
             </Grid>

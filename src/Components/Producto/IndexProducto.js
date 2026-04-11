@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import {
   Typography, Grid, Dialog, DialogActions, DialogContent,
   DialogTitle, Button, Container, Box, IconButton,
@@ -22,7 +22,7 @@ const IndexProducto = ({ productos, categorias, categoriaSeleccionada, handleCat
   deleteSuccess, deleteError, handleDelete, getCategoryIcon, snackbar, handleCloseSnackbar }) => {
 
   const navigate = useNavigate();
-  const [page, setPage] = useState(1);
+  const [page, setPage] = React.useState(1);
   const itemsPerPage = 8;
   const theme = useTheme();
 

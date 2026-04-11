@@ -23,7 +23,7 @@ const fieldSx = {
   },
 };
 
-const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading }) => {
+const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading, monedas }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
   const { plan } = React.useContext(AuthContext);
@@ -103,7 +103,7 @@ const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loadi
               fullWidth
               size="small"
               label="Moneda"
-              value={data?.Moneda || "NIO"}
+              value={data?.Moneda || ""}
               onChange={(e) => onChange({ ...data, Moneda: e.target.value })}
               required
               disabled={loading}
@@ -118,8 +118,11 @@ const TipoPagoForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loadi
                 },
               }}
             >
-              <MenuItem value="NIO">NIO</MenuItem>
-              <MenuItem value="USD">USD</MenuItem>
+              {monedas.map((moneda) => (
+                <MenuItem key={moneda} value={moneda}>
+                  {moneda}
+                </MenuItem>
+              ))}
             </TextField>
           </Grid>
 

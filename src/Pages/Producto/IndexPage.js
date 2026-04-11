@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback  } from 'react';
 import productoService from '../../Services/ProductoService';
 import IndexProducto from "../../Components/Producto/IndexProducto";
 import FitnessCenterIcon from '@mui/icons-material/FitnessCenter';
@@ -11,14 +11,14 @@ import BackpackIcon from '@mui/icons-material/Backpack';
 export default function IndexPage() {
     const [productos, setProductos] = useState([]);
     const [categorias, setCategorias] = useState([]);
-    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(1);
+    const [categoriaSeleccionada, setCategoriaSeleccionada] = useState('');
     const [currentProducto, setCurrentProducto] = useState({
         codigoProducto: 0,
         descripcion: '',
         precio: 0,
         existencias: 0,
         categoria: '',
-        moneda: 'NIO',
+        moneda: '',
         stockMinimo: 0,
     });
     const emptyProducto = { ...currentProducto };
@@ -37,10 +37,6 @@ export default function IndexPage() {
         severity: 'success'
     });
 
-    useEffect(() => {
-        fetchCategorias();
-    }, []);
-
     const showSnackbar = (message, severity = 'success') => {
         setSnackbar({
             open: true,
@@ -55,7 +51,7 @@ export default function IndexPage() {
         }));
     };
 
-    const fetchCategorias = async () => {
+    const fetchCategorias = useCallback(async () => {
         try {
             const data = await productoService.getCategorias();
             setCategorias([...data]);
@@ -64,17 +60,23 @@ export default function IndexPage() {
                 const primeraCategoria = data[0];
                 setCategoriaSeleccionada(primeraCategoria);
 
-                const productosIniciales = await productoService.getProductosByCategoria(primeraCategoria);
+                const productosIniciales =
+                    await productoService.getProductosByCategoria(primeraCategoria);
+
                 setProductos(productosIniciales);
             }
         } catch (error) {
             const backendMessage =
-            error?.response?.data ||
-            'Error al obtener categorías.';
+                error?.response?.data || 'Error al obtener categorías.';
 
             showSnackbar(backendMessage, 'error');
         }
-    };
+    }, [])
+    
+    useEffect(() => {
+        fetchCategorias();
+    }, [fetchCategorias]);
+
     useEffect(() => {
         if (!categoriaSeleccionada) return;
 
@@ -94,26 +96,32 @@ export default function IndexPage() {
         setCategoriaSeleccionada(e.target.value);
     };
 
-    const handleOpenEdit = (event, producto) => {
-        setCurrentProducto(producto);
+    const handleOpenEdit = async (event, producto) => {
+        setCurrentProducto({
+            ...producto
+        });
+
         setAnchorEl(event.currentTarget);
     };
 
-    const handleOpenNew = (event) => {
+    const handleOpenNew = async (event) => {
+
         setCurrentProducto({
             codigoProducto: 0,
             descripcion: '',
             precio: 0,
             existencias: 0,
             categoria: '',
-            moneda: 'NIO',
+            moneda:'',
             stockMinimo: 0,
         });
+
         setAnchorEl(event.currentTarget);
     };
 
     const handleClose = () => {
         setAnchorEl(null);
+        document.activeElement?.blur();
     };
 
     const handleChange = (e) => {
@@ -126,8 +134,6 @@ export default function IndexPage() {
         setError('');
         setSuccess('');
 
-        handleClose();
-
         if (!currentProducto.descripcion || currentProducto.precio <= 0 || currentProducto.existencias < 0) {
             setError('Por favor, completa todos los campos obligatorios.');
             setLoading(false);
@@ -135,6 +141,8 @@ export default function IndexPage() {
         }
 
         try {
+            let categoriaFinal = currentProducto.categoria;
+
             if (currentProducto.codigoProducto === 0) {
                 await productoService.createProducto(currentProducto);
                 showSnackbar('Producto creado exitosamente.');
@@ -143,14 +151,29 @@ export default function IndexPage() {
                 showSnackbar('Producto actualizado exitosamente.');
             }
 
-            const productosActuales = await productoService.getProductosByCategoria(categoriaSeleccionada);
-            setProductos(productosActuales);
+            const existeCategoria = categorias.includes(categoriaFinal);
+
+            if (!existeCategoria) {
+                await fetchCategorias();
+            }
+
+            setCategoriaSeleccionada(categoriaFinal);
 
         } catch (error) {
             console.error('Error al guardar el producto:', error);
             showSnackbar(currentProducto.codigoProducto === 0 ? 'Error al crear el producto.' : 'Error al actualizar el producto.');
         } finally {
             setLoading(false);
+            setCurrentProducto({
+                codigoProducto: 0,
+                descripcion: '',
+                precio: 0,
+                existencias: 0,
+                categoria: '',
+                moneda: '',
+                stockMinimo: 0,
+            });
+            handleClose();
             setTimeout(() => setSuccess(''), 2000);
         }
     };

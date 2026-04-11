@@ -328,6 +328,7 @@ export default function FormPage({ pagoId, onSuccess }) {
                 handleTipoPagoChange={handleTipoPagoChange}
                 cambioEquivalente={cambioEquivalente}
                 cargarUltimoPago={cargarUltimoPago}
+                tipoCambio={tipoCambio}
             />
             <CustomSnackbar
                 open={snackbar.open}

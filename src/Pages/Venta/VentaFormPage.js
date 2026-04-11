@@ -137,7 +137,7 @@ export default function VentaFormPage() {
         );
     }, [efectivo, totalMostrado]);
 
-    const monedaEquivalente = obtenerMonedaEquivalente(monedaTotal);
+    const monedaEquivalente = obtenerMonedaEquivalente(monedaTotal, tipoCambio);
     const simboloCambioEquivalente = obtenerSimboloMoneda(monedaEquivalente);
 
     const totalEquivalente = monedaTotal === 'NIO' ? totalUSD : totalNIO;

@@ -1,3 +1,4 @@
+import React, { useEffect } from "react";
 import { 
   Box, TextField, Button, Stack, Typography, CircularProgress, Popover, Paper, InputAdornment,
   Grid, Alert, AlertTitle, MenuItem, Select, FormControl, InputLabel, useTheme, useMediaQuery,
@@ -5,9 +6,11 @@ import {
 } from "@mui/material";
 import DescriptionIcon from "@mui/icons-material/Description";
 import AttachMoneyIcon from "@mui/icons-material/AttachMoney";
+import PaymentsIcon from "@mui/icons-material/Payments";
 import InventoryIcon from "@mui/icons-material/Inventory";
 import CategoryIcon from "@mui/icons-material/Category";
 import DeleteIcon from '@mui/icons-material/Delete';
+import TipoCambioService from "../../Services/TipoCambioService";
 
 const fieldSx = {
   "& .MuiOutlinedInput-root": {
@@ -23,20 +26,12 @@ const fieldSx = {
   },
 };
 
-const ProductoForm = ({
-  anchorEl,
-  open,
-  currentProducto,
-  handleChange,
-  onClose,
-  onSubmit,
-  loading,
-  success,
-  error,
-  handleDelete
-}) => {
+const ProductoForm = ({ anchorEl, open, currentProducto, handleChange, onClose, onSubmit, loading,
+  success, error, handleDelete }) => {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("sm"));
+  const [monedas, setMonedas] = React.useState([]);
+  const [loadingMonedas, setLoadingMonedas] = React.useState(false);
 
   const categoriaMap = {
     'Bebidas Y Alimentos': 'Bebidas y Alimentos',
@@ -45,7 +40,23 @@ const ProductoForm = ({
   };
 
   const normalizedCategoria = categoriaMap[currentProducto.categoria] || currentProducto.categoria || '';
+  useEffect(() => {
+    if (!open) return;
 
+    const loadMonedas = async () => {
+      setLoadingMonedas(true);
+      try {
+        const response = await TipoCambioService.getMonedas();
+        setMonedas(response);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoadingMonedas(false);
+      }
+    };
+
+    loadMonedas();
+  }, [open]);
   const content = (
     <Paper
       sx={{
@@ -104,7 +115,7 @@ const ProductoForm = ({
             <FormControl fullWidth size="small" disabled={loading} sx={{ ...fieldSx, backgroundColor: theme.palette.background.paper }}>
               <InputLabel>Categoría</InputLabel>
               <Select
-                value={normalizedCategoria}
+                value={normalizedCategoria || ''}
                 onChange={handleChange}
                 name="categoria"
                 label="Categoría"
@@ -116,11 +127,11 @@ const ProductoForm = ({
                 }
               >
                 <MenuItem value="Suplementos">Suplementos</MenuItem>
-                <MenuItem value="Equipos de Entrenamiento">Equipos de Entrenamiento</MenuItem>
+                <MenuItem value="Equipos de Entrenamiento">Equipos</MenuItem>
                 <MenuItem value="Accesorios Deportivos">Accesorios</MenuItem>
-                <MenuItem value="Bebidas y Alimentos">Bebidas y Alimentos</MenuItem>
+                <MenuItem value="Bebidas y Alimentos">Bebidas</MenuItem>
                 <MenuItem value="Recuperación y Cuidado Personal">Cuidado Personal</MenuItem>
-                <MenuItem value="Clases y Servicios">Clases y Servicios</MenuItem>
+                <MenuItem value="Clases y Servicios">Servicios</MenuItem>
                 <MenuItem value="Otros">Otros</MenuItem>
               </Select>
             </FormControl>
@@ -153,19 +164,34 @@ const ProductoForm = ({
             <FormControl fullWidth size="small" disabled={loading} sx={{ backgroundColor: theme.palette.background.paper }}>
               <InputLabel>Moneda</InputLabel>
               <Select
-                value={currentProducto.moneda}
+                value={
+                  monedas.length > 0 &&
+                  monedas.includes(currentProducto.moneda)
+                    ? currentProducto.moneda
+                    : ""
+                }
                 onChange={handleChange}
                 name="moneda"
                 label="Moneda"
-                sx={{ width: '100%' }}
                 startAdornment={
                   <InputAdornment position="start">
-                    <AttachMoneyIcon fontSize="small" />
+                    <PaymentsIcon fontSize="small" />
                   </InputAdornment>
                 }
               >
-                <MenuItem value="NIO">NIO</MenuItem>
-                <MenuItem value="USD">USD</MenuItem>
+                {loadingMonedas ? (
+                  <MenuItem disabled>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <CircularProgress size={18} />
+                    </Box>
+                  </MenuItem>
+                ) : (
+                  monedas.map((moneda) => (
+                    <MenuItem key={moneda} value={moneda}>
+                      {moneda}
+                    </MenuItem>
+                  ))
+                )}
               </Select>
             </FormControl>
           </Grid>
@@ -243,6 +269,7 @@ const ProductoForm = ({
           sx: { borderRadius: 3, boxShadow: "0px 12px 32px rgba(0,0,0,0.15)" },
         },
       }}
+      disableRestoreFocus
     >
       {content}
     </Popover>

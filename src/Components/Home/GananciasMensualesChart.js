@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
 import { BarChart, useAnimateBar, useDrawingArea } from "@mui/x-charts";
 import { useTheme } from "@mui/material/styles";
-import { Box, FormControl, InputLabel, MenuItem, Select, Typography, Snackbar, Alert,
-    useMediaQuery } from "@mui/material";
+import { Box, FormControl, InputLabel, MenuItem, Select, Typography, Snackbar, Alert, useMediaQuery } from "@mui/material";
 import PagoService from "../../Services/PagoService";
 
 const mesesNombres = [
@@ -14,6 +13,7 @@ const GananciasMensualesChart = ({ pagosData }) => {
     const [añosDisponibles, setAñosDisponibles] = React.useState([]);
     const [añoSeleccionado, setAñoSeleccionado] = React.useState(null);
     const [chartData, setChartData] = React.useState(null);
+    const [monedas, setMonedas] = React.useState([]);
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
 
     const theme = useTheme();
@@ -34,22 +34,37 @@ const GananciasMensualesChart = ({ pagosData }) => {
         const fetchMeses = async () => {
             try {
                 const response = await PagoService.getMesesConPagos(añoSeleccionado);
+
                 if (!response || response.length === 0) {
                     setChartData(null);
+                    setMonedas([]);
                     setOpenSnackbar(true);
                     return;
                 }
 
-                const formattedData = response.map(item => ({
-                    mes: mesesNombres[item.mes - 1],
-                    gananciasNIO: item.totalGananciasNIO,
-                    gananciasUSD: item.totalGananciasUSD,
-                }));
+                // 🔥 detectar monedas dinámicamente
+                const currencySet = new Set();
 
+                const formattedData = response.map(item => {
+                    const row = {
+                        mes: mesesNombres[item.mes - 1],
+                        ...item.totalesPorMoneda
+                    };
+
+                    Object.keys(item.totalesPorMoneda || {}).forEach(moneda => {
+                        currencySet.add(moneda);
+                    });
+
+                    return row;
+                });
+
+                setMonedas(Array.from(currencySet));
                 setChartData(formattedData);
+
             } catch (error) {
                 console.error(error);
                 setChartData(null);
+                setMonedas([]);
                 setOpenSnackbar(true);
             }
         };
@@ -57,10 +72,19 @@ const GananciasMensualesChart = ({ pagosData }) => {
         fetchMeses();
     }, [añoSeleccionado]);
 
+    const series = monedas.map((moneda, index) => ({
+        id: moneda,
+        dataKey: moneda,
+        label: `Ingresos (${moneda})`,
+        color: ["#1976d2", "#2e7d32"][index % 2],
+        valueFormatter: (v) => `${moneda} ${Number(v).toLocaleString()}`
+    }));
+
     return (
         <Box sx={{ width: "100%", textAlign: "center" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Typography variant="h6">Ganancias Mensuales</Typography>
+                <Typography variant="h6">Ingresos Mensuales</Typography>
+
                 <FormControl variant="filled" sx={{ minWidth: 120 }}>
                     <InputLabel>Año</InputLabel>
                     <Select
@@ -80,15 +104,14 @@ const GananciasMensualesChart = ({ pagosData }) => {
                     height={chartHeight}
                     dataset={chartData}
                     layout="horizontal"
-                    xAxis={[
-                        { id: "nio", min: 0, valueFormatter: v => `C$${v.toLocaleString()}`, disableTicks: true, tickLabelStyle: { display: "none" }},
-                        { id: "usd", min: 0, valueFormatter: v => `$${v.toFixed(2)}` }
+                    series={series}
+                    yAxis={[
+                        {
+                            scaleType: "band",
+                            dataKey: "mes",
+                            width: 110
+                        }
                     ]}
-                    series={[
-                        { id: "gananciasNIO", dataKey: "gananciasNIO", label: "Ganancias NIO", xAxisId: "nio", color: "#1976d2", valueFormatter: (v) => `C$${v.toLocaleString()}`, barLabel: (v) => `C$${v.value.toLocaleString()}`},
-                        { id: "gananciasUSD", dataKey: "gananciasUSD", label: "Ganancias USD", xAxisId: "usd", color: "#2e7d32", valueFormatter: (v) => `$${v.toFixed(2)}`, barLabel: (v) => `$${v.value.toLocaleString()}`},
-                    ]}
-                    yAxis={[{ scaleType: "band", dataKey: "mes", width: 110 }]}
                     slots={{ bar: BarShadedBackground }}
                 />
             ) : (
@@ -104,7 +127,9 @@ const GananciasMensualesChart = ({ pagosData }) => {
                 autoHideDuration={3000}
                 onClose={() => setOpenSnackbar(false)}
             >
-                <Alert severity="error">No se encontraron datos para el año seleccionado.</Alert>
+                <Alert severity="error">
+                    No se encontraron datos para el año seleccionado.
+                </Alert>
             </Snackbar>
         </Box>
     );

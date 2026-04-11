@@ -20,7 +20,6 @@ const fadeInUp = keyframes`
 `;
 
 const PagosCards = ({ pagos, onPagoDeleted }) => {
-  console.log('Renderizando PagosCards con pagos:', pagos);
   const [openModal, setOpenModal] = useState(false);
   const [pagoSeleccionado, setPagoSeleccionado] = useState(null);
   const [pagoAEliminar, setPagoAEliminar] = useState(null);
@@ -28,21 +27,15 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
   const [infopago, setinfopago] = useState(null);
   //const navigate = useNavigate();
   const theme = useTheme();
-  const formatearMonto = (monto, moneda) => {
-    const simbolo = obtenerSimboloMoneda(moneda || '');
-
+  const formatearMonto = (monto) => {
     const montoNumero = Number(monto);
-    const montoFormateado = isNaN(montoNumero)
+
+    return isNaN(montoNumero)
       ? '0.00'
       : montoNumero.toLocaleString('es-NI', {
           minimumFractionDigits: 2,
           maximumFractionDigits: 2
         });
-    if (!simbolo) {
-      return `${moneda || ''} ${montoFormateado}`;
-    }
-
-    return `${simbolo}${montoFormateado}`;
   };
   const { rol } = useContext(AuthContext);
   const isAdminorSuper = rol === 'Admin' || rol === 'SuperAdmin';
@@ -142,9 +135,21 @@ const PagosCards = ({ pagos, onPagoDeleted }) => {
                     {pago.cliente ? pago.cliente.nombreCompleto : 'Cliente no disponible'}
                   </Typography>
                   <Divider sx={{ marginY: 1 }} />
-                  <Typography variant="body1" sx={{ marginBottom: 0.5 }}>
-                    <strong>Monto:</strong> {formatearMonto(pago.monto, pago.moneda)}
-                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                    <Typography variant="body1">
+                      <strong>Monto:</strong> {formatearMonto(pago.monto)}
+                    </Typography>
+
+                    <Typography
+                      variant="caption"
+                      sx={{
+                        color: 'text.secondary',
+                        fontSize: '0.75rem'
+                      }}
+                    >
+                      {obtenerSimboloMoneda(pago.moneda)}
+                    </Typography>
+                  </Box>
                   <Typography variant="body2" color="text.secondary">
                     <strong>Fecha de Pago:</strong> {new Date(pago.fechaPago).toLocaleDateString()}
                   </Typography>

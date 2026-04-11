@@ -1,62 +1,151 @@
 import React from 'react';
-import { Card, CardContent, Typography, Grid, Divider, Box } from '@mui/material';
+import { Box, Typography, IconButton, Popover, Tooltip } from '@mui/material';
+import { useTheme } from '@mui/material/styles';
 import PaymentIcon from '@mui/icons-material/Payment';
-import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 
 const PagosResumen = ({ diaseleccionado, pagosDayData }) => {
 
-    const diaData = pagosDayData.find((data) => data.dia === diaseleccionado);
+    const theme = useTheme();
+    const isDark = theme.palette.mode === 'dark';
+
+    const [anchorEl, setAnchorEl] = React.useState(null);
+
+    const handleOpen = (event) => {
+        setAnchorEl(event.currentTarget);
+    };
+
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+
+    const open = Boolean(anchorEl);
+
+    const diaData = pagosDayData?.find(
+        (data) => data.dia === diaseleccionado
+    );
 
     return (
-        <Grid container spacing={2} sx={{ marginTop: 2, justifyContent: 'center' }}>
-            <Grid item xs={12} sm={6} md={4}>
-                <Card sx={{ width: { xs: '100%', sm: '90%' }, boxShadow: 3, borderRadius: 3, padding: 2, maxHeight: 150, border: '1px solid #e0e0e0' }}>
-                    <CardContent>
-                        <Typography variant="h6" sx={{ fontWeight: 600, color: '#1976d2', textAlign: 'center' }}>
-                            Día: {diaseleccionado}
+        <Box>
+            <Tooltip title="Ver resumen de pagos" arrow>
+                <IconButton onClick={handleOpen} color="primary">
+                    <PaymentIcon />
+                </IconButton>
+            </Tooltip>
+
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center'
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center'
+                }}
+            >
+                <Box
+                    sx={{
+                        p: 0,
+                        minWidth: 280,
+                        borderRadius: 2,
+                        overflow: 'hidden',
+                        backgroundColor: isDark ? '#1e1e1e' : '#fff'
+                    }}
+                >
+                    <Box
+                        sx={{
+                        px: 2,
+                        py: 1.2,
+                        background: isDark
+                            ? 'linear-gradient(90deg, #1565c0, #1e88e5)'
+                            : 'linear-gradient(90deg, #1976d2, #42a5f5)',
+                        color: 'white'
+                        }}
+                    >
+                        <Typography variant="caption" sx={{ opacity: 0.9 }}>
+                            Resumen del día
                         </Typography>
-
-                        <Divider sx={{ my: 1.5 }} />
-
+                        <Typography variant="subtitle2" fontWeight={600}>
+                            {diaseleccionado}
+                        </Typography>
+                    </Box>
+                    <Box sx={{ p: 1.5 }}>
                         {diaData ? (
-                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <PaymentIcon color="primary" fontSize="small" />
-                                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                        Pagos realizados:
+                            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.2 }}>
+                                <Box
+                                    sx={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        alignItems: 'center',
+                                        px: 1.5,
+                                        py: 1,
+                                        borderRadius: 2,
+                                        backgroundColor: isDark ? '#2a2a2a' : '#f5f7ff'
+                                    }}
+                                >
+                                    <Typography variant="body2" fontWeight={600}>
+                                        Pagos
                                     </Typography>
-                                    <Typography variant="body2">{diaData.pagosRealizados}</Typography>
+
+                                    <Typography
+                                        variant="subtitle2"
+                                        sx={{
+                                        fontWeight: 700,
+                                        color: isDark ? '#90caf9' : '#1976d2'
+                                        }}
+                                    >
+                                        {diaData.pagosRealizados}
+                                    </Typography>
                                 </Box>
 
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <AttachMoneyIcon color="success" fontSize="small" />
-                                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                        Total NIO:
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        C${diaData.totalNIO.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                                    </Typography>
-                                </Box>
+                                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.8 }}>
+                                    {diaData.totalesPorMoneda &&
+                                        Object.entries(diaData.totalesPorMoneda).map(([moneda, valor]) => (
+                                        <Box
+                                            key={moneda}
+                                            sx={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            alignItems: 'center',
+                                            px: 1.2,
+                                            py: 0.7,
+                                            borderRadius: 2,
+                                            backgroundColor: isDark ? '#262626' : '#fafafa',
+                                            border: `1px solid ${isDark ? '#333' : '#eee'}`
+                                            }}
+                                        >
+                                            <Typography variant="body2" fontWeight={600}>
+                                            {moneda}
+                                            </Typography>
 
-                                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                                    <AttachMoneyIcon color="secondary" fontSize="small" />
-                                    <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                                        Total USD:
-                                    </Typography>
-                                    <Typography variant="body2">
-                                        ${diaData.totalUSD.toLocaleString(undefined, { minimumFractionDigits: 2 })}
+                                            <Typography
+                                            variant="body2"
+                                            sx={{
+                                                fontWeight: 600,
+                                                color: isDark ? '#e0e0e0' : '#333'
+                                            }}
+                                            >
+                                            {Number(valor || 0).toLocaleString(undefined, {
+                                                minimumFractionDigits: 2
+                                            })}
+                                            </Typography>
+                                        </Box>
+                                        ))}
+                                    </Box>
+                                </Box>
+                                ) : (
+                                <Box sx={{ textAlign: 'center', py: 2 }}>
+                                    <Typography variant="body2" color="text.secondary">
+                                    No hay datos disponibles
                                     </Typography>
                                 </Box>
-                            </Box>
-                        ) : (
-                            <Typography variant="body2" sx={{ marginTop: 1, textAlign: 'center', color: '#757575' }}>
-                                No hay datos disponibles para este día.
-                            </Typography>
-                        )}
-                    </CardContent>
-                </Card>
-            </Grid>
-        </Grid>
+                            )}
+                        </Box>
+                    </Box>
+            </Popover>
+        </Box>
     );
 };
 

@@ -16,7 +16,7 @@ const fieldSx = {
   },
 };
 
-const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading }) => {
+const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loading, tipoCambios }) => {
     return (
         <Popover
             open={open}
@@ -35,7 +35,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
             >
             <Paper sx={{ p: 4, width: 460 }}>
                 <Typography variant="h6" mb={3} fontWeight={600} textAlign="center">
-                {data?.Id ? "Editar Tipo de Cambio" : "Nuevo Tipo de Cambio"}
+                {data?.Id ? "Editar Tipo de Cambio" : "Tipo de Cambio"}
                 </Typography>
 
                 <Box component="form" onSubmit={onSubmit}>
@@ -49,7 +49,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
                         value={data?.monedaOrigen || ""}
                         onChange={(e) => onChange({ ...data, monedaOrigen: e.target.value.toUpperCase() })}
                         required
-                        disabled={loading}
+                        disabled
                         sx={fieldSx}
                         inputProps={{ maxLength: 3 }}
                     />
@@ -64,7 +64,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
                         value={data?.monedaDestino || ""}
                         onChange={(e) => onChange({ ...data, monedaDestino: e.target.value.toUpperCase() })}
                         required
-                        disabled={loading}
+                        disabled
                         sx={fieldSx}
                         inputProps={{ maxLength: 3 }}
                     />
@@ -104,7 +104,7 @@ const TipoCambioForm = ({ anchorEl, open, data, onChange, onClose, onSubmit, loa
                         value={data?.Fecha ? data.Fecha.split("T")[0] : new Date().toISOString().split("T")[0]}
                         onChange={(e) => onChange({ ...data, fecha: e.target.value })}
                         required
-                        disabled={loading}
+                        disabled
                         sx={fieldSx}
                         InputLabelProps={{ shrink: true }}
                         InputProps={{

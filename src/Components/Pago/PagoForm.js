@@ -3,8 +3,7 @@ import dayjs from 'dayjs';
 import { obtenerSimboloMoneda, obtenerMonedaEquivalente } from '../../Utils/MonedaUtils';
 
 const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes, handleInputChange, tiposPago, loadingTiposPago,
-  handleTipoPagoInputChange, handleTipoPagoChange, cambioEquivalente, cargarUltimoPago
- }) => {
+  handleTipoPagoInputChange, handleTipoPagoChange, cambioEquivalente, cargarUltimoPago, tipoCambio }) => {
   const theme = useTheme();
   if (loading) return <CircularProgress />;
   return (
@@ -203,7 +202,10 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
                       Monto
                     </Typography>
                     <Typography variant="h6" mb={1}>
-                      {obtenerSimboloMoneda(formik.values.Moneda)} {formik.values.Monto.toFixed(2)}
+                      <Box component="span" sx={{ fontSize: '0.8em', mr: 0.3 }}>
+                        {obtenerSimboloMoneda(formik.values.Moneda)}
+                      </Box>
+                      {formik.values.Monto.toFixed(2)}
                     </Typography>
                     <TextField
                       fullWidth
@@ -220,11 +222,14 @@ const PagoForm = ({ formik, loading, pagoId, monedas, clientes, loadingClientes,
                       Cambio
                     </Typography>
                     <Typography variant="h6">
-                      {obtenerSimboloMoneda(formik.values.Moneda)} {formik.values.Cambio.toFixed(2)}
+                      <Box component="span" sx={{ fontSize: '0.8em', mr: 0.3 }}>
+                        {obtenerSimboloMoneda(formik.values.Moneda)}
+                      </Box>
+                      {formik.values.Cambio.toFixed(2)}
                     </Typography>
                     {cambioEquivalente > 0 && (
                       <Typography variant="caption" color="text.secondary">
-                        Equivalente: {obtenerSimboloMoneda(obtenerMonedaEquivalente(formik.values.Moneda))}{' '}
+                        Equivalente: {obtenerSimboloMoneda(obtenerMonedaEquivalente(formik.values.Moneda, tipoCambio))}{' '}
                         {cambioEquivalente.toFixed(2)}
                       </Typography>
                     )}
