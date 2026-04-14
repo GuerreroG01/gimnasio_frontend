@@ -1,13 +1,28 @@
 import React, { useEffect } from "react";
-import { BarChart, useAnimateBar, useDrawingArea } from "@mui/x-charts";
+import { BarChart } from "@mui/x-charts";
 import { useTheme } from "@mui/material/styles";
-import { Box, FormControl, InputLabel, MenuItem, Select, Typography, Snackbar, Alert, useMediaQuery } from "@mui/material";
+import {
+    Box,
+    FormControl,
+    InputLabel,
+    MenuItem,
+    Select,
+    Typography,
+    Snackbar,
+    Alert,
+    useMediaQuery,
+} from "@mui/material";
 import PagoService from "../../Services/PagoService";
 
 const mesesNombres = [
     "Enero","Febrero","Marzo","Abril","Mayo","Junio",
     "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
 ];
+
+const colorMap = {
+    NIO: "#1976d2",
+    USD: "#2e7d32",
+};
 
 const GananciasMensualesChart = ({ pagosData }) => {
     const [añosDisponibles, setAñosDisponibles] = React.useState([]);
@@ -42,13 +57,12 @@ const GananciasMensualesChart = ({ pagosData }) => {
                     return;
                 }
 
-                // 🔥 detectar monedas dinámicamente
                 const currencySet = new Set();
 
                 const formattedData = response.map(item => {
                     const row = {
                         mes: mesesNombres[item.mes - 1],
-                        ...item.totalesPorMoneda
+                        ...(item.totalesPorMoneda || {})
                     };
 
                     Object.keys(item.totalesPorMoneda || {}).forEach(moneda => {
@@ -58,7 +72,14 @@ const GananciasMensualesChart = ({ pagosData }) => {
                     return row;
                 });
 
-                setMonedas(Array.from(currencySet));
+                // 🎯 FORZAMOS ORDEN FIJO (importante para UX)
+                const orderedCurrencies = Array.from(currencySet).sort((a, b) => {
+                    if (a === "NIO") return -1;
+                    if (b === "NIO") return 1;
+                    return 0;
+                });
+
+                setMonedas(orderedCurrencies);
                 setChartData(formattedData);
 
             } catch (error) {
@@ -72,12 +93,14 @@ const GananciasMensualesChart = ({ pagosData }) => {
         fetchMeses();
     }, [añoSeleccionado]);
 
-    const series = monedas.map((moneda, index) => ({
+    const series = monedas.map((moneda) => ({
         id: moneda,
         dataKey: moneda,
         label: `Ingresos (${moneda})`,
-        color: ["#1976d2", "#2e7d32"][index % 2],
-        valueFormatter: (v) => `${moneda} ${Number(v).toLocaleString()}`
+        color: colorMap[moneda] || "#27b065",
+
+        valueFormatter: (v) =>
+            ` ${Number(v).toLocaleString()}`
     }));
 
     return (
@@ -109,10 +132,12 @@ const GananciasMensualesChart = ({ pagosData }) => {
                         {
                             scaleType: "band",
                             dataKey: "mes",
-                            width: 110
+                            width: 110,
                         }
                     ]}
-                    slots={{ bar: BarShadedBackground }}
+                    slots={{
+                        legend: () => null,
+                    }}
                 />
             ) : (
                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: chartHeight }}>
@@ -136,17 +161,3 @@ const GananciasMensualesChart = ({ pagosData }) => {
 };
 
 export default GananciasMensualesChart;
-
-function BarShadedBackground(props) {
-    const { ownerState, ...other } = props;
-    const theme = useTheme();
-    const animatedProps = useAnimateBar(props);
-    const { width } = useDrawingArea();
-
-    return (
-        <>
-            <rect {...other} fill={(theme.vars || theme).palette.text.primary} opacity={theme.palette.mode === "dark" ? 0.05 : 0.08} x={other.x} width={width} />
-            <rect {...other} opacity={ownerState?.isFaded ? 0.3 : 1} {...animatedProps} />
-        </>
-    );
-}
