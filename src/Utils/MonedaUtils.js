@@ -25,11 +25,13 @@ export const obtenerSimboloMoneda = (moneda) => {
 };
 
 export const obtenerMonedaEquivalente = (moneda, tipoCambio) => {
-    if (!moneda || !Array.isArray(tipoCambio) || tipoCambio.length === 0) {
-        return null;
-    }
+    console.log('Obteniendo moneda equivalente para:', moneda);
+    console.log('Tipo de cambio disponible:', tipoCambio);
+    if (!moneda) return null;
 
-    const cambio = tipoCambio.find(
+    const lista = Array.isArray(tipoCambio) ? tipoCambio : [];
+
+    const cambio = lista.find(
         t => t.monedaOrigen === moneda || t.monedaDestino === moneda
     );
 
@@ -38,4 +40,12 @@ export const obtenerMonedaEquivalente = (moneda, tipoCambio) => {
     return cambio.monedaOrigen === moneda
         ? cambio.monedaDestino
         : cambio.monedaOrigen;
+};
+export const formatMoney = (value, locale = 'es-NI', currency = null) => {
+    if (value === null || value === undefined || isNaN(value)) return '0.00';
+
+    return new Intl.NumberFormat(locale, {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+    }).format(value);
 };

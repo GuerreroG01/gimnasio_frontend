@@ -7,8 +7,6 @@ const DetailsPago = ({ open, onClose, pago, infopago, obtenerSimboloMoneda }) =>
   const clienteNombre = pago.cliente ? pago.cliente.nombreCompleto : 'Cliente no encontrado';
   const fechaPago = new Date(pago.fechaPago);
   const mesesPagados = pago.intervaloPago ? `Meses Pagados: ${pago.mesesPagados}` : `Días Pagados: ${pago.mesesPagados}`;
-  //Hay que seguir el rastro para saber de que metodo obtiene el pago
-  const monto = `Monto: ${obtenerSimboloMoneda(pago.moneda)}${pago.monto}`;
   const detallePago = `Detalle: ${pago.detallePago}`;
   const nombreTipoPago = `Tipo de Pago: ${pago.nombreTipoPagoDto ? pago.nombreTipoPagoDto?.descripcion : 'Tipo de Pago Desconocido'}`;
   return (
@@ -70,9 +68,28 @@ const DetailsPago = ({ open, onClose, pago, infopago, obtenerSimboloMoneda }) =>
           {mesesPagados}
         </Typography>
 
-        <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
-          {monto}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+          <Typography
+            variant="body1"
+            gutterBottom
+            sx={{
+              fontSize: '1rem',
+              color: 'text.secondary'
+            }}
+          >
+            Monto : {pago.monto}
+          </Typography>
+
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              fontSize: '0.75rem'
+            }}
+          >
+            {obtenerSimboloMoneda(pago.moneda)}
+          </Typography>
+        </Box>
 
         <Typography variant="body1" gutterBottom sx={{ fontSize: '1rem', color: 'text.secondary' }}>
           {detallePago}

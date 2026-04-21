@@ -1,9 +1,10 @@
 import { Box, Typography, Button, TextField, Divider, CircularProgress, Chip, Pagination, Stack, Tooltip, IconButton, Select, MenuItem } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import { obtenerSimboloMoneda, formatMoney } from '../../Utils/MonedaUtils';
 
 const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProducto, fechaVenta, totalPages,
     page, setPage, itemsPerPage, monedaTotal, setMonedaTotal, simboloMoneda, totalMostrado, mostrarFactura, isLoading, 
-    productosPaginados, existencias, handleCantidadChangeLocal, theme, alpha
+    productosPaginados, existencias, handleCantidadChangeLocal, theme, alpha, monedasDisponibles
   }) => {
   return (
     <Box
@@ -34,7 +35,7 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
         {productosPaginados.map(({ producto, cantidad }, index) => {
           const existenciasActual = existencias?.[producto.codigoProducto] ?? producto.existencias ?? 0;
           const subtotal = producto.precio * cantidad;
-          const monedaSimbolo = producto.moneda === 'USD' ? '$' : 'C$';
+          const monedaSimbolo = obtenerSimboloMoneda(producto.moneda);
 
           return (
             <Box
@@ -84,14 +85,40 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
                 inputProps={{ min: 1, max: existenciasActual }}
                 sx={{ width: 60, color: (theme) => theme.palette.text.primary }}
               />
-
-              <Typography variant="body2" align="right" sx={{ color: (theme) => theme.palette.text.primary }}>
-                {monedaSimbolo}{producto.precio.toFixed(2)}
-              </Typography>
-
-              <Typography variant="body2" align="right" fontWeight="bold" sx={{ color: (theme) => theme.palette.text.primary }}>
-                {monedaSimbolo}{subtotal.toFixed(2)}
-              </Typography>
+              
+              <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                <Typography variant="body2" align="right" sx={{ color: (theme) => theme.palette.text.primary }}>
+                  {producto.precio.toFixed(2)}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: '0.75rem'
+                  }}
+                >
+                  {monedaSimbolo}
+                </Typography>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                <Typography
+                  variant="body2"
+                  align="right"
+                  fontWeight="bold"
+                  sx={{ color: (theme) => theme.palette.text.primary }}
+                >
+                  {formatMoney(subtotal)}
+                </Typography>
+                <Typography
+                  variant="caption"
+                  sx={{
+                    color: 'text.secondary',
+                    fontSize: '0.75rem'
+                  }}
+                >
+                  {monedaSimbolo}
+                </Typography>
+              </Box>
 
               <IconButton
                 color="error"
@@ -136,14 +163,27 @@ const DatosVenta = ({ productosSeleccionados, onCantidadChange, onEliminarProduc
             value={monedaTotal}
             onChange={(e) => setMonedaTotal(e.target.value)}
           >
-            <MenuItem value="USD">USD</MenuItem>
-            <MenuItem value="NIO">NIO</MenuItem>
+            {monedasDisponibles.map((moneda) => (
+              <MenuItem key={moneda.value} value={moneda.value}>
+                {moneda.label}
+              </MenuItem>
+            ))}
           </Select>
         </Box>
-
-        <Typography variant="h6" fontWeight="bold" color="primary">
-          {simboloMoneda}{totalMostrado.toFixed(2)}
-        </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+          <Typography variant="h6" fontWeight="bold" color="primary">
+            {formatMoney(totalMostrado)}
+          </Typography>
+          <Typography
+            variant="caption"
+            sx={{
+              color: 'text.secondary',
+              fontSize: '0.75rem'
+            }}
+          >
+            {simboloMoneda}
+          </Typography>
+        </Box>
       </Box>
 
       <Button

@@ -167,9 +167,11 @@ export default function FormPage({ pagoId, onSuccess }) {
         if (values.Cambio !== cambio) {
             setFieldValue("Cambio", cambio);
         }
-
-        const monedaDestino = obtenerMonedaEquivalente(values.Moneda);
+        //console.log('La moneda es:', values.Moneda);
+        const monedaDestino = obtenerMonedaEquivalente(values.Moneda, tipoCambio);
+        console.log('Moneda destino para equivalencia:', monedaDestino);
         const cambioEq = convertirPrecio(cambio, values.Moneda, monedaDestino, tipoCambio);
+        //console.log('Cambio:', cambio, 'Equivalente en', monedaDestino, ':', cambioEq);
         if (cambioEq !== cambioEquivalente) {
             setCambioEquivalente(cambioEq);
         }

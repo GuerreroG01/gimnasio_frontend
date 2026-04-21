@@ -9,9 +9,8 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
   openSnackbar, setOpenSnackbar, handleBuscarDescripcion, descripcion, productosFiltrados, onEliminarProducto, mostrarPago, handleVolver,
   handleCompletarVenta, totalPages, page, setPage, itemsPerPage, monedaTotal, setMonedaTotal, simboloMoneda, totalMostrado, mostrarFactura,
   productosPaginados, isLoading, loadingFind, existencias, handleCantidadChangeLocal, efectivo, setEfectivo, cambio, cambioEquivalente, simboloCambioEquivalente, 
-  monedaCambioEquivalente, totalEquivalente, simboloTotalEquivalente, monedaTotalEquivalente }) => {
+  monedaCambioEquivalente, totalEquivalente, simboloTotalEquivalente, monedaTotalEquivalente, monedasDisponibles }) => {
   const theme = useTheme();
-
   if (mostrarPago) {
     return (
       <PagoVenta
@@ -131,7 +130,7 @@ const VentaForm = ({ productosSeleccionados, editMode, handleSelectProduct, hand
             isLoading={isLoading}
             existencias={existencias}
             handleCantidadChangeLocal={handleCantidadChangeLocal}
-            theme={theme} alpha={alpha}
+            theme={theme} alpha={alpha} monedasDisponibles={monedasDisponibles}
           />
         </Grid>
       </Grid>

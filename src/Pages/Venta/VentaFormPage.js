@@ -8,12 +8,18 @@ import VentaService from '../../Services/VentaService';
 import TipoCambioService from '../../Services/TipoCambioService';
 
 import { useExistencias } from '../../Context/ExistenciaContext';
+import {
+    convertirPrecio,
+    obtenerSimboloMoneda,
+    obtenerMonedaEquivalente
+} from '../../Utils/MonedaUtils';
 
-import { convertirPrecio, obtenerSimboloMoneda, obtenerMonedaEquivalente } from '../../Utils/MonedaUtils';
 export default function VentaFormPage() {
+
     const { codigo_venta } = useParams();
     const navigate = useNavigate();
     const authToken = localStorage.getItem("token");
+
     const ahora = new Date();
     const fechaLocal = ahora.toLocaleDateString('es-ES', {
         timeZone: 'America/Managua',
@@ -21,12 +27,14 @@ export default function VentaFormPage() {
         month: '2-digit',
         year: 'numeric',
     });
+
     const [productosSeleccionados, setProductosSeleccionados] = useState([]);
     const [productosFiltrados, setProductosFiltrados] = useState([]);
     const [descripcion, setDescripcion] = useState('');
     const [fechaVenta, setFechaVenta] = useState(fechaLocal);
 
-    const [monedaTotal, setMonedaTotal] = useState('NIO');
+    const [monedaTotal, setMonedaTotal] = useState('');
+    const [monedasDisponibles, setMonedasDisponibles] = useState([]);
 
     const [efectivo, setEfectivo] = useState('');
     const [cambio, setCambio] = useState(0);
@@ -68,6 +76,7 @@ export default function VentaFormPage() {
                     setError('No se encontró la venta.');
                     return;
                 }
+
                 setFechaVenta(
                     new Date(venta.fecha_venta).toLocaleDateString('es-ES', {
                         timeZone: 'America/Managua',
@@ -76,6 +85,7 @@ export default function VentaFormPage() {
                         year: 'numeric',
                     })
                 );
+
                 setMonedaTotal(venta.moneda);
                 setEfectivo(venta.efectivo?.toString() ?? '');
                 setCambio(venta.cambio ?? 0);
@@ -86,6 +96,7 @@ export default function VentaFormPage() {
                         cantidad: vp.cantidad
                     }))
                 );
+
             } catch (err) {
                 console.error(err);
                 setError('Error al obtener la venta.');
@@ -99,52 +110,78 @@ export default function VentaFormPage() {
         const fetchTipoCambio = async () => {
             try {
                 const data = await TipoCambioService.getTipoCambios();
+
                 setTipoCambio(data);
+
+                const setMonedas = new Set();
+                data.forEach((t) => {
+                    if (t.monedaOrigen) setMonedas.add(t.monedaOrigen);
+                    if (t.monedaDestino) setMonedas.add(t.monedaDestino);
+                });
+
+                const monedasArray = Array.from(setMonedas).map((m) => ({
+                    value: m,
+                    label: m
+                }));
+
+                setMonedasDisponibles(monedasArray);
+
             } catch (error) {
                 console.error('Error al cargar tipo de cambio', error);
             }
         };
+
         fetchTipoCambio();
     }, []);
 
-    const totalNIO = productosSeleccionados.reduce((acc, { producto, cantidad }) =>
-        acc + convertirPrecio(
-            producto.precio * cantidad,
-            producto.moneda,
-            'NIO',
-            tipoCambio
-        ), 0
-    );
+    useEffect(() => {
+        if (monedasDisponibles.length > 0 && monedaTotal == null) {
+            setMonedaTotal(monedasDisponibles[0].value);
+        }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [monedasDisponibles]);
 
-    const totalUSD = productosSeleccionados.reduce((acc, { producto, cantidad }) =>
-        acc + convertirPrecio(
-            producto.precio * cantidad,
-            producto.moneda,
-            'USD',
-            tipoCambio
-        ), 0
-    );
+    const monedaEquivalente = obtenerMonedaEquivalente(monedaTotal, tipoCambio);
 
-    const totalMostrado = monedaTotal === 'NIO' ? totalNIO : totalUSD;
+    const totalMostrado = (!monedaTotal || !tipoCambio)
+        ? 0
+        : productosSeleccionados.reduce((acc, { producto, cantidad }) =>
+            acc + convertirPrecio(
+                producto.precio * cantidad,
+                producto.moneda,
+                monedaTotal,
+                tipoCambio
+            ), 0
+        );
+
+    const totalEquivalente = (!monedaEquivalente || !tipoCambio)
+        ? 0
+        : productosSeleccionados.reduce((acc, { producto, cantidad }) =>
+            acc + convertirPrecio(
+                producto.precio * cantidad,
+                producto.moneda,
+                monedaEquivalente,
+                tipoCambio
+            ), 0
+        );
+
     const simboloMoneda = obtenerSimboloMoneda(monedaTotal);
+    const simboloCambioEquivalente = obtenerSimboloMoneda(monedaEquivalente);
 
     useEffect(() => {
         const efectivoNum = parseFloat(efectivo);
+
         setCambio(
-            !isNaN(efectivoNum)
+            !isNaN(efectivoNum) && totalMostrado
                 ? Math.max(efectivoNum - totalMostrado, 0)
                 : 0
         );
-    }, [efectivo, totalMostrado]);
+    }, [efectivo, totalMostrado, monedaTotal]);
 
-    const monedaEquivalente = obtenerMonedaEquivalente(monedaTotal, tipoCambio);
-    const simboloCambioEquivalente = obtenerSimboloMoneda(monedaEquivalente);
-
-    const totalEquivalente = monedaTotal === 'NIO' ? totalUSD : totalNIO;
-
-    const cambioEquivalente = totalMostrado > 0
-        ? (cambio * totalEquivalente) / totalMostrado
-        : 0;
+    const cambioEquivalente =
+        totalMostrado > 0
+            ? (cambio * totalEquivalente) / totalMostrado
+            : 0;
 
     const handleSelectProduct = (producto) => {
         if (!productosSeleccionados.find(p => p.producto.codigoProducto === producto.codigoProducto)) {
@@ -177,7 +214,6 @@ export default function VentaFormPage() {
             prev.filter(p => p.producto.codigoProducto !== codigoProducto)
         );
     };
-
     const handleBuscarDescripcion = async (value) => {
         setDescripcion(value);
     };
@@ -196,7 +232,7 @@ export default function VentaFormPage() {
 
         setLoadingFind(true);
 
-        const delayDebounceFn = setTimeout(async () => {
+        const delay = setTimeout(async () => {
             try {
                 const productos = await ProductoService.getProductoByDescripcion(descripcion);
                 setProductosFiltrados(productos.slice(0, 2));
@@ -208,11 +244,11 @@ export default function VentaFormPage() {
             }
         }, 1000);
 
-        return () => clearTimeout(delayDebounceFn);
+        return () => clearTimeout(delay);
 
     }, [descripcion]);
-    
-    const mostrarFactura = async () => {
+
+    const mostrarFactura = () => {
         setIsLoading(true);
         setMostrarPago(true);
         setIsLoading(false);
@@ -249,6 +285,7 @@ export default function VentaFormPage() {
             setOpenSnackbar(true);
             setMostrarPago(false);
             setTimeout(() => navigate('/venta'), 500);
+
         } catch (error) {
             console.error(error);
             setError('Error al guardar la venta.');
@@ -258,6 +295,7 @@ export default function VentaFormPage() {
     useEffect(() => setPage(1), [productosSeleccionados.length]);
 
     const totalPages = Math.ceil(productosSeleccionados.length / itemsPerPage);
+
     const productosPaginados = productosSeleccionados.slice(
         (page - 1) * itemsPerPage,
         page * itemsPerPage
@@ -265,23 +303,47 @@ export default function VentaFormPage() {
 
     return (
         <VentaForm
-            productosSeleccionados={productosSeleccionados} productosFiltrados={productosFiltrados} descripcion={descripcion}
-            fechaVenta={fechaVenta} existencias={existencias}
+            productosSeleccionados={productosSeleccionados}
+            productosFiltrados={productosFiltrados}
+            descripcion={descripcion}
+            fechaVenta={fechaVenta}
+            existencias={existencias}
 
-            monedaTotal={monedaTotal} setMonedaTotal={setMonedaTotal}
+            monedaTotal={monedaTotal}
+            setMonedaTotal={setMonedaTotal}
 
-            totalMostrado={totalMostrado} simboloMoneda={simboloMoneda} totalEquivalente={totalEquivalente}
+            totalMostrado={totalMostrado}
+            simboloMoneda={simboloMoneda}
+            totalEquivalente={totalEquivalente}
             simboloCambioEquivalente={simboloCambioEquivalente}
 
-            efectivo={efectivo} setEfectivo={setEfectivo} cambio={cambio} cambioEquivalente={cambioEquivalente}
+            efectivo={efectivo}
+            setEfectivo={setEfectivo}
+            cambio={cambio}
+            cambioEquivalente={cambioEquivalente}
 
-            page={page} setPage={setPage} totalPages={totalPages} itemsPerPage={itemsPerPage} productosPaginados={productosPaginados}
+            page={page}
+            setPage={setPage}
+            totalPages={totalPages}
+            itemsPerPage={itemsPerPage}
+            productosPaginados={productosPaginados}
 
-            editMode={editMode} mostrarPago={mostrarPago} isLoading={isLoading} loadingFind={loadingFind} openSnackbar={openSnackbar}
+            editMode={editMode}
+            mostrarPago={mostrarPago}
+            isLoading={isLoading}
+            loadingFind={loadingFind}
+            openSnackbar={openSnackbar}
 
-            handleSelectProduct={handleSelectProduct} handleCantidadChangeLocal={handleCantidadChangeLocal} onEliminarProducto={handleEliminarProducto}
-            handleBuscarDescripcion={handleBuscarDescripcion} handleGuardarVenta={handleGuardarVenta} mostrarFactura={mostrarFactura}
-            handleVolver={() => setMostrarPago(false)} setOpenSnackbar={setOpenSnackbar} setError={setError}
+            handleSelectProduct={handleSelectProduct}
+            handleCantidadChangeLocal={handleCantidadChangeLocal}
+            onEliminarProducto={handleEliminarProducto}
+            handleBuscarDescripcion={handleBuscarDescripcion}
+            handleGuardarVenta={handleGuardarVenta}
+            mostrarFactura={mostrarFactura}
+            handleVolver={() => setMostrarPago(false)}
+            setOpenSnackbar={setOpenSnackbar}
+            error={error} setError={setError}
+            monedasDisponibles={monedasDisponibles}
         />
     );
 }

@@ -155,7 +155,23 @@ const VentasContent = ({ selectedFecha, fechaLimite, tipoCambio }) => {
                         <TableCell align="center">{venta.codigo_venta}</TableCell>
                         <TableCell align="center">{formatDate(venta.fecha_venta)}</TableCell>
                         <TableCell align="center">{venta.nombre_vendedor}</TableCell>
-                        <TableCell align="center">{simbolo}{total.toFixed(2)}</TableCell>
+                        <TableCell align="center">
+                          <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'baseline', gap: 0.5 }}>
+                            <Typography variant="body2">
+                              {total.toFixed(2)}
+                            </Typography>
+
+                            <Typography
+                              variant="caption"
+                              sx={{
+                                color: 'text.secondary',
+                                fontSize: '0.75rem'
+                              }}
+                            >
+                              {simbolo}
+                            </Typography>
+                          </Box>
+                        </TableCell>
                         <TableCell align="center">
                           <Tooltip title={<span style={{ whiteSpace: "pre-line" }}>{renderProductosTooltip(venta)}</span>} arrow>
                             <Box display="inline-flex" alignItems="center">
