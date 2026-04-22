@@ -111,6 +111,9 @@ const GananciasMensualesChart = ({ pagosData }) => {
                             },
                         }
                     ]}
+                    slots={{
+                        legend: () => null,
+                    }}
                 />
             ) : (
                 <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: chartHeight }}>

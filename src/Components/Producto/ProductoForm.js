@@ -116,11 +116,11 @@ const ProductoForm = ({
                 }
               >
                 <MenuItem value="Suplementos">Suplementos</MenuItem>
-                <MenuItem value="Equipos de Entrenamiento">Equipos de Entrenamiento</MenuItem>
+                <MenuItem value="Equipos de Entrenamiento">Equipos</MenuItem>
                 <MenuItem value="Accesorios Deportivos">Accesorios</MenuItem>
-                <MenuItem value="Bebidas y Alimentos">Bebidas y Alimentos</MenuItem>
+                <MenuItem value="Bebidas y Alimentos">Alimentos</MenuItem>
                 <MenuItem value="Recuperación y Cuidado Personal">Cuidado Personal</MenuItem>
-                <MenuItem value="Clases y Servicios">Clases y Servicios</MenuItem>
+                <MenuItem value="Clases y Servicios">Servicios</MenuItem>
                 <MenuItem value="Otros">Otros</MenuItem>
               </Select>
             </FormControl>

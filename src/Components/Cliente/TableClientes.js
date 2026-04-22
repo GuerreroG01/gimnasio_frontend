@@ -17,36 +17,26 @@ import Collapse from '@mui/material/Collapse';
 import Typography from '@mui/material/Typography';
 import { format } from 'date-fns';
 import { es } from 'date-fns/locale';
-import TiempoPagoService from '../../Services/TiempoPagoService';
+import PagoService from '../../Services/PagoService';
 
 function Row({ usuario, onEdit, onDelete, onViewDetails }) {
   const [open, setOpen] = React.useState(false);
-  const [fechasUsuario, setFechasUsuario] = React.useState([]);
   const [ultimoPago, setUltimoPago] = React.useState(null);
 
   React.useEffect(() => {
-    if (open && !fechasUsuario.length) {
-      const fetchFechas = async () => {
+    if (open && usuario.codigo) {
+      const fetchUltimoPago = async () => {
         try {
-          const response = await TiempoPagoService.getFechasByClienteId(usuario.codigo);
-          const datosFechas = response.data;
-
-          setFechasUsuario(datosFechas);
-
-          if (datosFechas.length > 0) {
-            const ultimo = datosFechas.reduce((max, fecha) =>
-              new Date(fecha.fechaPago) > new Date(max.fechaPago) ? fecha : max
-            );
-            setUltimoPago(ultimo);
-          }
+          const data = await PagoService.getUltimoPagoVigente(usuario.codigo);
+          setUltimoPago(data);
         } catch (error) {
-          console.error('Error fetching fechas:', error);
+          console.error('Error fetching último pago:', error);
         }
       };
 
-      fetchFechas();
+      fetchUltimoPago();
     }
-  }, [open, usuario.codigo, fechasUsuario.length]);
+  }, [open, usuario.codigo]);
 
   const calcularDiasRestantes = (fechaVencimiento) => {
     const fechaActual = new Date();
