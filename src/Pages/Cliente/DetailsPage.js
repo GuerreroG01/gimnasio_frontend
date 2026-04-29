@@ -19,7 +19,17 @@ export default function DetailsPage(){
         try {
             const clienteResponse = await ClienteService.getClienteById(id);
             const fechasResponse = await TiempoPagoService.getFechasByClienteId(id);
-            const fechasOrdenadas = fechasResponse.data.sort((a, b) => new Date(b.fechaPago) - new Date(a.fechaPago));
+            const fechasOrdenadas = fechasResponse.data
+            .slice()
+            .sort((a, b) => {
+                const fechaA = new Date(a.fechaPago);
+                const fechaB = new Date(b.fechaPago);
+
+                if (fechaB.getTime() !== fechaA.getTime()) {
+                return fechaB - fechaA;
+                }
+                return (b.codigoPago || 0) - (a.codigoPago || 0);
+            });
             setCliente({ ...clienteResponse.data, TiempoPago: fechasOrdenadas });
         } catch (error) {
             console.error('Error fetching data:', error);
