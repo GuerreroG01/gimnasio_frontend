@@ -125,7 +125,7 @@ export default function ClienteProgreso({ theme, clienteIdInput, setClienteIdInp
                                 <InputAdornment position="end">
                                 <Tooltip title="Buscar Progreso">
                                     <IconButton
-                                    onClick={handleFetchProgresos}
+                                    onClick={() => handleFetchProgresos()}
                                     edge="end"
                                     color="primary"
                                     >
