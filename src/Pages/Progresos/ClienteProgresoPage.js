@@ -48,7 +48,7 @@ export default function ClienteProgresoPage() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
 
-    const fetchClienteInfo = async (id) => {
+    const fetchClienteInfo = React.useCallback(async (id) => {
         try {
             const response = await ClienteService.getClienteById(id);
             setClienteInfo(response.data);
@@ -56,20 +56,12 @@ export default function ClienteProgresoPage() {
             console.error("Error obteniendo info del cliente:", error);
             setClienteInfo(null);
         }
-    };
+    }, []);
 
     const handleFetchProgresos = React.useCallback(async (id) => {
-        const searchId = id || clienteIdInput;
+        const searchId = id ?? clienteIdInput;
 
-        if (!searchId) {
-            setSnackbar({
-                open: true,
-                message: 'Por favor ingresa un código de cliente.',
-                severity: 'warning'
-            });
-            return;
-        }
-
+        if (!searchId) return;
         setClienteIdInput(searchId);
         navigate(`?clienteId=${searchId}`, { replace: true });
 
@@ -98,7 +90,7 @@ export default function ClienteProgresoPage() {
         } finally {
             setLoading(false);
         }
-    }, [clienteIdInput, navigate]);
+    }, [navigate, fetchClienteInfo, clienteIdInput]);
 
     const agruparPorNivel = (progresos) => progresos.reduce((acc, progreso) => {
         const nivel = progreso.programaFit?.nivel || 'Sin nivel';
@@ -109,11 +101,16 @@ export default function ClienteProgresoPage() {
 
     useEffect(() => {
         const clienteIdParam = searchParams.get('clienteId');
-        console.log('Id recibido:', clienteIdParam);
-        if (clienteIdParam) {
+
+        if (!clienteIdParam) return;
+
+        // SOLO reaccionar si viene de URL externa
+        if (clienteIdParam !== clienteId) {
+            setClienteIdInput(clienteIdParam);
             handleFetchProgresos(clienteIdParam);
         }
-    }, [handleFetchProgresos, searchParams]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [searchParams]);
     useEffect(() => {
         if (error) {
             setSnackbar({
