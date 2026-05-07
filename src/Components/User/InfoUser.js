@@ -19,7 +19,6 @@ const InfoUser = () => {
         "Empleado": "Empleado",
         "Cliente": "Cliente"
     };
-    const isAdmin = ["Admin", "SuperAdmin"].includes(rol);
     const isSuperAdmin = rol === "SuperAdmin";
     const isAdminFull = rol === "Admin" && plan?.toUpperCase() === "FULL";
     const permitido = isSuperAdmin || isAdminFull;

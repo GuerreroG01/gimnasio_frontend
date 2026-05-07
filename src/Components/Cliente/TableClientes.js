@@ -21,14 +21,13 @@ import PagoService from '../../Services/PagoService';
 
 function Row({ usuario, onEdit, onDelete, onViewDetails }) {
   const [open, setOpen] = React.useState(false);
-  const [fechasUsuario, setFechasUsuario] = React.useState([]);
   const [ultimoPago, setUltimoPago] = React.useState(null);
 
   React.useEffect(() => {
     if (open && usuario.codigo) {
       const fetchUltimoPago = async () => {
         try {
-          const data = await PagoService.getUltimoPagoVigente(usuario.codigo);
+          const data = await PagoService.getUltimoPagoVigente(usuario.codigo, true);
           setUltimoPago(data);
         } catch (error) {
           console.error('Error fetching último pago:', error);

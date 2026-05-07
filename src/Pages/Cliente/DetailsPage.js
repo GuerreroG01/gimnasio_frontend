@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { useTheme, alpha } from '@mui/material/styles';
+import { alpha } from '@mui/material/styles';
 import ClienteService from '../../Services/ClienteService';
 import TiempoPagoService from '../../Services/TiempoPagoService';
 import DetalleCliente from "../../Components/Cliente/DetalleCliente";
@@ -13,13 +13,22 @@ export default function DetailsPage(){
     const { id } = useParams();
     const navigate = useNavigate();
     const [cliente, setCliente] = useState(null);
-    const theme = useTheme();
     useEffect(() => {
     const fetchData = async () => {
         try {
             const clienteResponse = await ClienteService.getClienteById(id);
             const fechasResponse = await TiempoPagoService.getFechasByClienteId(id);
-            const fechasOrdenadas = fechasResponse.data.sort((a, b) => new Date(b.fechaPago) - new Date(a.fechaPago));
+            const fechasOrdenadas = fechasResponse.data
+            .slice()
+            .sort((a, b) => {
+                const fechaA = new Date(a.fechaPago);
+                const fechaB = new Date(b.fechaPago);
+
+                if (fechaB.getTime() !== fechaA.getTime()) {
+                return fechaB - fechaA;
+                }
+                return (b.codigoPago || 0) - (a.codigoPago || 0);
+            });
             setCliente({ ...clienteResponse.data, TiempoPago: fechasOrdenadas });
         } catch (error) {
             console.error('Error fetching data:', error);

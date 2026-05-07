@@ -13,7 +13,7 @@ const indicadores = [
   { key: 'usuariosActivos', label: 'Usuarios activos', icon: <PeopleIcon />, valueKey: 'clientes', diffKey: 'clientesDiffPercent', refText: 'vs. mes anterior', isPercent: true, isDecimal: false, color: '#1976d2' },
   {
     key: 'ingresosDia',
-    label: 'Ingresos del día',
+    label: 'Ingresos Hoy',
     icon: <AttachMoneyIcon />,
     valuePath: ['ingresos', 'totalesPorMoneda'],
     diffPath: ['ingresosDiff', 'totalesPorMoneda'],

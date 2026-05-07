@@ -41,7 +41,7 @@ const ConfigInactividad = ({ permitido }) => {
       }
     };
     fetchConfig();
-  }, []);
+  }, [permitido]);
 
   useEffect(() => {
     if (!loading && cambiosPendientes && config.length > 0) {

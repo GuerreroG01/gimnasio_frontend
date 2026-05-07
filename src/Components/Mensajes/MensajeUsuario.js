@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import mensajeService from '../../Services/MensajeService';
-import { Button, IconButton, Tooltip, Alert, Typography, Card, CardContent, useTheme, Container, Box, Skeleton, } from '@mui/material';
+import { Button, IconButton, Tooltip, Alert, Typography, Card, CardContent, Container, Box, Skeleton, } from '@mui/material';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EventIcon from '@mui/icons-material/Event';
@@ -28,7 +28,6 @@ const MensajeUsuario = () => {
     .reverse()
     .join('-');
   const { usuario } = React.useContext(AuthContext);
-  const theme = useTheme();
 
   const fetchMessages = async () => {
     setLoading(true);
