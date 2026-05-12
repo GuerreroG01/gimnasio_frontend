@@ -19,16 +19,10 @@ const mesesNombres = [
     "Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"
 ];
 
-const colorMap = {
-    NIO: "#1976d2",
-    USD: "#2e7d32",
-};
-
 const GananciasMensualesChart = ({ pagosData }) => {
     const [añosDisponibles, setAñosDisponibles] = React.useState([]);
     const [añoSeleccionado, setAñoSeleccionado] = React.useState(null);
     const [chartData, setChartData] = React.useState(null);
-    const [monedas, setMonedas] = React.useState([]);
     const [openSnackbar, setOpenSnackbar] = React.useState(false);
 
     const theme = useTheme();
@@ -37,7 +31,10 @@ const GananciasMensualesChart = ({ pagosData }) => {
 
     useEffect(() => {
         if (pagosData.length > 0) {
-            const años = pagosData.map(item => item.año).sort((a, b) => a - b);
+            const años = pagosData
+                .map(item => item.anio ?? item.año)
+                .sort((a, b) => a - b);
+
             setAñosDisponibles(años);
             setAñoSeleccionado(años[años.length - 1]);
         }
@@ -52,40 +49,31 @@ const GananciasMensualesChart = ({ pagosData }) => {
 
                 if (!response || response.length === 0) {
                     setChartData(null);
-                    setMonedas([]);
                     setOpenSnackbar(true);
                     return;
                 }
 
-                const currencySet = new Set();
-
                 const formattedData = response.map(item => {
-                    const row = {
+                    const totales = item.totalesPorMoneda || {};
+
+                    // 🔥 1. sumamos TODO para barra única
+                    const totalMes = Object.values(totales)
+                        .reduce((acc, val) => acc + Number(val || 0), 0);
+
+                    return {
                         mes: mesesNombres[item.mes - 1],
-                        ...(item.totalesPorMoneda || {})
+                        totalMes,
+
+                        // 🔥 2. guardamos desglose dinámico para tooltip
+                        desglose: totales,
                     };
-
-                    Object.keys(item.totalesPorMoneda || {}).forEach(moneda => {
-                        currencySet.add(moneda);
-                    });
-
-                    return row;
                 });
 
-                // 🎯 FORZAMOS ORDEN FIJO (importante para UX)
-                const orderedCurrencies = Array.from(currencySet).sort((a, b) => {
-                    if (a === "NIO") return -1;
-                    if (b === "NIO") return 1;
-                    return 0;
-                });
-
-                setMonedas(orderedCurrencies);
                 setChartData(formattedData);
 
             } catch (error) {
                 console.error(error);
                 setChartData(null);
-                setMonedas([]);
                 setOpenSnackbar(true);
             }
         };
@@ -93,20 +81,12 @@ const GananciasMensualesChart = ({ pagosData }) => {
         fetchMeses();
     }, [añoSeleccionado]);
 
-    const series = monedas.map((moneda) => ({
-        id: moneda,
-        dataKey: moneda,
-        label: `Ingresos (${moneda})`,
-        color: colorMap[moneda] || "#27b065",
-
-        valueFormatter: (v) =>
-            ` ${Number(v).toLocaleString()}`
-    }));
-
     return (
         <Box sx={{ width: "100%", textAlign: "center" }}>
             <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center", mb: 2 }}>
-                <Typography variant="h6">Ingresos Mensuales</Typography>
+                <Typography variant="h6">
+                    Ingresos Mensuales
+                </Typography>
 
                 <FormControl variant="filled" sx={{ minWidth: 120 }}>
                     <InputLabel>Año</InputLabel>
@@ -116,7 +96,9 @@ const GananciasMensualesChart = ({ pagosData }) => {
                         size="small"
                     >
                         {añosDisponibles.map(año => (
-                            <MenuItem key={año} value={año}>{año}</MenuItem>
+                            <MenuItem key={año} value={año}>
+                                {año}
+                            </MenuItem>
                         ))}
                     </Select>
                 </FormControl>
@@ -127,7 +109,26 @@ const GananciasMensualesChart = ({ pagosData }) => {
                     height={chartHeight}
                     dataset={chartData}
                     layout="horizontal"
-                    series={series}
+                    series={[
+                        {
+                            id: "total",
+                            dataKey: "totalMes",
+                            label: "Ingresos",
+                            color: "#19d241",
+
+                            // 🔥 tooltip dinámico por monedas
+                            valueFormatter: (value, context) => {
+                                const row = chartData[context?.dataIndex];
+                                if (!row) return "";
+
+                                return Object.entries(row.desglose || {})
+                                    .map(([moneda, val]) =>
+                                        `${moneda}: ${Number(val).toLocaleString()}`
+                                    )
+                                    .join(" | ");
+                            },
+                        }
+                    ]}
                     yAxis={[
                         {
                             scaleType: "band",
@@ -140,7 +141,14 @@ const GananciasMensualesChart = ({ pagosData }) => {
                     }}
                 />
             ) : (
-                <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", height: chartHeight }}>
+                <Box
+                    sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        height: chartHeight,
+                    }}
+                >
                     <Typography variant="subtitle1" color="text.secondary">
                         Aún no hay datos para el año seleccionado.
                     </Typography>
